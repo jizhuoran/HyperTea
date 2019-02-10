@@ -1,0 +1,102 @@
+#include <algorithm>
+#include <vector>
+
+#include "hypertea/operators/scale_op.hpp"
+
+namespace hypertea {
+
+template <>
+void ScaleOp_CPU<float>::Forward(const float* bottom_data,
+      float* top_data) {
+
+
+  float* tmp_top_data = top_data;
+
+  for (int n = 0; n < outer_dim_; ++n) {
+    for (int d = 0; d < scale_dim_; ++d) {
+      const float factor = scale_data_[d];
+      hypertea_cpu_scale(inner_dim_, factor, bottom_data, top_data);
+      bottom_data += inner_dim_;
+      top_data += inner_dim_;
+    } 
+  }
+
+
+  top_data = tmp_top_data;
+  
+  if (bias_data_) {
+
+    float* bias_multiplier_ = (float* )malloc(sizeof(float) * inner_dim_);
+    hypertea_set(inner_dim_, float(1), bias_multiplier_);
+
+    for (int n = 0; n < outer_dim_; ++n) {
+
+      hypertea_cpu_gemm(CblasNoTrans, CblasNoTrans, scale_dim_,
+          inner_dim_, 1, float(1), bias_data_,
+          bias_multiplier_, float(1), top_data);
+      top_data += top_count_;
+    }
+  }
+
+}
+
+#ifdef USE_OPENCL
+
+
+template <typename Dtype>
+void ScaleOp_GPU<Dtype>::Forward(const cl_mem bottom_data,
+      cl_mem top_data) {
+
+
+  if (bias_data_) {
+
+    cl_int ret;
+
+    cl_kernel kernel = clCreateKernel(OpenCLHandler::Get().math_program, "ScaleBiasForward", &ret);
+    OPENCL_CHECK(ret);
+
+    // Set arguments for kernel
+    OPENCL_CHECK(clSetKernelArg(kernel, 0, sizeof(cl_mem), (void *)&bottom_data));  
+    OPENCL_CHECK(clSetKernelArg(kernel, 1, sizeof(cl_mem), (void *)&top_data));  
+    OPENCL_CHECK(clSetKernelArg(kernel, 2, sizeof(cl_int), (void *)&top_count_));  
+    OPENCL_CHECK(clSetKernelArg(kernel, 3, sizeof(cl_mem), (void *)&scale_data_)); 
+    OPENCL_CHECK(clSetKernelArg(kernel, 4, sizeof(cl_mem), (void *)&bias_data_));   
+    OPENCL_CHECK(clSetKernelArg(kernel, 5, sizeof(cl_int), (void *)&scale_dim_));  
+    OPENCL_CHECK(clSetKernelArg(kernel, 6, sizeof(cl_int), (void *)&inner_dim_));  
+
+    size_t global_size = HYPERTEA_GET_BLOCKS(top_count_);
+    
+    OPENCL_CHECK(clEnqueueNDRangeKernel(OpenCLHandler::Get().commandQueue, kernel, 1, NULL, &global_size, &HYPERTEA_OPENCL_NUM_THREADS, 0, NULL, NULL));  
+
+
+  } else {
+
+
+    cl_int ret;
+
+    cl_kernel kernel = clCreateKernel(OpenCLHandler::Get().math_program, "ScaleForward", &ret);
+    OPENCL_CHECK(ret);
+
+    // Set arguments for kernel
+    OPENCL_CHECK(clSetKernelArg(kernel, 0, sizeof(cl_mem), (void *)&bottom_data));  
+    OPENCL_CHECK(clSetKernelArg(kernel, 1, sizeof(cl_mem), (void *)&top_data));  
+    OPENCL_CHECK(clSetKernelArg(kernel, 2, sizeof(cl_int), (void *)&top_count_));  
+    OPENCL_CHECK(clSetKernelArg(kernel, 3, sizeof(cl_mem), (void *)&scale_data_)); 
+    OPENCL_CHECK(clSetKernelArg(kernel, 4, sizeof(cl_int), (void *)&scale_dim_));  
+    OPENCL_CHECK(clSetKernelArg(kernel, 5, sizeof(cl_int), (void *)&inner_dim_));  
+
+    size_t global_size = HYPERTEA_GET_BLOCKS(top_count_);
+    
+    OPENCL_CHECK(clEnqueueNDRangeKernel(OpenCLHandler::Get().commandQueue, kernel, 1, NULL, &global_size, &HYPERTEA_OPENCL_NUM_THREADS, 0, NULL, NULL));  
+
+
+  }
+}
+
+#endif //USE_OPENCL
+
+INSTANTIATE_CLASS_CPU(ScaleOp_CPU);
+INSTANTIATE_CLASS_GPU(ScaleOp_GPU);
+// REGISTER_LAYER_CLASS(Scale);
+
+}  // namespace hypertea
