@@ -9,9 +9,11 @@ namespace hypertea {
 
 
 template <>
-void BatchNormOp_CPU<float>::Forward(const float* bottom_data,
-      float* top_data) {
+void BatchNormOp_CPU<float>::Forward(const std::vector<float*> bottom_datas,
+      const std::vector<float*> top_datas) {
 
+  float* bottom_data = bottom_datas[0];
+  float* top_data = top_datas[0];
 
 
   if (bottom_data != top_data) {
@@ -76,15 +78,15 @@ void BatchNormOp_CPU<float>::Forward(const float* bottom_data,
 #ifdef USE_OPENCL
 
 template <typename Dtype>
-void BatchNormOp_GPU<Dtype>::Forward(const cl_mem bottom_data,
-      cl_mem top_data) {
+void BatchNormOp_GPU<Dtype>::Forward(const std::vector<cl_mem> bottom_datas,
+      const std::vector<cl_mem> top_datas) {
 
 
   float sum_shift_num = 1.;//64.0;
   float top_shift_num = 1.;//32.0;
 
-  if (bottom_data != top_data) {
-    hypertea_cl_copy<Dtype>(top_count_, bottom_data, top_data);
+  if (bottom_datas[0] != top_datas[0]) {
+    hypertea_cl_copy<Dtype>(top_count_, bottom_datas[0], top_datas[0]);
   }
 
   if (use_global_stats_) {
@@ -96,7 +98,7 @@ void BatchNormOp_GPU<Dtype>::Forward(const cl_mem bottom_data,
   } else {
     // compute mean
 
-    hypertea_gpu_bsum<Dtype>(channels_ * num_, spatial_dim_, bottom_data, 
+    hypertea_gpu_bsum<Dtype>(channels_ * num_, spatial_dim_, bottom_datas[0], 
                           1/sum_shift_num, (sum_shift_num*sum_shift_num)/(num_ * spatial_dim_), 
                           num_by_chans_, 1);
 
@@ -113,16 +115,16 @@ void BatchNormOp_GPU<Dtype>::Forward(const cl_mem bottom_data,
 
   hypertea_gpu_gemm<Dtype>(CblasNoTrans, CblasNoTrans, channels_ * num_,
       spatial_dim_, 1, float(-1), num_by_chans_,
-      spatial_sum_multiplier_, float(1.), top_data);
+      spatial_sum_multiplier_, float(1.), top_datas[0]);
 
 
   if (!use_global_stats_) {
 
 
-    hypertea_gpu_scal<Dtype>(top_count_, 1/top_shift_num, top_data);
+    hypertea_gpu_scal<Dtype>(top_count_, 1/top_shift_num, top_datas[0]);
 
     // compute variance using var(X) = E((X-EX)^2)
-    hypertea_gpu_mul<Dtype>(top_count_, top_data, top_data,
+    hypertea_gpu_mul<Dtype>(top_count_, top_datas[0], top_datas[0],
         temp_);  // (X-EX)^2
 
     hypertea_gpu_bsum<Dtype>(channels_ * num_, spatial_dim_, temp_, 
@@ -140,7 +142,7 @@ void BatchNormOp_GPU<Dtype>::Forward(const cl_mem bottom_data,
   hypertea_gpu_add_scalar<Dtype>(channels_, eps_, variance_);
   hypertea_gpu_sqrt<Dtype>(channels_, variance_, variance_);
 
-  hypertea_gpu_scal<Dtype>(top_count_, top_shift_num, top_data);
+  hypertea_gpu_scal<Dtype>(top_count_, top_shift_num, top_datas[0]);
   hypertea_gpu_scal<Dtype>(channels_, top_shift_num, variance_);
 
   // replicate variance to input size
@@ -151,7 +153,7 @@ void BatchNormOp_GPU<Dtype>::Forward(const cl_mem bottom_data,
       spatial_dim_, 1, float(1.), num_by_chans_,
       spatial_sum_multiplier_, float(0.), temp_);
 
-  hypertea_gpu_div<Dtype>(top_count_, top_data, temp_, top_data);
+  hypertea_gpu_div<Dtype>(top_count_, top_datas[0], temp_, top_datas[0]);
 
 }
 

@@ -1,0 +1,1 @@
+/usr/bin/c++  -O3 -DNDEBUG -Wno-sign-compare -std=c++0x  -rdynamic CMakeFiles/hypertea_demo.bin.dir/hypertea_demo.cpp.o  -o hypertea_demo.bin -Wl,-rpath,/usr/local/lib:::::::::::::::::::::::::::::::::::::: -Wl,--whole-archive ../lib/libhypertea.a -Wl,--no-whole-archive -lgflags -lopenblas -lOpenCL /usr/local/lib/libclblast.so 

@@ -72,8 +72,8 @@ class BatchNormOp_CPU : public CPUFunctor<Dtype> {
   virtual inline const char* type() const { return "BatchNorm"; }
 
  // protected:
-  virtual void Forward(const Dtype* bottom_data,
-      Dtype* top_data);
+  virtual void Forward(const std::vector<Dtype*> bottom_datas,
+      const std::vector<Dtype*> top_datas);
 
   Dtype *mean_, *variance_, *temp_;
   bool use_global_stats_;
@@ -138,8 +138,8 @@ class BatchNormOp_GPU : public GPUFunctor<Dtype> {
 
   virtual inline const char* type() const { return "BatchNorm"; }
 
-  virtual void Forward(const cl_mem bottom_data,
-      cl_mem top_data);
+  virtual void Forward(const std::vector<cl_mem> bottom_datas,
+      const std::vector<cl_mem> top_datas);
 
   cl_mem mean_, variance_, temp_;
   bool use_global_stats_;

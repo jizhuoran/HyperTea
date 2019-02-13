@@ -8,11 +8,11 @@
 namespace hypertea {
 
 template <>
-void TanHOp_CPU<float>::Forward(const float* bottom_data,
-      float* top_data) {
+void TanHOp_CPU<float>::Forward(const std::vector<float*> bottom_datas,
+      const std::vector<float*> top_datas) {
 
   for (int i = 0; i < data_count_; ++i) {
-    top_data[i] = tanh(bottom_data[i]);
+    top_datas[0][i] = tanh(bottom_datas[0][i]);
   }
 }
 
@@ -20,8 +20,8 @@ void TanHOp_CPU<float>::Forward(const float* bottom_data,
 #ifdef USE_OPENCL
 
 template <typename Dtype>
-void TanHOp_GPU<Dtype>::Forward(const cl_mem bottom_data,
-      cl_mem top_data) {
+void TanHOp_GPU<Dtype>::Forward(const std::vector<cl_mem> bottom_datas,
+      const std::vector<cl_mem> top_datas) {
 
   cl_int ret;
 
@@ -29,8 +29,8 @@ void TanHOp_GPU<Dtype>::Forward(const cl_mem bottom_data,
   OPENCL_CHECK(ret);
 
   // Set arguments for kernel
-  OPENCL_CHECK(clSetKernelArg(kernel, 0, sizeof(cl_mem), (void *)&bottom_data));  
-  OPENCL_CHECK(clSetKernelArg(kernel, 1, sizeof(cl_mem), (void *)&top_data));  
+  OPENCL_CHECK(clSetKernelArg(kernel, 0, sizeof(cl_mem), (void *)&bottom_datas[0]));  
+  OPENCL_CHECK(clSetKernelArg(kernel, 1, sizeof(cl_mem), (void *)&top_datas[0]));  
   OPENCL_CHECK(clSetKernelArg(kernel, 2, sizeof(cl_int), (void *)&data_count_));  
 
   size_t global_size = HYPERTEA_GET_BLOCKS(data_count_);

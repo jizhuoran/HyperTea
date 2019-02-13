@@ -33,7 +33,7 @@ class EltwiseOp_CPU : public CPUFunctor<Dtype> {
 
  // protected:
   virtual void Forward(const std::vector<Dtype*> bottom_datas,
-      Dtype* top_data);
+      const std::vector<Dtype*> top_datas);
   
 private:
   
@@ -68,7 +68,7 @@ class EltwiseOp_GPU : public GPUFunctor<Dtype> {
  // protected:
 
   virtual void Forward(const std::vector<cl_mem> bottom_datas,
-      cl_mem top_data);
+      const std::vector<cl_mem> top_datas);
   
 private:
   

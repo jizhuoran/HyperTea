@@ -10,7 +10,9 @@ namespace hypertea {
 
 template <>
 void EltwiseOp_CPU<float>::Forward(const std::vector<float*> bottom_datas,
-      float* top_data) {
+      const std::vector<float*> top_datas) {
+
+  float* top_data = top_datas[0];
 
   switch (op_) {
   case EltwiseParameter_EltwiseOp_PROD:
@@ -61,7 +63,7 @@ void EltwiseOp_CPU<float>::Forward(const std::vector<float*> bottom_datas,
 
 template <typename Dtype>
 void EltwiseOp_GPU<Dtype>::Forward(const std::vector<cl_mem> bottom_datas,
-      cl_mem top_data) {
+      const std::vector<cl_mem> top_datas) {
 
   int blob_idx = 0;
   size_t global_size = 0;
@@ -72,16 +74,16 @@ void EltwiseOp_GPU<Dtype>::Forward(const std::vector<cl_mem> bottom_datas,
   switch (op_) {
   case EltwiseParameter_EltwiseOp_PROD:
     hypertea_gpu_mul<Dtype>(top_count_, bottom_datas[0], bottom_datas[1],
-        top_data);
+        top_datas[0]);
     for (int i = 2; i < bottom_nums_; ++i) {
-      hypertea_gpu_mul<Dtype>(top_count_, top_data, bottom_datas[i], top_data);
+      hypertea_gpu_mul<Dtype>(top_count_, top_datas[0], bottom_datas[i], top_datas[0]);
     }
     break;
   case EltwiseParameter_EltwiseOp_SUM:
-    hypertea_gpu_set<Dtype>(top_count_, Dtype(0.), top_data);
+    hypertea_gpu_set<Dtype>(top_count_, Dtype(0.), top_datas[0]);
     // TODO(shelhamer) does cuBLAS optimize to sum for coeff = 1?
     for (int i = 0; i < bottom_nums_; ++i) {
-      hypertea_gpu_axpy<Dtype>(top_count_, coeffs_[i], bottom_datas[i], top_data);
+      hypertea_gpu_axpy<Dtype>(top_count_, coeffs_[i], bottom_datas[i], top_datas[0]);
     }
     break;
   case EltwiseParameter_EltwiseOp_MAX:
@@ -96,7 +98,7 @@ void EltwiseOp_GPU<Dtype>::Forward(const std::vector<cl_mem> bottom_datas,
     // Set arguments for kernel
     OPENCL_CHECK(clSetKernelArg(kernel, 0, sizeof(cl_mem), (void *)&bottom_datas[0]));  
     OPENCL_CHECK(clSetKernelArg(kernel, 1, sizeof(cl_mem), (void *)&bottom_datas[1]));  
-    OPENCL_CHECK(clSetKernelArg(kernel, 2, sizeof(cl_mem), (void *)&top_data));  
+    OPENCL_CHECK(clSetKernelArg(kernel, 2, sizeof(cl_mem), (void *)&top_datas[0]));  
     OPENCL_CHECK(clSetKernelArg(kernel, 3, sizeof(cl_mem), (void *)&max_idx_));  
     OPENCL_CHECK(clSetKernelArg(kernel, 4, sizeof(cl_int), (void *)&top_count_));  
     OPENCL_CHECK(clSetKernelArg(kernel, 5, sizeof(cl_int), (void *)&blob_idx));  
@@ -110,9 +112,9 @@ void EltwiseOp_GPU<Dtype>::Forward(const std::vector<cl_mem> bottom_datas,
 
       blob_idx = i-1;
 
-      OPENCL_CHECK(clSetKernelArg(kernel, 0, sizeof(cl_mem), (void *)&top_data));  
+      OPENCL_CHECK(clSetKernelArg(kernel, 0, sizeof(cl_mem), (void *)&top_datas[0]));  
       OPENCL_CHECK(clSetKernelArg(kernel, 1, sizeof(cl_mem), (void *)&bottom_datas[i]));  
-      OPENCL_CHECK(clSetKernelArg(kernel, 2, sizeof(cl_mem), (void *)&top_data));  
+      OPENCL_CHECK(clSetKernelArg(kernel, 2, sizeof(cl_mem), (void *)&top_datas[0]));  
       OPENCL_CHECK(clSetKernelArg(kernel, 3, sizeof(cl_mem), (void *)&max_idx_));  
       OPENCL_CHECK(clSetKernelArg(kernel, 4, sizeof(cl_int), (void *)&top_count_));  
       OPENCL_CHECK(clSetKernelArg(kernel, 5, sizeof(cl_int), (void *)&blob_idx));  

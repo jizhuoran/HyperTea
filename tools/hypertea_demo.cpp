@@ -5,7 +5,7 @@
 
 
 #include "../tools/conv_opencl.hpp"
-#include "../tools/demo_net_gpu.hpp"
+#include "../tools/demo_net_cpu.hpp"
 
 
 

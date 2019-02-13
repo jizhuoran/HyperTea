@@ -6,23 +6,24 @@
 namespace hypertea {
 
 template <>
-void ScaleOp_CPU<float>::Forward(const float* bottom_data,
-      float* top_data) {
+void ScaleOp_CPU<float>::Forward(const std::vector<float*> bottom_datas,
+      const std::vector<float*> top_datas) {
 
 
-  float* tmp_top_data = top_data;
+  float* tmp_top_data = top_datas[0];
+  float* bottom_data = bottom_datas[0];
 
   for (int n = 0; n < outer_dim_; ++n) {
     for (int d = 0; d < scale_dim_; ++d) {
       const float factor = scale_data_[d];
-      hypertea_cpu_scale(inner_dim_, factor, bottom_data, top_data);
+      hypertea_cpu_scale(inner_dim_, factor, bottom_data, tmp_top_data);
       bottom_data += inner_dim_;
-      top_data += inner_dim_;
+      tmp_top_data += inner_dim_;
     } 
   }
 
 
-  top_data = tmp_top_data;
+  tmp_top_data = top_datas[0];
   
   if (bias_data_) {
 
@@ -33,8 +34,8 @@ void ScaleOp_CPU<float>::Forward(const float* bottom_data,
 
       hypertea_cpu_gemm(CblasNoTrans, CblasNoTrans, scale_dim_,
           inner_dim_, 1, float(1), bias_data_,
-          bias_multiplier_, float(1), top_data);
-      top_data += top_count_;
+          bias_multiplier_, float(1), tmp_top_data);
+      tmp_top_data += top_count_;
     }
   }
 
@@ -44,8 +45,8 @@ void ScaleOp_CPU<float>::Forward(const float* bottom_data,
 
 
 template <typename Dtype>
-void ScaleOp_GPU<Dtype>::Forward(const cl_mem bottom_data,
-      cl_mem top_data) {
+void ScaleOp_GPU<Dtype>::Forward(const std::vector<cl_mem> bottom_datas,
+      const std::vector<cl_mem> top_datas) {
 
 
   if (bias_data_) {
@@ -56,8 +57,8 @@ void ScaleOp_GPU<Dtype>::Forward(const cl_mem bottom_data,
     OPENCL_CHECK(ret);
 
     // Set arguments for kernel
-    OPENCL_CHECK(clSetKernelArg(kernel, 0, sizeof(cl_mem), (void *)&bottom_data));  
-    OPENCL_CHECK(clSetKernelArg(kernel, 1, sizeof(cl_mem), (void *)&top_data));  
+    OPENCL_CHECK(clSetKernelArg(kernel, 0, sizeof(cl_mem), (void *)&bottom_datas[0]));  
+    OPENCL_CHECK(clSetKernelArg(kernel, 1, sizeof(cl_mem), (void *)&top_datas[0]));  
     OPENCL_CHECK(clSetKernelArg(kernel, 2, sizeof(cl_int), (void *)&top_count_));  
     OPENCL_CHECK(clSetKernelArg(kernel, 3, sizeof(cl_mem), (void *)&scale_data_)); 
     OPENCL_CHECK(clSetKernelArg(kernel, 4, sizeof(cl_mem), (void *)&bias_data_));   
@@ -78,8 +79,8 @@ void ScaleOp_GPU<Dtype>::Forward(const cl_mem bottom_data,
     OPENCL_CHECK(ret);
 
     // Set arguments for kernel
-    OPENCL_CHECK(clSetKernelArg(kernel, 0, sizeof(cl_mem), (void *)&bottom_data));  
-    OPENCL_CHECK(clSetKernelArg(kernel, 1, sizeof(cl_mem), (void *)&top_data));  
+    OPENCL_CHECK(clSetKernelArg(kernel, 0, sizeof(cl_mem), (void *)&bottom_datas[0]));  
+    OPENCL_CHECK(clSetKernelArg(kernel, 1, sizeof(cl_mem), (void *)&top_datas[0]));  
     OPENCL_CHECK(clSetKernelArg(kernel, 2, sizeof(cl_int), (void *)&top_count_));  
     OPENCL_CHECK(clSetKernelArg(kernel, 3, sizeof(cl_mem), (void *)&scale_data_)); 
     OPENCL_CHECK(clSetKernelArg(kernel, 4, sizeof(cl_int), (void *)&scale_dim_));  
