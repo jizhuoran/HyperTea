@@ -10,13 +10,14 @@ file(REMOVE_RECURSE
   "CMakeFiles/hypertea.dir/operators/scale_op.cpp.o"
   "CMakeFiles/hypertea.dir/operators/split_op.cpp.o"
   "CMakeFiles/hypertea.dir/operators/tanh_op.cpp.o"
+  "CMakeFiles/hypertea.dir/tensor.cpp.o"
   "CMakeFiles/hypertea.dir/util/benchmark.cpp.o"
   "CMakeFiles/hypertea.dir/util/im2col.cpp.o"
   "CMakeFiles/hypertea.dir/util/math_functions.cpp.o"
   "CMakeFiles/hypertea.dir/util/math_functions_cl.cpp.o"
   "CMakeFiles/hypertea.dir/util/opencl_util.cpp.o"
-  "../../lib/libhypertea.pdb"
-  "../../lib/libhypertea.a"
+  "../../lib/libhypertea-d.pdb"
+  "../../lib/libhypertea-d.a"
 )
 
 # Per-language clean rules from dependency scanning.

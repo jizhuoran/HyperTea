@@ -65,6 +65,9 @@ class ConvolutionOp_CPU : public BaseConvolutionOp_CPU<Dtype> {
  // protected:
   virtual void Forward(const std::vector<Dtype*> bottom_datas,
       const std::vector<Dtype*> top_datas);
+
+  virtual std::vector<Tensor<Dtype> *> Forward(const std::vector<Tensor<Dtype> *> inputs);
+
   
 };
 

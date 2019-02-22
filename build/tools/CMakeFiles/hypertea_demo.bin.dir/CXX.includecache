@@ -39,6 +39,8 @@ hypertea/util/half.hpp
 ../include/hypertea/hypertea/util/half.hpp
 hypertea/util/opencl_util.hpp
 ../include/hypertea/hypertea/util/opencl_util.hpp
+hypertea/tensor.hpp
+../include/hypertea/hypertea/tensor.hpp
 
 ../include/hypertea/glog_wrapper.hpp
 sstream
@@ -145,6 +147,12 @@ vector
 -
 hypertea/operator.hpp
 ../include/hypertea/operators/hypertea/operator.hpp
+
+../include/hypertea/tensor.hpp
+vector
+-
+hypertea/util/math_functions.hpp
+../include/hypertea/hypertea/util/math_functions.hpp
 
 ../include/hypertea/util/device_alternate.hpp
 cxxabi.h

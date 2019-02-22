@@ -468,6 +468,33 @@ operators/tanh_op.cpp.s:
 	cd /home/zrji/hypertea/build && $(MAKE) -f src/hypertea/CMakeFiles/hypertea.dir/build.make src/hypertea/CMakeFiles/hypertea.dir/operators/tanh_op.cpp.s
 .PHONY : operators/tanh_op.cpp.s
 
+tensor.o: tensor.cpp.o
+
+.PHONY : tensor.o
+
+# target to build an object file
+tensor.cpp.o:
+	cd /home/zrji/hypertea/build && $(MAKE) -f src/hypertea/CMakeFiles/hypertea.dir/build.make src/hypertea/CMakeFiles/hypertea.dir/tensor.cpp.o
+.PHONY : tensor.cpp.o
+
+tensor.i: tensor.cpp.i
+
+.PHONY : tensor.i
+
+# target to preprocess a source file
+tensor.cpp.i:
+	cd /home/zrji/hypertea/build && $(MAKE) -f src/hypertea/CMakeFiles/hypertea.dir/build.make src/hypertea/CMakeFiles/hypertea.dir/tensor.cpp.i
+.PHONY : tensor.cpp.i
+
+tensor.s: tensor.cpp.s
+
+.PHONY : tensor.s
+
+# target to generate assembly for a file
+tensor.cpp.s:
+	cd /home/zrji/hypertea/build && $(MAKE) -f src/hypertea/CMakeFiles/hypertea.dir/build.make src/hypertea/CMakeFiles/hypertea.dir/tensor.cpp.s
+.PHONY : tensor.cpp.s
+
 util/benchmark.o: util/benchmark.cpp.o
 
 .PHONY : util/benchmark.o
@@ -649,6 +676,9 @@ help:
 	@echo "... operators/tanh_op.o"
 	@echo "... operators/tanh_op.i"
 	@echo "... operators/tanh_op.s"
+	@echo "... tensor.o"
+	@echo "... tensor.i"
+	@echo "... tensor.s"
 	@echo "... util/benchmark.o"
 	@echo "... util/benchmark.i"
 	@echo "... util/benchmark.s"

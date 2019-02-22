@@ -17,6 +17,42 @@ void ELUOp_CPU<float>::Forward(const std::vector<float*> bottom_datas,
 
 }
 
+
+template <>
+std::vector<Tensor<float> *> ELUOp_CPU<float>::Forward(std::vector<Tensor<float> *> inputs) {
+
+  float* input = inputs[0]->data();
+  Tensor<float>* output_tensor = new Tensor<float>(inputs[0]->size());
+  float* output = output_tensor->data();
+
+  for (int i = 0; i < inputs[0]->size(); ++i) {
+    output[i] = std::max(input[i], float(0))
+        + alpha_ * (exp(std::min(input[i], float(0))) - float(1));
+  }
+
+  return {output_tensor};
+
+}
+
+
+template <>
+Tensor<float> ELUOp_CPU<float>::Forward1(Tensor<float> &inputs) {
+  
+  float* input_data = inputs.data();
+  Tensor<float> output(inputs.size());
+  float* output_data = output.data();
+
+  for (int i = 0; i < inputs.size(); ++i) {
+    output_data[i] = std::max(input_data[i], float(0))
+        + alpha_ * (exp(std::min(input_data[i], float(0))) - float(1));
+  }
+
+  return output;
+
+}
+
+
+
 #ifdef USE_OPENCL
 
 template <typename Dtype>

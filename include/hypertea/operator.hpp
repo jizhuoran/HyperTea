@@ -64,6 +64,19 @@ public:
 
   virtual void Forward(const std::vector<Dtype*> bottom_datas,
       const std::vector<Dtype*> top_datas) {}
+
+  virtual std::vector<Tensor<Dtype> *> Forward(const std::vector<Tensor<Dtype> *> inputs) {}
+  
+  Tensor<Dtype> Forward1(Tensor<Dtype> &input) {
+
+    return *(this->Forward({&input})[0]);
+
+  }
+
+
+  Tensor<Dtype> operator()(Tensor<Dtype> input) {
+    return *(this->Forward({&input})[0]);
+  }
   
 };
 

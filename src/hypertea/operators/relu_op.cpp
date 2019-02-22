@@ -18,6 +18,23 @@ void ReLUOp_CPU<float>::Forward(const std::vector<float*> bottom_datas,
 }
 
 
+template <>
+std::vector<Tensor<float> *> ReLUOp_CPU<float>::Forward(std::vector<Tensor<float> *> inputs) {
+
+  float* input = inputs[0]->data();
+  Tensor<float>* output_tensor = new Tensor<float>(inputs[0]->size());
+  float* output = output_tensor->data();
+
+  for (int i = 0; i < inputs[0]->size(); ++i) {
+    output[i] = std::max(input[i], float(0))
+        + negative_slope_ * std::min(input[i], float(0));
+  }
+
+  return {output_tensor};
+
+}
+
+
 #ifdef USE_OPENCL
 
 template <typename Dtype>

@@ -75,6 +75,75 @@ void BatchNormOp_CPU<float>::Forward(const std::vector<float*> bottom_datas,
 }
 
 
+
+template <>
+std::vector<Tensor<float> *> BatchNormOp_CPU<float>::Forward(std::vector<Tensor<float> *> inputs) {
+
+  float* bottom_data = inputs[0]->data();
+  Tensor<float>* output_tensor = new Tensor<float>(inputs[0]->size());
+  float* top_data = output_tensor->data();
+
+
+  if (bottom_data != top_data) {
+    hypertea_copy(top_count_, bottom_data, top_data);
+  }
+
+  if (use_global_stats_) {
+    // use the stored mean/variance estimates.
+    hypertea_cpu_scale(channels_, scale_factor_,
+        mean_, mean_);
+    hypertea_cpu_scale(channels_, scale_factor_,
+        variance_, variance_);
+  } else {
+    // compute mean
+    hypertea_cpu_gemv<float>(CblasNoTrans, channels_ * num_, spatial_dim_,
+        1. / (num_ * spatial_dim_), bottom_data,
+        spatial_sum_multiplier_, 0.,
+        num_by_chans_);
+    hypertea_cpu_gemv<float>(CblasTrans, num_, channels_, 1.,
+        num_by_chans_, batch_sum_multiplier_, 0.,
+        mean_);
+  }
+
+  // subtract mean
+  hypertea_cpu_gemm<float>(CblasNoTrans, CblasNoTrans, num_, channels_, 1, 1,
+      batch_sum_multiplier_, mean_, 0.,
+      num_by_chans_);
+  hypertea_cpu_gemm<float>(CblasNoTrans, CblasNoTrans, channels_ * num_,
+      spatial_dim_, 1, -1, num_by_chans_,
+      spatial_sum_multiplier_, 1., top_data);
+
+  if (!use_global_stats_) {
+    // compute variance using var(X) = E((X-EX)^2)
+    hypertea_sqr<float>(top_count_, top_data,
+                     temp_);  // (X-EX)^2
+    hypertea_cpu_gemv<float>(CblasNoTrans, channels_ * num_, spatial_dim_,
+        1. / (num_ * spatial_dim_), temp_,
+        spatial_sum_multiplier_, 0.,
+        num_by_chans_);
+    hypertea_cpu_gemv<float>(CblasTrans, num_, channels_, 1.,
+        num_by_chans_, batch_sum_multiplier_, 0.,
+        variance_);  // E((X_EX)^2)
+
+  }
+
+  // normalize variance
+  hypertea_add_scalar(channels_, eps_, variance_);
+  hypertea_sqrt(channels_, variance_, variance_);
+
+  // replicate variance to input size
+  hypertea_cpu_gemm<float>(CblasNoTrans, CblasNoTrans, num_, channels_, 1, 1,
+      batch_sum_multiplier_, variance_, 0.,
+      num_by_chans_);
+  hypertea_cpu_gemm<float>(CblasNoTrans, CblasNoTrans, channels_ * num_,
+      spatial_dim_, 1, 1., num_by_chans_,
+      spatial_sum_multiplier_, 0., temp_);
+  hypertea_div(top_count_, top_data, temp_, top_data);
+
+  return {output_tensor};
+
+}
+
 #ifdef USE_OPENCL
 
 template <typename Dtype>

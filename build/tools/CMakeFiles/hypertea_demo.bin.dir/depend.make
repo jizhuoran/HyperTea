@@ -15,6 +15,7 @@ tools/CMakeFiles/hypertea_demo.bin.dir/hypertea_demo.cpp.o: ../include/hypertea/
 tools/CMakeFiles/hypertea_demo.bin.dir/hypertea_demo.cpp.o: ../include/hypertea/operators/scale_op.hpp
 tools/CMakeFiles/hypertea_demo.bin.dir/hypertea_demo.cpp.o: ../include/hypertea/operators/split_op.hpp
 tools/CMakeFiles/hypertea_demo.bin.dir/hypertea_demo.cpp.o: ../include/hypertea/operators/tanh_op.hpp
+tools/CMakeFiles/hypertea_demo.bin.dir/hypertea_demo.cpp.o: ../include/hypertea/tensor.hpp
 tools/CMakeFiles/hypertea_demo.bin.dir/hypertea_demo.cpp.o: ../include/hypertea/util/device_alternate.hpp
 tools/CMakeFiles/hypertea_demo.bin.dir/hypertea_demo.cpp.o: ../include/hypertea/util/half.hpp
 tools/CMakeFiles/hypertea_demo.bin.dir/hypertea_demo.cpp.o: ../include/hypertea/util/im2col.hpp

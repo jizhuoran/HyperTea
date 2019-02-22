@@ -71,7 +71,7 @@ CMAKE_BINARY_DIR = /home/zrji/hypertea/build
 CMakeFiles/symlink_to_build.dir/all:
 	$(MAKE) -f CMakeFiles/symlink_to_build.dir/build.make CMakeFiles/symlink_to_build.dir/depend
 	$(MAKE) -f CMakeFiles/symlink_to_build.dir/build.make CMakeFiles/symlink_to_build.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/zrji/hypertea/build/CMakeFiles --progress-num=20 "Built target symlink_to_build"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/zrji/hypertea/build/CMakeFiles --progress-num=21 "Built target symlink_to_build"
 .PHONY : CMakeFiles/symlink_to_build.dir/all
 
 # Build rule for subdir invocation for target.
@@ -121,7 +121,7 @@ src/hypertea/preinstall:
 src/hypertea/CMakeFiles/hypertea.dir/all:
 	$(MAKE) -f src/hypertea/CMakeFiles/hypertea.dir/build.make src/hypertea/CMakeFiles/hypertea.dir/depend
 	$(MAKE) -f src/hypertea/CMakeFiles/hypertea.dir/build.make src/hypertea/CMakeFiles/hypertea.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/zrji/hypertea/build/CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17 "Built target hypertea"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/zrji/hypertea/build/CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18 "Built target hypertea"
 .PHONY : src/hypertea/CMakeFiles/hypertea.dir/all
 
 # Include target in all.
@@ -131,7 +131,7 @@ all: src/hypertea/CMakeFiles/hypertea.dir/all
 
 # Build rule for subdir invocation for target.
 src/hypertea/CMakeFiles/hypertea.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/zrji/hypertea/build/CMakeFiles 17
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/zrji/hypertea/build/CMakeFiles 18
 	$(MAKE) -f CMakeFiles/Makefile2 src/hypertea/CMakeFiles/hypertea.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/zrji/hypertea/build/CMakeFiles 0
 .PHONY : src/hypertea/CMakeFiles/hypertea.dir/rule
@@ -176,7 +176,7 @@ tools/preinstall:
 tools/CMakeFiles/hypertea_demo.bin.dir/all: src/hypertea/CMakeFiles/hypertea.dir/all
 	$(MAKE) -f tools/CMakeFiles/hypertea_demo.bin.dir/build.make tools/CMakeFiles/hypertea_demo.bin.dir/depend
 	$(MAKE) -f tools/CMakeFiles/hypertea_demo.bin.dir/build.make tools/CMakeFiles/hypertea_demo.bin.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/zrji/hypertea/build/CMakeFiles --progress-num=18,19 "Built target hypertea_demo.bin"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/zrji/hypertea/build/CMakeFiles --progress-num=19,20 "Built target hypertea_demo.bin"
 .PHONY : tools/CMakeFiles/hypertea_demo.bin.dir/all
 
 # Include target in all.
@@ -186,7 +186,7 @@ all: tools/CMakeFiles/hypertea_demo.bin.dir/all
 
 # Build rule for subdir invocation for target.
 tools/CMakeFiles/hypertea_demo.bin.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/zrji/hypertea/build/CMakeFiles 19
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/zrji/hypertea/build/CMakeFiles 20
 	$(MAKE) -f CMakeFiles/Makefile2 tools/CMakeFiles/hypertea_demo.bin.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/zrji/hypertea/build/CMakeFiles 0
 .PHONY : tools/CMakeFiles/hypertea_demo.bin.dir/rule

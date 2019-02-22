@@ -27,23 +27,235 @@ free(all_weights);
 void inference( std::vector<float> &data_from_user, std::vector<float> &deconv5_3_to_user) { 
 
 
-auto x = scale1(bn1(ELU1(conv1(data_tensor))));
-x = scale2(bn2(ELU2(conv2(x))));
-x = scale3(bn3(ELU3(conv3(x))));
+Tensor<float> data_tensor = Tensor<float>(data_from_user.data(), data_from_user.size());
 
-x += res1_scale2(res1_bn2(res1_conv2(res1_ReLU1(res1_scale1(res1_bn1(res1_conv1(x)))))));
-x += res2_scale2(res2_bn2(res2_conv2(res2_ReLU1(res2_scale1(res2_bn1(res2_conv1(x)))))));
-x += res3_scale2(res3_bn2(res3_conv2(res3_ReLU1(res3_scale1(res3_bn1(res3_conv1(x)))))));
-x += res4_scale2(res4_bn2(res4_conv2(res4_ReLU1(res4_scale1(res4_bn1(res4_conv1(x)))))));
-x += res5_scale2(res5_bn2(res5_conv2(res5_ReLU1(res5_scale1(res5_bn1(res5_conv1(x)))))));
+float* conv1_data = (float *)malloc(33554432);
+float* conv2_data = (float *)malloc(16777216);
+float* conv3_data = (float *)malloc(8388608);
+float* conv3_scale3_0_split_0_data = (float *)malloc(8388608);
+float* conv3_scale3_0_split_1_data = (float *)malloc(8388608);
+float* data_data = (float *)malloc(3145728);
+float* deconv5_1_data = (float *)malloc(16777216);
+float* deconv5_2_data = (float *)malloc(33554432);
+float* deconv5_3_data = (float *)malloc(3145728);
+float* res1_conv1_data = (float *)malloc(8388608);
+float* res1_conv2_data = (float *)malloc(8388608);
+float* res1_output_data = (float *)malloc(8388608);
+float* res1_output_res1_elewise_0_split_0_data = (float *)malloc(8388608);
+float* res1_output_res1_elewise_0_split_1_data = (float *)malloc(8388608);
+float* res2_conv1_data = (float *)malloc(8388608);
+float* res2_conv2_data = (float *)malloc(8388608);
+float* res2_output_data = (float *)malloc(8388608);
+float* res2_output_res2_elewise_0_split_0_data = (float *)malloc(8388608);
+float* res2_output_res2_elewise_0_split_1_data = (float *)malloc(8388608);
+float* res3_conv1_data = (float *)malloc(8388608);
+float* res3_conv2_data = (float *)malloc(8388608);
+float* res3_output_data = (float *)malloc(8388608);
+float* res3_output_res3_elewise_0_split_0_data = (float *)malloc(8388608);
+float* res3_output_res3_elewise_0_split_1_data = (float *)malloc(8388608);
+float* res4_conv1_data = (float *)malloc(8388608);
+float* res4_conv2_data = (float *)malloc(8388608);
+float* res4_output_data = (float *)malloc(8388608);
+float* res4_output_res4_elewise_0_split_0_data = (float *)malloc(8388608);
+float* res4_output_res4_elewise_0_split_1_data = (float *)malloc(8388608);
+float* res5_conv1_data = (float *)malloc(8388608);
+float* res5_conv2_data = (float *)malloc(8388608);
+float* res5_output_data = (float *)malloc(8388608);
 
-x = deconv5_1_bn_sc(deconv5_1_bn(deconv5_1_ELU(deconv5_1(x))));
-x = deconv5_2_bn_sc(deconv5_2_bn(deconv5_2_ELU(deconv5_2(x))));
-x = image_scale2(image_scale1(tanh(deconv5_3(x))));
 
-hypertea_copy(deconv5_3_to_user.size(), x.data(), deconv5_3_to_user.data());
+hypertea_copy(data_from_user.size(), data_from_user.data(), data_data);
 
 
+auto conv1_tensors = conv1.Forward({&data_tensor});
+
+conv1_tensors = ELU1.Forward(conv1_tensors);
+
+conv1_tensors = bn1.Forward(conv1_tensors);
+
+conv1_tensors = scale1.Forward(conv1_tensors);
+
+auto conv2_tensors = conv2.Forward(conv1_tensors);
+
+conv2_tensors = ELU2.Forward(conv2_tensors);
+
+conv2_tensors = bn2.Forward(conv2_tensors);
+
+conv2_tensors = scale2.Forward(conv2_tensors);
+
+auto conv3_tensors = conv3.Forward(conv2_tensors);
+
+conv3_tensors = ELU3.Forward(conv3_tensors);
+
+conv3_tensors = bn3.Forward(conv3_tensors);
+
+conv3_tensors = scale3.Forward(conv3_tensors);
+
+conv3_scale3_0_split.Forward({conv3_data}, {conv3_scale3_0_split_0_data , conv3_scale3_0_split_1_data});
+
+auto res1_conv1_tensors = res1_conv1.Forward(conv3_tensors);
+
+res1_conv1_tensors = res1_bn1.Forward(res1_conv1_tensors);
+
+res1_conv1_tensors = res1_scale1.Forward(res1_conv1_tensors);
+
+res1_conv1_tensors = res1_ReLU1.Forward(res1_conv1_tensors);
+
+auto res1_conv2_tensors = res1_conv2.Forward(res1_conv1_tensors);
+
+res1_conv2_tensors = res1_bn2.Forward(res1_conv2_tensors);
+
+res1_conv2_tensors = res1_scale2.Forward(res1_conv2_tensors);
+
+
+
+
+
+
+
+
+res1_elewise.Forward({res1_conv2_tensors[0]->data(), conv3_tensors[0]->data()}, {res1_output_data});
+
+res1_output_res1_elewise_0_split.Forward({res1_output_data}, {res1_output_res1_elewise_0_split_0_data , res1_output_res1_elewise_0_split_1_data});
+
+res2_conv1.Forward({res1_output_res1_elewise_0_split_0_data}, {res2_conv1_data});
+
+res2_bn1.Forward({res2_conv1_data}, {res2_conv1_data});
+
+res2_scale1.Forward({res2_conv1_data}, {res2_conv1_data});
+
+res2_ReLU1.Forward({res2_conv1_data}, {res2_conv1_data});
+
+res2_conv2.Forward({res2_conv1_data}, {res2_conv2_data});
+
+res2_bn2.Forward({res2_conv2_data}, {res2_conv2_data});
+
+res2_scale2.Forward({res2_conv2_data}, {res2_conv2_data});
+
+res2_elewise.Forward({res2_conv2_data , res1_output_res1_elewise_0_split_1_data}, {res2_output_data});
+
+res2_output_res2_elewise_0_split.Forward({res2_output_data}, {res2_output_res2_elewise_0_split_0_data , res2_output_res2_elewise_0_split_1_data});
+
+res3_conv1.Forward({res2_output_res2_elewise_0_split_0_data}, {res3_conv1_data});
+
+res3_bn1.Forward({res3_conv1_data}, {res3_conv1_data});
+
+res3_scale1.Forward({res3_conv1_data}, {res3_conv1_data});
+
+res3_ReLU1.Forward({res3_conv1_data}, {res3_conv1_data});
+
+res3_conv2.Forward({res3_conv1_data}, {res3_conv2_data});
+
+res3_bn2.Forward({res3_conv2_data}, {res3_conv2_data});
+
+res3_scale2.Forward({res3_conv2_data}, {res3_conv2_data});
+
+res3_elewise.Forward({res3_conv2_data , res2_output_res2_elewise_0_split_1_data}, {res3_output_data});
+
+res3_output_res3_elewise_0_split.Forward({res3_output_data}, {res3_output_res3_elewise_0_split_0_data , res3_output_res3_elewise_0_split_1_data});
+
+res4_conv1.Forward({res3_output_res3_elewise_0_split_0_data}, {res4_conv1_data});
+
+res4_bn1.Forward({res4_conv1_data}, {res4_conv1_data});
+
+res4_scale1.Forward({res4_conv1_data}, {res4_conv1_data});
+
+res4_ReLU1.Forward({res4_conv1_data}, {res4_conv1_data});
+
+res4_conv2.Forward({res4_conv1_data}, {res4_conv2_data});
+
+res4_bn2.Forward({res4_conv2_data}, {res4_conv2_data});
+
+res4_scale2.Forward({res4_conv2_data}, {res4_conv2_data});
+
+res4_elewise.Forward({res4_conv2_data , res3_output_res3_elewise_0_split_1_data}, {res4_output_data});
+
+res4_output_res4_elewise_0_split.Forward({res4_output_data}, {res4_output_res4_elewise_0_split_0_data , res4_output_res4_elewise_0_split_1_data});
+
+res5_conv1.Forward({res4_output_res4_elewise_0_split_0_data}, {res5_conv1_data});
+
+res5_bn1.Forward({res5_conv1_data}, {res5_conv1_data});
+
+res5_scale1.Forward({res5_conv1_data}, {res5_conv1_data});
+
+
+Tensor<float> *temp1 = new Tensor<float>(res5_conv1_data, 8388608 / 4); 
+
+
+auto temp2 = res5_ReLU1.Forward({temp1});
+
+std::cout << temp2[0]->size();
+
+
+
+res5_conv2.Forward({temp2[0]->data()}, {res5_conv2_data});
+
+res5_bn2.Forward({res5_conv2_data}, {res5_conv2_data});
+
+res5_scale2.Forward({res5_conv2_data}, {res5_conv2_data});
+
+res5_elewise.Forward({res5_conv2_data , res4_output_res4_elewise_0_split_1_data}, {res5_output_data});
+
+deconv5_1.Forward({res5_output_data}, {deconv5_1_data});
+
+deconv5_1_ELU.Forward({deconv5_1_data}, {deconv5_1_data});
+
+deconv5_1_bn.Forward({deconv5_1_data}, {deconv5_1_data});
+
+deconv5_1_bn_sc.Forward({deconv5_1_data}, {deconv5_1_data});
+
+deconv5_2.Forward({deconv5_1_data}, {deconv5_2_data});
+
+deconv5_2_ELU.Forward({deconv5_2_data}, {deconv5_2_data});
+
+deconv5_2_bn.Forward({deconv5_2_data}, {deconv5_2_data});
+
+deconv5_2_bn_sc.Forward({deconv5_2_data}, {deconv5_2_data});
+
+deconv5_3.Forward({deconv5_2_data}, {deconv5_3_data});
+
+tanh.Forward({deconv5_3_data}, {deconv5_3_data});
+
+image_scale1.Forward({deconv5_3_data}, {deconv5_3_data});
+
+image_scale2.Forward({deconv5_3_data}, {deconv5_3_data});
+
+
+
+hypertea_copy(deconv5_3_to_user.size(), deconv5_3_data, deconv5_3_to_user.data());
+
+
+// free(conv1_data);
+// free(conv2_data);
+// free(conv3_data);
+// free(conv3_scale3_0_split_0_data);
+// free(conv3_scale3_0_split_1_data);
+// free(data_data);
+// free(deconv5_1_data);
+// free(deconv5_2_data);
+// free(deconv5_3_data);
+// free(res1_conv1_data);
+// free(res1_conv2_data);
+// free(res1_output_data);
+// free(res1_output_res1_elewise_0_split_0_data);
+// free(res1_output_res1_elewise_0_split_1_data);
+// free(res2_conv1_data);
+// free(res2_conv2_data);
+// free(res2_output_data);
+// free(res2_output_res2_elewise_0_split_0_data);
+// free(res2_output_res2_elewise_0_split_1_data);
+// free(res3_conv1_data);
+// free(res3_conv2_data);
+// free(res3_output_data);
+// free(res3_output_res3_elewise_0_split_0_data);
+// free(res3_output_res3_elewise_0_split_1_data);
+// free(res4_conv1_data);
+// free(res4_conv2_data);
+// free(res4_output_data);
+// free(res4_output_res4_elewise_0_split_0_data);
+// free(res4_output_res4_elewise_0_split_1_data);
+// free(res5_conv1_data);
+// free(res5_conv2_data);
+// free(res5_output_data);
 
 
 }

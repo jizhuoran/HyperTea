@@ -22,6 +22,34 @@ void ConvolutionOp_CPU<float>::Forward(const std::vector<float*> bottom_datas,
 
 }
 
+
+
+template <>
+std::vector<Tensor<float> *> ConvolutionOp_CPU<float>::Forward(std::vector<Tensor<float> *> inputs) {
+
+
+  std::vector<Tensor<float> *> outputs;
+
+  for (int i = 0; i < inputs.size(); ++i) {
+
+    const float* input_data = inputs[i]->data();
+    Tensor<float>* output_tensor = new Tensor<float>(this->top_dim_);
+    float* output_data = output_tensor->data();
+
+    for (int n = 0; n < this->num_; ++n) {
+      this->forward_cpu_gemm(input_data + n * this->bottom_dim_, weight_,
+          output_data + n * this->top_dim_);
+      if (this->bias_) {
+        this->forward_cpu_bias(output_data + n * this->top_dim_, bias_);
+      }
+    }
+    outputs.push_back(output_tensor);
+  }
+
+  return outputs;
+
+}
+
 #ifdef USE_OPENCL
 
 template <typename Dtype>

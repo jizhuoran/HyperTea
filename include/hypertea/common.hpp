@@ -29,6 +29,7 @@
 #include "hypertea/util/device_alternate.hpp"
 #include "hypertea/util/half.hpp"
 #include "hypertea/util/opencl_util.hpp"
+#include "hypertea/tensor.hpp"
 
 
 

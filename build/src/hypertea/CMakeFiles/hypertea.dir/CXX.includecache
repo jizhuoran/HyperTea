@@ -39,6 +39,8 @@ hypertea/util/half.hpp
 ../include/hypertea/hypertea/util/half.hpp
 hypertea/util/opencl_util.hpp
 ../include/hypertea/hypertea/util/opencl_util.hpp
+hypertea/tensor.hpp
+../include/hypertea/hypertea/tensor.hpp
 
 ../include/hypertea/glog_wrapper.hpp
 sstream
@@ -48,29 +50,11 @@ android/log.h
 iostream
 -
 
-../include/hypertea/operator.hpp
-algorithm
--
-string
--
+../include/hypertea/tensor.hpp
 vector
 -
-hypertea/common.hpp
-../include/hypertea/hypertea/common.hpp
 hypertea/util/math_functions.hpp
 ../include/hypertea/hypertea/util/math_functions.hpp
-
-../include/hypertea/operators/elu_op.hpp
-vector
--
-hypertea/operator.hpp
-../include/hypertea/operators/hypertea/operator.hpp
-
-../include/hypertea/operators/split_op.hpp
-vector
--
-hypertea/operator.hpp
-../include/hypertea/operators/hypertea/operator.hpp
 
 ../include/hypertea/util/device_alternate.hpp
 cxxabi.h
@@ -126,21 +110,9 @@ CL/cl.h
 hypertea/util/device_alternate.hpp
 ../include/hypertea/util/hypertea/util/device_alternate.hpp
 
-/home/zrji/hypertea/src/hypertea/operators/elu_op.cpp
-algorithm
--
-vector
--
-hypertea/operators/elu_op.hpp
-/home/zrji/hypertea/src/hypertea/operators/hypertea/operators/elu_op.hpp
-
-/home/zrji/hypertea/src/hypertea/operators/split_op.cpp
-vector
--
-hypertea/operators/split_op.hpp
-/home/zrji/hypertea/src/hypertea/operators/hypertea/operators/split_op.hpp
-hypertea/util/math_functions.hpp
-/home/zrji/hypertea/src/hypertea/operators/hypertea/util/math_functions.hpp
+/home/zrji/hypertea/src/hypertea/tensor.cpp
+hypertea/tensor.hpp
+/home/zrji/hypertea/src/hypertea/hypertea/tensor.hpp
 
 /usr/local/cuda/include/CL/cl.h
 OpenCL/cl_platform.h

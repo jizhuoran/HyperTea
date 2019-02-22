@@ -75,6 +75,10 @@ class BatchNormOp_CPU : public CPUFunctor<Dtype> {
   virtual void Forward(const std::vector<Dtype*> bottom_datas,
       const std::vector<Dtype*> top_datas);
 
+  virtual std::vector<Tensor<Dtype> *> Forward(const std::vector<Tensor<Dtype> *> inputs);
+
+
+
   Dtype *mean_, *variance_, *temp_;
   bool use_global_stats_;
   
