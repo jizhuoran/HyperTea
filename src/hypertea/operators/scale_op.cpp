@@ -9,7 +9,6 @@ template <>
 void ScaleOp_CPU<float>::Forward(const std::vector<float*> bottom_datas,
       const std::vector<float*> top_datas) {
 
-
   float* tmp_top_data = top_datas[0];
   float* bottom_data = bottom_datas[0];
 
@@ -35,7 +34,7 @@ void ScaleOp_CPU<float>::Forward(const std::vector<float*> bottom_datas,
       hypertea_cpu_gemm(CblasNoTrans, CblasNoTrans, scale_dim_,
           inner_dim_, 1, float(1), bias_data_,
           bias_multiplier_, float(1), tmp_top_data);
-      tmp_top_data += top_count_;
+      tmp_top_data += (scale_dim_ * inner_dim_);
     }
   }
 

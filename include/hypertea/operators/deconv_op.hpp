@@ -26,6 +26,28 @@ class DeconvolutionOp_CPU : public BaseConvolutionOp_CPU<Dtype> {
  public:
 
   explicit DeconvolutionOp_CPU(const Dtype* weight, const Dtype* bias,
+              int bottom_count, int bottom_size,
+              int batch_size,
+              int input_channels,
+              int group,
+              int output_channels,
+              int out_spatial_dim,
+              bool is_1x1,
+              bool force_nd_im2col,
+              int conv_out_spatial_dim,
+              int num_spatial_axes,
+              std::vector<int> kernel_shape,
+              std::vector<int> stride,
+              std::vector<int> pad,
+              std::vector<int> dilation,
+              std::vector<int> conv_input_shape,
+              std::vector<int> col_buffer_shape) 
+
+    : BaseConvolutionOp_CPU<Dtype>(weight, bias, bottom_count, bottom_size, batch_size, input_channels, 
+      group, output_channels, out_spatial_dim, is_1x1, force_nd_im2col, conv_out_spatial_dim, num_spatial_axes, 
+      kernel_shape, stride, pad, dilation, conv_input_shape, col_buffer_shape, true) {}
+
+  explicit DeconvolutionOp_CPU(const Dtype* weight, const Dtype* bias,
               int bottom_dim, int bottom_size, 
               int top_dim,
 
@@ -57,6 +79,7 @@ class DeconvolutionOp_CPU : public BaseConvolutionOp_CPU<Dtype> {
       group, weight_offset, num_output, out_spatial_dim, is_1x1, force_nd_im2col, conv_out_channels, 
       conv_in_channels, conv_out_spatial_dim, kernel_dim, col_offset, output_offset, 
       num_spatial_axes, kernel_shape, stride, pad, dilation, conv_input_shape, col_buffer_shape) {}
+
 
   virtual inline const char* type() const { return "Deconvolution"; }
 

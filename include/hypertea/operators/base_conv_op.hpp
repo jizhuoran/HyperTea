@@ -115,7 +115,105 @@ class BaseConvolutionOp_CPU : public CPUFunctor<Dtype> {
   std::vector<int> col_buffer_shape_;
   // vector<int> output_shape_;
 
+explicit BaseConvolutionOp_CPU(const Dtype* weight, const Dtype* bias,
+              int bottom_dim, int bottom_size,
+              int num,
+              int input_channels,
+              int group,
+              int num_output,
+              int out_spatial_dim,
+              bool is_1x1,
+              bool force_nd_im2col,
+              int conv_out_spatial_dim,
+              int num_spatial_axes,
+              std::vector<int> kernel_shape,
+              std::vector<int> stride,
+              std::vector<int> pad,
+              std::vector<int> dilation,
+              std::vector<int> conv_input_shape,
+              std::vector<int> col_buffer_shape,
 
+              bool is_transposed
+               ) 
+
+    : CPUFunctor<Dtype>(),
+      weight_(weight), bias_(bias),
+      bottom_dim_(bottom_dim), bottom_size_(bottom_size),
+      num_(num),
+      group_(group),
+      num_output_(num_output),
+      out_spatial_dim_(out_spatial_dim),
+      is_1x1_(is_1x1),
+      force_nd_im2col_(force_nd_im2col),
+      conv_out_spatial_dim_(conv_out_spatial_dim),
+      num_spatial_axes_(num_spatial_axes),
+      kernel_shape_(kernel_shape),
+      stride_(stride),
+      pad_(pad),
+      dilation_(dilation),
+      conv_input_shape_(conv_input_shape),
+      col_buffer_shape_(col_buffer_shape) {
+
+
+
+
+
+          if (is_transposed) {
+            conv_out_channels_ = input_channels;
+            conv_in_channels_ = num_output;
+          } else {
+            conv_out_channels_ = num_output;
+            conv_in_channels_ = input_channels;
+          }
+
+
+          int filter_size = std::accumulate(kernel_shape.begin(), kernel_shape.end(), 1, std::multiplies<int>());
+
+          kernel_dim_ = conv_in_channels_ * filter_size;
+          weight_offset_ = conv_out_channels_ * kernel_dim_;
+
+          col_offset_ = std::accumulate(col_buffer_shape_.begin(), col_buffer_shape_.end(), 1, std::multiplies<int>());
+          output_offset_ = out_spatial_dim * conv_out_channels_;
+          top_dim_ = out_spatial_dim * num_output;//output_offset_;
+
+          // num_output_ = num_output;
+
+
+          std::cout << bottom_dim_ << ", "
+          << bottom_size_ << ", "
+          << top_dim_ << ", "
+
+          << num_ << ", "
+          << input_channels << ", "
+          << group_ << ", "
+          << weight_offset_ << ", "
+          << num_output << ", "
+          << out_spatial_dim_ << ", "
+          << false << ", "
+          << false << ", "
+
+          << conv_out_channels_ << ", "
+          << conv_in_channels_ << ", "
+          << conv_out_spatial_dim_ << ", "
+          << kernel_dim_ << ", "
+          << col_offset_ << ", "
+          << output_offset_ << ", "
+
+          << num_spatial_axes_ << std::endl;
+
+          // std::cout << output_offset_ << std::endl;
+
+
+          bias_multiplier_ = (Dtype*)malloc(sizeof(Dtype) * out_spatial_dim_);
+          hypertea_set(out_spatial_dim_, Dtype(1), bias_multiplier_);
+
+          int col_buffer_size = 1;
+          for (auto& n : col_buffer_shape)
+            col_buffer_size *= n;
+
+          col_buffer_ = (Dtype*)malloc(sizeof(Dtype) * col_buffer_size);
+          hypertea_set(col_buffer_size, Dtype(1), col_buffer_);
+      }
 
 
 
