@@ -10,7 +10,7 @@ template <>
 void ConvolutionOp_CPU<float>::Forward(const std::vector<float*> bottom_datas,
       const std::vector<float*> top_datas) {
 
-  for (int i = 0; i < bottom_size_; ++i) {
+  for (int i = 0; i < bottom_datas.size(); ++i) {
     for (int n = 0; n < this->num_; ++n) {
       this->forward_cpu_gemm(bottom_datas[i] + n * this->bottom_dim_, weight_,
           top_datas[i] + n * this->top_dim_);
@@ -33,7 +33,7 @@ std::vector<Tensor<float> *> ConvolutionOp_CPU<float>::Forward(std::vector<Tenso
   for (int i = 0; i < inputs.size(); ++i) {
 
     const float* input_data = inputs[i]->data();
-    Tensor<float>* output_tensor = new Tensor<float>(this->top_dim_);
+    Tensor<float>* output_tensor = new Tensor<float>(this->top_dim_ * this->num_);
     float* output_data = output_tensor->data();
 
     for (int n = 0; n < this->num_; ++n) {
@@ -61,7 +61,7 @@ void ConvolutionOp_GPU<Dtype>::Forward(const std::vector<cl_mem> bottom_datas,
 
   cl_kernel kernel = clCreateKernel(OpenCLHandler::Get().conv_program, this->kernel_name_.c_str(), &ret);
 
-  for (int i = 0; i < this->bottom_size_; ++i) {
+  for (int i = 0; i < bottom_datas.size(); ++i) {
 
     OPENCL_CHECK(clSetKernelArg(kernel, 0, sizeof(cl_mem), (void *)&bottom_datas[i]));  
     OPENCL_CHECK(clSetKernelArg(kernel, 1, sizeof(cl_mem), (void *)&this->weight_));  

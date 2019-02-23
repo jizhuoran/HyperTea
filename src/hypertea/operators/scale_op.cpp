@@ -71,7 +71,7 @@ std::vector<Tensor<float> *> ScaleOp_CPU<float>::Forward(std::vector<Tensor<floa
       hypertea_cpu_gemm(CblasNoTrans, CblasNoTrans, scale_dim_,
           inner_dim_, 1, float(1), bias_data_,
           bias_multiplier_, float(1), output);
-      output += top_count_;
+      output += (scale_dim_ * inner_dim_); 
     }
   }
 

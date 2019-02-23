@@ -221,6 +221,8 @@ fstream
 -
 iostream
 -
+chrono
+-
 ../tools/conv_opencl.hpp
 /home/zrji/hypertea/tools/conv_opencl.hpp
 ../tools/reference.hpp

@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <fstream>
 #include <iostream>
-
+#include <chrono>
 
 #include "../tools/conv_opencl.hpp"
 #include "../tools/reference.hpp"
@@ -139,10 +139,16 @@ int main(int argc, char** argv) {
 
     hypertea::new_net tmp_net;
 
+
+    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+
     for (int i = 0; i < 1; ++i) {
     	tmp_net.inference(converter, converter1);
     }
+  
+    std::chrono::steady_clock::time_point end= std::chrono::steady_clock::now();
 
+    std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() <<std::endl;
     
 
     FILE *f = fopen("./examples/style_transfer/hypertea.ppm", "wb");

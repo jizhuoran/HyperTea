@@ -16,8 +16,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/hypertea.dir/util/math_functions.cpp.o"
   "CMakeFiles/hypertea.dir/util/math_functions_cl.cpp.o"
   "CMakeFiles/hypertea.dir/util/opencl_util.cpp.o"
-  "../../lib/libhypertea-d.pdb"
-  "../../lib/libhypertea-d.a"
+  "../../lib/libhypertea.pdb"
+  "../../lib/libhypertea.a"
 )
 
 # Per-language clean rules from dependency scanning.

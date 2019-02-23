@@ -52,20 +52,10 @@ public:
   ~CPUFunctor() {}
 
 
-  // virtual void Forward(const Dtype* bottom_data,
-  //     Dtype* top_data) {}
-
-  // virtual void Forward(const std::vector<Dtype*> bottom_datas,
-  //     Dtype* top_data) {}
-
-  // virtual void Forward(const Dtype* bottom_data,
-  //     const std::vector<Dtype*> top_datas) {}
-
-
   virtual void Forward(const std::vector<Dtype*> bottom_datas,
       const std::vector<Dtype*> top_datas) {}
 
-  virtual std::vector<Tensor<Dtype> *> Forward(const std::vector<Tensor<Dtype> *> inputs) {}
+  virtual std::vector<Tensor<Dtype> *> Forward(const std::vector<Tensor<Dtype> *> inputs) { return {}; }
   
   Tensor<Dtype> Forward1(Tensor<Dtype> &input) {
 
@@ -89,17 +79,6 @@ public:
   GPUFunctor() : Functor<Dtype>() {}
   ~GPUFunctor() {}
 
-
-    // virtual void Forward(const cl_mem bottom_data,
-    //   cl_mem top_data) {}
-
-    // virtual void Forward(const cl_mem bottom_data,
-    //   const std::vector<cl_mem> top_datas) {}
-
-
-
-    // virtual void Forward(const std::vector<cl_mem> bottom_datas,
-    //   cl_mem top_data) {}
 
     virtual void Forward(const std::vector<cl_mem> bottom_datas,
       const std::vector<cl_mem> top_datas) {}
