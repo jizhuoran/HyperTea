@@ -6,48 +6,46 @@
 namespace hypertea {
 
 
+// template <>
+// void ELUOp_CPU<float>::Forward(const std::vector<float*> bottom_datas,
+//       const std::vector<float*> top_datas) {
+
+//   for (int i = 0; i < data_count_; ++i) {
+//     top_datas[0][i] = std::max(bottom_datas[0][i], float(0))
+//         + alpha_ * (exp(std::min(bottom_datas[0][i], float(0))) - float(1));
+//   }
+
+// }
+
+
+// template <>
+// std::vector<Tensor<float> *> ELUOp_CPU<float>::Forward(std::vector<Tensor<float> *> inputs) {
+
+//   float* input = inputs[0]->data();
+//   float* output = inplace_? inputs[0]->data() : new float[inputs[0]->size()];
+
+//   for (int i = 0; i < inputs[0]->size(); ++i) {
+//       output[i] = std::max(input[i], float(0))
+//           + alpha_ * (exp(std::min(input[i], float(0))) - float(1));
+//   }
+
+//   return {new Tensor<float>(output, inputs[0]->size())};
+
+// }
+
+
 template <>
-void ELUOp_CPU<float>::Forward(const std::vector<float*> bottom_datas,
-      const std::vector<float*> top_datas) {
-
-  for (int i = 0; i < data_count_; ++i) {
-    top_datas[0][i] = std::max(bottom_datas[0][i], float(0))
-        + alpha_ * (exp(std::min(bottom_datas[0][i], float(0))) - float(1));
-  }
-
-}
-
-
-template <>
-std::vector<Tensor<float> *> ELUOp_CPU<float>::Forward(std::vector<Tensor<float> *> inputs) {
-
-  float* input = inputs[0]->data();
-  Tensor<float>* output_tensor = new Tensor<float>(inputs[0]->size());
-  float* output = output_tensor->data();
-
-  for (int i = 0; i < inputs[0]->size(); ++i) {
-    output[i] = std::max(input[i], float(0))
-        + alpha_ * (exp(std::min(input[i], float(0))) - float(1));
-  }
-
-  return {output_tensor};
-
-}
-
-
-template <>
-Tensor<float> ELUOp_CPU<float>::Forward1(Tensor<float> &inputs) {
+Tensor<float> ELUOp_CPU<float>::Forward(Tensor<float> &input_tensor) {
   
-  float* input_data = inputs.data();
-  Tensor<float> output(inputs.size());
-  float* output_data = output.data();
+  float* input_data = input_tensor.data();
+  float* output_data = inplace_? input_tensor.data() : new float[input_tensor.size()];
 
-  for (int i = 0; i < inputs.size(); ++i) {
-    output_data[i] = std::max(input_data[i], float(0))
-        + alpha_ * (exp(std::min(input_data[i], float(0))) - float(1));
+  for (int i = 0; i < input_tensor.size(); ++i) {
+      output_data[i] = std::max(input_data[i], float(0))
+          + alpha_ * (exp(std::min(input_data[i], float(0))) - float(1));
   }
 
-  return output;
+  return Tensor<float>(output_data, input_tensor.size());  
 
 }
 

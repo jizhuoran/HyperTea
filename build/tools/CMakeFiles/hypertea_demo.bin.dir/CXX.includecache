@@ -225,10 +225,10 @@ chrono
 -
 ../tools/conv_opencl.hpp
 /home/zrji/hypertea/tools/conv_opencl.hpp
-../tools/reference.hpp
-/home/zrji/hypertea/tools/reference.hpp
+../tools/reference1.hpp
+/home/zrji/hypertea/tools/reference1.hpp
 
-/home/zrji/hypertea/tools/reference.hpp
+/home/zrji/hypertea/tools/reference1.hpp
 hypertea/hypertea.hpp
 /home/zrji/hypertea/tools/hypertea/hypertea.hpp
 

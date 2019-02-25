@@ -6,16 +6,16 @@
 
 namespace hypertea {
 
-template <>
-void ReLUOp_CPU<float>::Forward(const std::vector<float*> bottom_datas,
-      const std::vector<float*> top_datas) {
+// template <>
+// void ReLUOp_CPU<float>::Forward(const std::vector<float*> bottom_datas,
+//       const std::vector<float*> top_datas) {
 
-  for (int i = 0; i < data_count_; ++i) {
-    top_datas[0][i] = std::max(bottom_datas[0][i], float(0))
-        + negative_slope_ * std::min(bottom_datas[0][i], float(0));
-  }
+//   for (int i = 0; i < data_count_; ++i) {
+//     top_datas[0][i] = std::max(bottom_datas[0][i], float(0))
+//         + negative_slope_ * std::min(bottom_datas[0][i], float(0));
+//   }
 
-}
+// }
 
 
 template <>

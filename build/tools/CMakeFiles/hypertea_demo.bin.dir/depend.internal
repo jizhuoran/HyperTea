@@ -25,6 +25,6 @@ tools/CMakeFiles/hypertea_demo.bin.dir/hypertea_demo.cpp.o
  ../include/hypertea/util/opencl_util.hpp
  /home/zrji/hypertea/tools/conv_opencl.hpp
  /home/zrji/hypertea/tools/hypertea_demo.cpp
- /home/zrji/hypertea/tools/reference.hpp
+ /home/zrji/hypertea/tools/reference1.hpp
  /usr/local/cuda/include/CL/cl.h
  /usr/local/cuda/include/CL/cl_platform.h

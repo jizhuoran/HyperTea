@@ -20,19 +20,19 @@ class ReLUOp_CPU : public CPUFunctor<Dtype> {
    *   - negative_slope (\b optional, default 0).
    *     the value @f$ \nu @f$ by which negative values are multiplied.
    */
-  explicit ReLUOp_CPU(int data_count, float negative_slope)
-      : CPUFunctor<Dtype>(), data_count_(data_count), negative_slope_(negative_slope) {}
+  explicit ReLUOp_CPU(float negative_slope)
+      : CPUFunctor<Dtype>(), negative_slope_(negative_slope) {}
 
   virtual inline const char* type() const { return "ReLU"; }
 
-  virtual void Forward(const std::vector<Dtype*> bottom_datas,
-      const std::vector<Dtype*> top_datas);
+  // virtual void Forward(const std::vector<Dtype*> bottom_datas,
+  //     const std::vector<Dtype*> top_datas);
 
   virtual std::vector<Tensor<Dtype> *> Forward(const std::vector<Tensor<Dtype> *> inputs);
   
 
   private:
-    int data_count_;
+    // int data_count_;
     float negative_slope_;
 
 };

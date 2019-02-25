@@ -11,6 +11,9 @@
 
 namespace hypertea {
 
+#define IN_PLACE true
+#define NOT_IN_PLACE false
+
 /**
  * @brief An interface for the units of computation which can be composed into a
  *        Net.
@@ -57,7 +60,7 @@ public:
 
   virtual std::vector<Tensor<Dtype> *> Forward(const std::vector<Tensor<Dtype> *> inputs) { return {}; }
   
-  Tensor<Dtype> Forward1(Tensor<Dtype> &input) {
+  virtual Tensor<Dtype> Forward(Tensor<Dtype> &input) {
 
     return *(this->Forward({&input})[0]);
 
@@ -65,7 +68,7 @@ public:
 
 
   Tensor<Dtype> operator()(Tensor<Dtype> input) {
-    return *(this->Forward({&input})[0]);
+    return this->Forward(input);
   }
   
 };

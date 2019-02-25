@@ -5,7 +5,7 @@
 #include <chrono>
 
 #include "../tools/conv_opencl.hpp"
-#include "../tools/reference.hpp"
+#include "../tools/reference1.hpp"
 
 
 
@@ -118,8 +118,8 @@ int main(int argc, char** argv) {
     PPMImage *image;
     image = readPPM("./examples/style_transfer/HKU.ppm");
 
-    std::vector<float> converter(512*512*3*2, 0);
-    std::vector<float> converter1(512*512*3*2, 0);
+    std::vector<float> converter(512*512*3*1, 0);
+    std::vector<float> converter1(512*512*3*1, 0);
 
     for (int y = 0; y < 512; y++) {
       for (int x = 0; x < 512; x++) {
@@ -128,9 +128,9 @@ int main(int argc, char** argv) {
         converter[y * 512 + x + 2 * 512 * 512] = image->data[y * 512 + x].blue;
 
 
-        converter[512*512*3 + y * 512 + x] = image->data[y * 512 + x].red;
-        converter[512*512*3 + y * 512 + x + 512 * 512] = image->data[y * 512 + x].green;
-        converter[512*512*3 + y * 512 + x + 2 * 512 * 512] = image->data[y * 512 + x].blue;
+        // converter[512*512*3 + y * 512 + x] = image->data[y * 512 + x].red;
+        // converter[512*512*3 + y * 512 + x + 512 * 512] = image->data[y * 512 + x].green;
+        // converter[512*512*3 + y * 512 + x + 2 * 512 * 512] = image->data[y * 512 + x].blue;
 
 
       }
@@ -164,16 +164,16 @@ int main(int argc, char** argv) {
 
 
 
-    f = fopen("./examples/style_transfer/hypertea2.ppm", "wb");
-    fprintf(f, "P6\n%i %i 255\n", 512, 512);
-    for (int y = 0; y < 512; y++) {
-        for (int x = 0; x < 512; x++) {
-            fputc(converter1[512*512*3 + y * 512 + x], f);   // 0 .. 255
-            fputc(converter1[512*512*3 + y * 512 + x + 512 * 512], f); // 0 .. 255
-            fputc(converter1[512*512*3 + y * 512 + x + 2 * 512 * 512], f);  // 0 .. 255
-        }
-    }
-    fclose(f);
+    // f = fopen("./examples/style_transfer/hypertea2.ppm", "wb");
+    // fprintf(f, "P6\n%i %i 255\n", 512, 512);
+    // for (int y = 0; y < 512; y++) {
+    //     for (int x = 0; x < 512; x++) {
+    //         fputc(converter1[512*512*3 + y * 512 + x], f);   // 0 .. 255
+    //         fputc(converter1[512*512*3 + y * 512 + x + 512 * 512], f); // 0 .. 255
+    //         fputc(converter1[512*512*3 + y * 512 + x + 2 * 512 * 512], f);  // 0 .. 255
+    //     }
+    // }
+    // fclose(f);
 
     
 }

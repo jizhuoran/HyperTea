@@ -7,14 +7,14 @@
 
 namespace hypertea {
 
-template <>
-void TanHOp_CPU<float>::Forward(const std::vector<float*> bottom_datas,
-      const std::vector<float*> top_datas) {
+// template <>
+// void TanHOp_CPU<float>::Forward(const std::vector<float*> bottom_datas,
+//       const std::vector<float*> top_datas) {
 
-  for (int i = 0; i < data_count_; ++i) {
-    top_datas[0][i] = tanh(bottom_datas[0][i]);
-  }
-}
+//   for (int i = 0; i < data_count_; ++i) {
+//     top_datas[0][i] = tanh(bottom_datas[0][i]);
+//   }
+// }
 
 
 

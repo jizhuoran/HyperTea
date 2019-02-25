@@ -22,23 +22,23 @@ class ELUOp_CPU : public CPUFunctor<Dtype> {
  public:
   
 
-  explicit ELUOp_CPU(int data_count, float alpha)
-      : CPUFunctor<Dtype>(), data_count_(data_count), alpha_(alpha) {}
+  explicit ELUOp_CPU(float alpha, bool inplace = false)
+      : CPUFunctor<Dtype>(), alpha_(alpha), inplace_(inplace) {}
 
   virtual inline const char* type() const { return "ELU"; }
 
-  virtual void Forward(const std::vector<Dtype*> bottom_datas,
-      const std::vector<Dtype*> top_datas);
+  // virtual void Forward(const std::vector<Dtype*> bottom_datas,
+      // const std::vector<Dtype*> top_datas);
   
-  virtual std::vector<Tensor<Dtype> *> Forward(const std::vector<Tensor<Dtype> *> inputs);
-  virtual Tensor<Dtype> Forward1(Tensor<Dtype> &input);
+  // virtual std::vector<Tensor<Dtype> *> Forward(const std::vector<Tensor<Dtype> *> inputs);
+  virtual Tensor<Dtype> Forward(Tensor<Dtype> &input_tensor);
 
 
 
   private:
-    int data_count_;
+    // int data_count_;
     float alpha_;
-
+    bool inplace_;
 
 
 };

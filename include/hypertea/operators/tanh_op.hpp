@@ -18,18 +18,18 @@ namespace hypertea {
 template <typename Dtype>
 class TanHOp_CPU : public CPUFunctor<Dtype> {
  public:
-  explicit TanHOp_CPU(int data_count)
-      : CPUFunctor<Dtype>(), data_count_(data_count) {}
+  explicit TanHOp_CPU()
+      : CPUFunctor<Dtype>() {}
 
   virtual inline const char* type() const { return "TanH"; }
 
-  virtual void Forward(const std::vector<Dtype*> bottom_datas,
-      const std::vector<Dtype*> top_datas);
+  // virtual void Forward(const std::vector<Dtype*> bottom_datas,
+      // const std::vector<Dtype*> top_datas);
   
   virtual std::vector<Tensor<Dtype> *> Forward(const std::vector<Tensor<Dtype> *> inputs);
 
-private:
-  int data_count_;
+// private:
+  // int data_count_;
 
 };
 
