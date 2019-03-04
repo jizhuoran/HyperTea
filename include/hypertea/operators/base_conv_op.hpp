@@ -48,6 +48,7 @@ explicit BaseConvolutionOp_CPU(const Dtype* weight, const Dtype* bias,
           out_spatial_dim_ = std::accumulate(output_shape.begin()+2, output_shape.end(), 1, std::multiplies<int>());
           top_dim_ = out_spatial_dim_ * num_output_;//output_offset_;
           
+          top_count_ = top_dim_ * num_;
 
 
           col_buffer_shape_.push_back(group_);
@@ -99,11 +100,17 @@ explicit BaseConvolutionOp_CPU(const Dtype* weight, const Dtype* bias,
 
 
 
-          bias_multiplier_ = (Dtype*)malloc(sizeof(Dtype) * out_spatial_dim_);
+          bias_multiplier_ = new Dtype[out_spatial_dim_];
           hypertea_set(out_spatial_dim_, Dtype(1), bias_multiplier_);
-          col_buffer_ = (Dtype*)malloc(sizeof(Dtype) * col_offset_);
+          col_buffer_ = new Dtype[col_offset_];
           hypertea_set(col_offset_, Dtype(1), col_buffer_);
       }
+
+
+  ~BaseConvolutionOp_CPU() {
+    delete [] bias_multiplier_;
+    delete [] col_buffer_;
+  }
 
 
 
@@ -116,6 +123,7 @@ explicit BaseConvolutionOp_CPU(const Dtype* weight, const Dtype* bias,
   int weight_offset_ = -1;
   int num_output_ = -1;
   int out_spatial_dim_ = -1;
+  int top_count_ = -1;
   bool is_1x1_;
   bool force_nd_im2col_;
 
@@ -196,12 +204,12 @@ template <typename Dtype>
 class BaseConvolutionOp_GPU : public GPUFunctor<Dtype> {
 
 public:
-  explicit BaseConvolutionOp_GPU(std::string kernel_name, int bottom_size,
+  explicit BaseConvolutionOp_GPU(std::string kernel_name, int top_count,
                              cl_mem weight, cl_mem bias,
                              std::vector<int> local,
                              std::vector<int> global)
 
-      : GPUFunctor<Dtype>(), kernel_name_(kernel_name), bottom_size_(bottom_size),
+      : GPUFunctor<Dtype>(), kernel_name_(kernel_name), top_count_(top_count),
         weight_(weight), bias_(bias) {
 
           local_size_ = new size_t[3];
@@ -221,7 +229,7 @@ protected:
 
   const cl_mem weight_;
   const cl_mem bias_;
-  int bottom_size_, bottom_dim_, top_dim_;
+  int top_count_;
 
 
   std::string kernel_name_;

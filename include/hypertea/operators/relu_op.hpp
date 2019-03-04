@@ -20,20 +20,22 @@ class ReLUOp_CPU : public CPUFunctor<Dtype> {
    *   - negative_slope (\b optional, default 0).
    *     the value @f$ \nu @f$ by which negative values are multiplied.
    */
-  explicit ReLUOp_CPU(float negative_slope)
-      : CPUFunctor<Dtype>(), negative_slope_(negative_slope) {}
+  explicit ReLUOp_CPU(float negative_slope, bool inplace = false)
+      : CPUFunctor<Dtype>(), negative_slope_(negative_slope), inplace_(inplace) {}
 
   virtual inline const char* type() const { return "ReLU"; }
 
   // virtual void Forward(const std::vector<Dtype*> bottom_datas,
   //     const std::vector<Dtype*> top_datas);
 
-  virtual std::vector<Tensor<Dtype> *> Forward(const std::vector<Tensor<Dtype> *> inputs);
+  // virtual std::vector<Tensor<Dtype> *> Forward(const std::vector<Tensor<Dtype> *> inputs);
+  virtual TensorCPU<Dtype> Forward(TensorCPU<Dtype> &input_tensor);
   
 
   private:
     // int data_count_;
     float negative_slope_;
+    bool inplace_;
 
 };
 
@@ -48,18 +50,20 @@ class ReLUOp_GPU : public GPUFunctor<Dtype> {
    *   - negative_slope (\b optional, default 0).
    *     the value @f$ \nu @f$ by which negative values are multiplied.
    */
-  explicit ReLUOp_GPU(int data_count, float negative_slope)
-      : GPUFunctor<Dtype>(), data_count_(data_count), negative_slope_(negative_slope) {}
+  explicit ReLUOp_GPU(float negative_slope, bool inplace = false)
+      : GPUFunctor<Dtype>(), negative_slope_(negative_slope), inplace_(inplace) {}
 
   virtual inline const char* type() const { return "ReLU"; }
 
-  virtual void Forward(const std::vector<cl_mem> bottom_datas,
-      const std::vector<cl_mem> top_datas);
+  // virtual void Forward(const std::vector<cl_mem> bottom_datas,
+  //     const std::vector<cl_mem> top_datas);
+
+  virtual TensorGPU<Dtype> Forward(TensorGPU<Dtype> input_tensor);
 
 
   private:
-    int data_count_;
     float negative_slope_;
+    bool inplace_;
 
 };
 

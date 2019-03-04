@@ -62,7 +62,7 @@ hypertea/common.hpp
 hypertea/util/math_functions.hpp
 ../include/hypertea/hypertea/util/math_functions.hpp
 
-../include/hypertea/operators/elu_op.hpp
+../include/hypertea/operators/batch_norm_op.hpp
 vector
 -
 hypertea/operator.hpp
@@ -128,13 +128,17 @@ CL/cl.h
 hypertea/util/device_alternate.hpp
 ../include/hypertea/util/hypertea/util/device_alternate.hpp
 
-/home/zrji/hypertea/src/hypertea/operators/elu_op.cpp
+/home/zrji/hypertea/src/hypertea/operators/batch_norm_op.cpp
 algorithm
 -
 vector
 -
-hypertea/operators/elu_op.hpp
-/home/zrji/hypertea/src/hypertea/operators/hypertea/operators/elu_op.hpp
+math.h
+-
+hypertea/operators/batch_norm_op.hpp
+/home/zrji/hypertea/src/hypertea/operators/hypertea/operators/batch_norm_op.hpp
+hypertea/util/math_functions.hpp
+/home/zrji/hypertea/src/hypertea/operators/hypertea/util/math_functions.hpp
 
 /usr/local/cuda/include/CL/cl.h
 OpenCL/cl_platform.h

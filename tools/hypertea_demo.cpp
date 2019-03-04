@@ -5,7 +5,7 @@
 #include <chrono>
 
 #include "../tools/conv_opencl.hpp"
-#include "../tools/reference1.hpp"
+#include "../tools/demo_net_gpu.hpp"
 
 
 
@@ -136,6 +136,10 @@ int main(int argc, char** argv) {
       }
     }
 
+    
+    
+
+
 
     hypertea::new_net tmp_net;
 
@@ -151,6 +155,11 @@ int main(int argc, char** argv) {
     std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() <<std::endl;
     
 
+    // for(int i = 0; i < 512*512*3*1; ++i) {
+    //   converter1[i] *= 127.5;
+    // }
+
+
     FILE *f = fopen("./examples/style_transfer/hypertea.ppm", "wb");
     fprintf(f, "P6\n%i %i 255\n", 512, 512);
     for (int y = 0; y < 512; y++) {
@@ -163,7 +172,13 @@ int main(int argc, char** argv) {
     fclose(f);
 
 
-
+    for (int j = 0; j < 3; ++j){
+      for (int i = 0; i < 4; ++i) {
+        std::cout << converter1[j * 512 * 512 + i] << " ";
+      }
+      std::cout << " " << std::endl;
+    }
+    
     // f = fopen("./examples/style_transfer/hypertea2.ppm", "wb");
     // fprintf(f, "P6\n%i %i 255\n", 512, 512);
     // for (int y = 0; y < 512; y++) {

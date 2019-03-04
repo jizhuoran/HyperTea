@@ -22,27 +22,43 @@ namespace hypertea {
 template <typename Dtype>
 class ScaleOp_CPU: public CPUFunctor<Dtype> {
  public:
-  explicit ScaleOp_CPU(int top_count,
-                   Dtype* bias_data, Dtype* scale_data, 
-                   int scale_dim, int outer_dim, int inner_dim)
-      : CPUFunctor<Dtype>(), top_count_(top_count), 
+  explicit ScaleOp_CPU(Dtype* bias_data, Dtype* scale_data, 
+                   int scale_dim, int outer_dim, int inner_dim, bool inplace = false)
+      : CPUFunctor<Dtype>(),
         bias_data_(bias_data), scale_data_(scale_data), 
         scale_dim_(scale_dim), outer_dim_(outer_dim), 
-        inner_dim_(inner_dim) {}
+        inner_dim_(inner_dim), inplace_(inplace) {
+
+          if (bias_data != NULL) {
+            bias_multiplier_ = new Dtype[inner_dim_];
+            hypertea_set(inner_dim_, Dtype(1), bias_multiplier_);
+          }
+          
+        }
+
+  ~ScaleOp_CPU() {
+    
+    if (bias_multiplier_ != NULL) {
+      delete [] bias_multiplier_;
+    }
+  }
 
   virtual inline const char* type() const { return "Scale"; }
 
-  virtual void Forward(const std::vector<Dtype*> bottom_datas,
-      const std::vector<Dtype*> top_datas);
-
-  virtual std::vector<Tensor<Dtype> *> Forward(const std::vector<Tensor<Dtype> *> inputs);
+  virtual TensorCPU<Dtype> Forward(TensorCPU<Dtype> &input_tensor);
 
 
-  int top_count_;
+private:
+
+  bool inplace_;
+
 
   Dtype* bias_data_;
   Dtype* scale_data_;
   
+  Dtype* bias_multiplier_ = NULL;
+
+
   int outer_dim_, scale_dim_, inner_dim_;
 
 };
@@ -63,8 +79,11 @@ class ScaleOp_GPU: public GPUFunctor<Dtype> {
 
   virtual inline const char* type() const { return "Scale"; }
 
-  virtual void Forward(const std::vector<cl_mem> bottom_datas,
-      const std::vector<cl_mem> top_datas);
+  // virtual void Forward(const std::vector<cl_mem> bottom_datas,
+  //     const std::vector<cl_mem> top_datas);
+
+  virtual TensorGPU<Dtype> Forward(TensorGPU<Dtype> input_tensor);
+  
 
 
   int top_count_;
@@ -73,6 +92,8 @@ class ScaleOp_GPU: public GPUFunctor<Dtype> {
   cl_mem scale_data_;
   
   int scale_dim_, inner_dim_;
+
+  bool inplace_ = false;
 
 };
 

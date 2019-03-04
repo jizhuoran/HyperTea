@@ -381,3 +381,212 @@ ScaleOp_CPU<float> image_scale2 = ScaleOp_CPU<float>( 1572864, NULL, image_scale
 };
 } //namespace hypertea
 
+
+#include "hypertea/hypertea.hpp"
+
+namespace hypertea {
+
+class new_net {
+public:
+
+    new_net() {
+
+        FILE *f = fopen("pytorch_weight", "rb");
+        size_t read_size = fread(all_weights, 1, weight_size, f);
+        if (read_size != weight_size) { 
+            LOG(ERROR) << "Weight File Size Mismatch" << read_size << " and " << weight_size << std::endl;
+        }
+        fclose(f);
+    }
+
+
+    ~new_net() {
+        free(all_weights);
+    }
+
+    
+    
+    void inference( std::vector<float> &data_from_user, std::vector<float> &data_to_user) {
+        
+        TensorCPU<float> data(data_from_user);
+
+        auto temp = bn1(elu1(conv1(data)));
+        temp = bn2(elu2(conv2(temp)));
+        temp = bn3(elu3(conv3(temp)));
+
+
+        temp += res1_bn2(res1_conv2(res1_bn1(res1_relu1(res1_bn1(res1_conv1(temp))))));
+        temp += res2_bn2(res2_conv2(res2_bn1(res2_relu1(res2_bn1(res2_conv1(temp))))));
+        temp += res3_bn2(res3_conv2(res3_bn1(res3_relu1(res3_bn1(res3_conv1(temp))))));
+        temp += res4_bn2(res4_conv2(res4_bn1(res4_relu1(res4_bn1(res4_conv1(temp))))));
+        temp += res5_bn2(res5_conv2(res5_bn1(res5_relu1(res5_bn1(res5_conv1(temp))))));
+
+
+        temp = de_bn1(de_elu1(deconv1(temp)));
+        temp = de_bn2(de_elu2(deconv2(temp)));
+        temp = de_tanh3(deconv3(temp));
+
+
+        hypertea_copy(data_to_user.size(), temp.data(), data_to_user.data());
+
+    }
+
+
+private:
+    int weight_size = 7308300;
+    unsigned char* all_weights = (unsigned char*) malloc(weight_size);
+float* conv1_bias = reinterpret_cast<float*>(all_weights + 0);
+float* conv1_weight = reinterpret_cast<float*>(all_weights + 128);
+float* bn1_bias = reinterpret_cast<float*>(all_weights + 31232);
+float* bn1_weight = reinterpret_cast<float*>(all_weights + 31360);
+float* bn1_weight = reinterpret_cast<float*>(all_weights + 31488);
+float* bn1_bias = reinterpret_cast<float*>(all_weights + 31616);
+float* conv2_bias = reinterpret_cast<float*>(all_weights + 31744);
+float* conv2_weight = reinterpret_cast<float*>(all_weights + 32000);
+float* bn2_bias = reinterpret_cast<float*>(all_weights + 163072);
+float* bn2_weight = reinterpret_cast<float*>(all_weights + 163328);
+float* bn2_weight = reinterpret_cast<float*>(all_weights + 163584);
+float* bn2_bias = reinterpret_cast<float*>(all_weights + 163840);
+float* conv3_bias = reinterpret_cast<float*>(all_weights + 164096);
+float* conv3_weight = reinterpret_cast<float*>(all_weights + 164608);
+float* bn3_bias = reinterpret_cast<float*>(all_weights + 688896);
+float* bn3_weight = reinterpret_cast<float*>(all_weights + 689408);
+float* bn3_weight = reinterpret_cast<float*>(all_weights + 689920);
+float* bn3_bias = reinterpret_cast<float*>(all_weights + 690432);
+float* res1_conv1_weight = reinterpret_cast<float*>(all_weights + 690944);
+float* res1_bn1_bias = reinterpret_cast<float*>(all_weights + 1280768);
+float* res1_bn1_weight = reinterpret_cast<float*>(all_weights + 1281280);
+float* res1_bn1_weight = reinterpret_cast<float*>(all_weights + 1281792);
+float* res1_bn1_bias = reinterpret_cast<float*>(all_weights + 1282304);
+float* res1_bn1_bias = reinterpret_cast<float*>(all_weights + 1282816);
+float* res1_bn1_weight = reinterpret_cast<float*>(all_weights + 1283328);
+float* res1_bn1_weight = reinterpret_cast<float*>(all_weights + 1283840);
+float* res1_bn1_bias = reinterpret_cast<float*>(all_weights + 1284352);
+float* res1_conv2_weight = reinterpret_cast<float*>(all_weights + 1284864);
+float* res1_bn2_bias = reinterpret_cast<float*>(all_weights + 1874688);
+float* res1_bn2_weight = reinterpret_cast<float*>(all_weights + 1875200);
+float* res1_bn2_weight = reinterpret_cast<float*>(all_weights + 1875712);
+float* res1_bn2_bias = reinterpret_cast<float*>(all_weights + 1876224);
+float* res2_conv1_weight = reinterpret_cast<float*>(all_weights + 1876736);
+float* res2_bn1_bias = reinterpret_cast<float*>(all_weights + 2466560);
+float* res2_bn1_weight = reinterpret_cast<float*>(all_weights + 2467072);
+float* res2_bn1_weight = reinterpret_cast<float*>(all_weights + 2467584);
+float* res2_bn1_bias = reinterpret_cast<float*>(all_weights + 2468096);
+float* res2_bn1_bias = reinterpret_cast<float*>(all_weights + 2468608);
+float* res2_bn1_weight = reinterpret_cast<float*>(all_weights + 2469120);
+float* res2_bn1_weight = reinterpret_cast<float*>(all_weights + 2469632);
+float* res2_bn1_bias = reinterpret_cast<float*>(all_weights + 2470144);
+float* res2_conv2_weight = reinterpret_cast<float*>(all_weights + 2470656);
+float* res2_bn2_bias = reinterpret_cast<float*>(all_weights + 3060480);
+float* res2_bn2_weight = reinterpret_cast<float*>(all_weights + 3060992);
+float* res2_bn2_weight = reinterpret_cast<float*>(all_weights + 3061504);
+float* res2_bn2_bias = reinterpret_cast<float*>(all_weights + 3062016);
+float* res3_conv1_weight = reinterpret_cast<float*>(all_weights + 3062528);
+float* res3_bn1_bias = reinterpret_cast<float*>(all_weights + 3652352);
+float* res3_bn1_weight = reinterpret_cast<float*>(all_weights + 3652864);
+float* res3_bn1_weight = reinterpret_cast<float*>(all_weights + 3653376);
+float* res3_bn1_bias = reinterpret_cast<float*>(all_weights + 3653888);
+float* res3_bn1_bias = reinterpret_cast<float*>(all_weights + 3654400);
+float* res3_bn1_weight = reinterpret_cast<float*>(all_weights + 3654912);
+float* res3_bn1_weight = reinterpret_cast<float*>(all_weights + 3655424);
+float* res3_bn1_bias = reinterpret_cast<float*>(all_weights + 3655936);
+float* res3_conv2_weight = reinterpret_cast<float*>(all_weights + 3656448);
+float* res3_bn2_bias = reinterpret_cast<float*>(all_weights + 4246272);
+float* res3_bn2_weight = reinterpret_cast<float*>(all_weights + 4246784);
+float* res3_bn2_weight = reinterpret_cast<float*>(all_weights + 4247296);
+float* res3_bn2_bias = reinterpret_cast<float*>(all_weights + 4247808);
+float* res4_conv1_weight = reinterpret_cast<float*>(all_weights + 4248320);
+float* res4_bn1_bias = reinterpret_cast<float*>(all_weights + 4838144);
+float* res4_bn1_weight = reinterpret_cast<float*>(all_weights + 4838656);
+float* res4_bn1_weight = reinterpret_cast<float*>(all_weights + 4839168);
+float* res4_bn1_bias = reinterpret_cast<float*>(all_weights + 4839680);
+float* res4_bn1_bias = reinterpret_cast<float*>(all_weights + 4840192);
+float* res4_bn1_weight = reinterpret_cast<float*>(all_weights + 4840704);
+float* res4_bn1_weight = reinterpret_cast<float*>(all_weights + 4841216);
+float* res4_bn1_bias = reinterpret_cast<float*>(all_weights + 4841728);
+float* res4_conv2_weight = reinterpret_cast<float*>(all_weights + 4842240);
+float* res4_bn2_bias = reinterpret_cast<float*>(all_weights + 5432064);
+float* res4_bn2_weight = reinterpret_cast<float*>(all_weights + 5432576);
+float* res4_bn2_weight = reinterpret_cast<float*>(all_weights + 5433088);
+float* res4_bn2_bias = reinterpret_cast<float*>(all_weights + 5433600);
+float* res5_conv1_weight = reinterpret_cast<float*>(all_weights + 5434112);
+float* res5_bn1_bias = reinterpret_cast<float*>(all_weights + 6023936);
+float* res5_bn1_weight = reinterpret_cast<float*>(all_weights + 6024448);
+float* res5_bn1_weight = reinterpret_cast<float*>(all_weights + 6024960);
+float* res5_bn1_bias = reinterpret_cast<float*>(all_weights + 6025472);
+float* res5_bn1_bias = reinterpret_cast<float*>(all_weights + 6025984);
+float* res5_bn1_weight = reinterpret_cast<float*>(all_weights + 6026496);
+float* res5_bn1_weight = reinterpret_cast<float*>(all_weights + 6027008);
+float* res5_bn1_bias = reinterpret_cast<float*>(all_weights + 6027520);
+float* res5_conv2_weight = reinterpret_cast<float*>(all_weights + 6028032);
+float* res5_bn2_bias = reinterpret_cast<float*>(all_weights + 6617856);
+float* res5_bn2_weight = reinterpret_cast<float*>(all_weights + 6618368);
+float* res5_bn2_weight = reinterpret_cast<float*>(all_weights + 6618880);
+float* res5_bn2_bias = reinterpret_cast<float*>(all_weights + 6619392);
+float* deconv1_bias = reinterpret_cast<float*>(all_weights + 6619904);
+float* deconv1_weight = reinterpret_cast<float*>(all_weights + 6620160);
+float* de_bn1_bias = reinterpret_cast<float*>(all_weights + 7144448);
+float* de_bn1_weight = reinterpret_cast<float*>(all_weights + 7144704);
+float* de_bn1_weight = reinterpret_cast<float*>(all_weights + 7144960);
+float* de_bn1_bias = reinterpret_cast<float*>(all_weights + 7145216);
+float* deconv2_bias = reinterpret_cast<float*>(all_weights + 7145472);
+float* deconv2_weight = reinterpret_cast<float*>(all_weights + 7145600);
+float* de_bn2_bias = reinterpret_cast<float*>(all_weights + 7276672);
+float* de_bn2_weight = reinterpret_cast<float*>(all_weights + 7276800);
+float* de_bn2_weight = reinterpret_cast<float*>(all_weights + 7276928);
+float* de_bn2_bias = reinterpret_cast<float*>(all_weights + 7277056);
+float* deconv3_bias = reinterpret_cast<float*>(all_weights + 7277184);
+float* deconv3_weight = reinterpret_cast<float*>(all_weights + 7277196);
+
+
+ConvolutionOp_CPU<float> conv1 = ConvolutionOp_CPU<float> ({ conv1_weight, conv1_bias, 1, false, std::vector<int> {9,9}, std::vector<int> {1,1}, std::vector<int> {4,4}, std::vector<int> {1,1}, std::vector<int> {1,3,512,512}, std::vector<int> {1,32,512,512}, false });
+ELUOp_CPU<float> elu1 = ELUOp_CPU<float> ({ 1, NOT_IN_PLACE });
+BatchNormOp_CPU<float> bn1 = BatchNormOp_CPU<float> ({ 8388608, bn1_bias, bn1_weight, 1, 32, 1e-05, 1, False, NULL, NULL, bn1_weight, bn1_bias });
+ConvolutionOp_CPU<float> conv2 = ConvolutionOp_CPU<float> ({ conv2_weight, conv2_bias, 1, false, std::vector<int> {4,4}, std::vector<int> {2,2}, std::vector<int> {1,1}, std::vector<int> {1,1}, std::vector<int> {1,32,512,512}, std::vector<int> {1,64,256,256}, false });
+ELUOp_CPU<float> elu2 = ELUOp_CPU<float> ({ 1, NOT_IN_PLACE });
+BatchNormOp_CPU<float> bn2 = BatchNormOp_CPU<float> ({ 4194304, bn2_bias, bn2_weight, 1, 64, 1e-05, 1, False, NULL, NULL, bn2_weight, bn2_bias });
+ConvolutionOp_CPU<float> conv3 = ConvolutionOp_CPU<float> ({ conv3_weight, conv3_bias, 1, false, std::vector<int> {4,4}, std::vector<int> {2,2}, std::vector<int> {1,1}, std::vector<int> {1,1}, std::vector<int> {1,64,256,256}, std::vector<int> {1,128,128,128}, false });
+ELUOp_CPU<float> elu3 = ELUOp_CPU<float> ({ 1, NOT_IN_PLACE });
+BatchNormOp_CPU<float> bn3 = BatchNormOp_CPU<float> ({ 2097152, bn3_bias, bn3_weight, 1, 128, 1e-05, 1, False, NULL, NULL, bn3_weight, bn3_bias });
+ConvolutionOp_CPU<float> res1_conv1 = ConvolutionOp_CPU<float> ({ res1_conv1_weight, NULL, 1, false, std::vector<int> {3,3}, std::vector<int> {1,1}, std::vector<int> {1,1}, std::vector<int> {1,1}, std::vector<int> {1,128,128,128}, std::vector<int> {1,128,128,128}, false });
+BatchNormOp_CPU<float> res1_bn1 = BatchNormOp_CPU<float> ({ 2097152, res1_bn1_bias, res1_bn1_weight, 1, 128, 1e-05, 1, False, NULL, NULL, res1_bn1_weight, res1_bn1_bias });
+ReLUOp_CPU<float> res1_relu1 = ReLUOp_CPU<float> ({ 0, NOT_IN_PLACE });
+BatchNormOp_CPU<float> res1_bn1 = BatchNormOp_CPU<float> ({ 2097152, res1_bn1_bias, res1_bn1_weight, 1, 128, 1e-05, 1, False, NULL, NULL, res1_bn1_weight, res1_bn1_bias });
+ConvolutionOp_CPU<float> res1_conv2 = ConvolutionOp_CPU<float> ({ res1_conv2_weight, NULL, 1, false, std::vector<int> {3,3}, std::vector<int> {1,1}, std::vector<int> {1,1}, std::vector<int> {1,1}, std::vector<int> {1,128,128,128}, std::vector<int> {1,128,128,128}, false });
+BatchNormOp_CPU<float> res1_bn2 = BatchNormOp_CPU<float> ({ 2097152, res1_bn2_bias, res1_bn2_weight, 1, 128, 1e-05, 1, False, NULL, NULL, res1_bn2_weight, res1_bn2_bias });
+ConvolutionOp_CPU<float> res2_conv1 = ConvolutionOp_CPU<float> ({ res2_conv1_weight, NULL, 1, false, std::vector<int> {3,3}, std::vector<int> {1,1}, std::vector<int> {1,1}, std::vector<int> {1,1}, std::vector<int> {1,128,128,128}, std::vector<int> {1,128,128,128}, false });
+BatchNormOp_CPU<float> res2_bn1 = BatchNormOp_CPU<float> ({ 2097152, res2_bn1_bias, res2_bn1_weight, 1, 128, 1e-05, 1, False, NULL, NULL, res2_bn1_weight, res2_bn1_bias });
+ReLUOp_CPU<float> res2_relu1 = ReLUOp_CPU<float> ({ 0, NOT_IN_PLACE });
+BatchNormOp_CPU<float> res2_bn1 = BatchNormOp_CPU<float> ({ 2097152, res2_bn1_bias, res2_bn1_weight, 1, 128, 1e-05, 1, False, NULL, NULL, res2_bn1_weight, res2_bn1_bias });
+ConvolutionOp_CPU<float> res2_conv2 = ConvolutionOp_CPU<float> ({ res2_conv2_weight, NULL, 1, false, std::vector<int> {3,3}, std::vector<int> {1,1}, std::vector<int> {1,1}, std::vector<int> {1,1}, std::vector<int> {1,128,128,128}, std::vector<int> {1,128,128,128}, false });
+BatchNormOp_CPU<float> res2_bn2 = BatchNormOp_CPU<float> ({ 2097152, res2_bn2_bias, res2_bn2_weight, 1, 128, 1e-05, 1, False, NULL, NULL, res2_bn2_weight, res2_bn2_bias });
+ConvolutionOp_CPU<float> res3_conv1 = ConvolutionOp_CPU<float> ({ res3_conv1_weight, NULL, 1, false, std::vector<int> {3,3}, std::vector<int> {1,1}, std::vector<int> {1,1}, std::vector<int> {1,1}, std::vector<int> {1,128,128,128}, std::vector<int> {1,128,128,128}, false });
+BatchNormOp_CPU<float> res3_bn1 = BatchNormOp_CPU<float> ({ 2097152, res3_bn1_bias, res3_bn1_weight, 1, 128, 1e-05, 1, False, NULL, NULL, res3_bn1_weight, res3_bn1_bias });
+ReLUOp_CPU<float> res3_relu1 = ReLUOp_CPU<float> ({ 0, NOT_IN_PLACE });
+BatchNormOp_CPU<float> res3_bn1 = BatchNormOp_CPU<float> ({ 2097152, res3_bn1_bias, res3_bn1_weight, 1, 128, 1e-05, 1, False, NULL, NULL, res3_bn1_weight, res3_bn1_bias });
+ConvolutionOp_CPU<float> res3_conv2 = ConvolutionOp_CPU<float> ({ res3_conv2_weight, NULL, 1, false, std::vector<int> {3,3}, std::vector<int> {1,1}, std::vector<int> {1,1}, std::vector<int> {1,1}, std::vector<int> {1,128,128,128}, std::vector<int> {1,128,128,128}, false });
+BatchNormOp_CPU<float> res3_bn2 = BatchNormOp_CPU<float> ({ 2097152, res3_bn2_bias, res3_bn2_weight, 1, 128, 1e-05, 1, False, NULL, NULL, res3_bn2_weight, res3_bn2_bias });
+ConvolutionOp_CPU<float> res4_conv1 = ConvolutionOp_CPU<float> ({ res4_conv1_weight, NULL, 1, false, std::vector<int> {3,3}, std::vector<int> {1,1}, std::vector<int> {1,1}, std::vector<int> {1,1}, std::vector<int> {1,128,128,128}, std::vector<int> {1,128,128,128}, false });
+BatchNormOp_CPU<float> res4_bn1 = BatchNormOp_CPU<float> ({ 2097152, res4_bn1_bias, res4_bn1_weight, 1, 128, 1e-05, 1, False, NULL, NULL, res4_bn1_weight, res4_bn1_bias });
+ReLUOp_CPU<float> res4_relu1 = ReLUOp_CPU<float> ({ 0, NOT_IN_PLACE });
+BatchNormOp_CPU<float> res4_bn1 = BatchNormOp_CPU<float> ({ 2097152, res4_bn1_bias, res4_bn1_weight, 1, 128, 1e-05, 1, False, NULL, NULL, res4_bn1_weight, res4_bn1_bias });
+ConvolutionOp_CPU<float> res4_conv2 = ConvolutionOp_CPU<float> ({ res4_conv2_weight, NULL, 1, false, std::vector<int> {3,3}, std::vector<int> {1,1}, std::vector<int> {1,1}, std::vector<int> {1,1}, std::vector<int> {1,128,128,128}, std::vector<int> {1,128,128,128}, false });
+BatchNormOp_CPU<float> res4_bn2 = BatchNormOp_CPU<float> ({ 2097152, res4_bn2_bias, res4_bn2_weight, 1, 128, 1e-05, 1, False, NULL, NULL, res4_bn2_weight, res4_bn2_bias });
+ConvolutionOp_CPU<float> res5_conv1 = ConvolutionOp_CPU<float> ({ res5_conv1_weight, NULL, 1, false, std::vector<int> {3,3}, std::vector<int> {1,1}, std::vector<int> {1,1}, std::vector<int> {1,1}, std::vector<int> {1,128,128,128}, std::vector<int> {1,128,128,128}, false });
+BatchNormOp_CPU<float> res5_bn1 = BatchNormOp_CPU<float> ({ 2097152, res5_bn1_bias, res5_bn1_weight, 1, 128, 1e-05, 1, False, NULL, NULL, res5_bn1_weight, res5_bn1_bias });
+ReLUOp_CPU<float> res5_relu1 = ReLUOp_CPU<float> ({ 0, NOT_IN_PLACE });
+BatchNormOp_CPU<float> res5_bn1 = BatchNormOp_CPU<float> ({ 2097152, res5_bn1_bias, res5_bn1_weight, 1, 128, 1e-05, 1, False, NULL, NULL, res5_bn1_weight, res5_bn1_bias });
+ConvolutionOp_CPU<float> res5_conv2 = ConvolutionOp_CPU<float> ({ res5_conv2_weight, NULL, 1, false, std::vector<int> {3,3}, std::vector<int> {1,1}, std::vector<int> {1,1}, std::vector<int> {1,1}, std::vector<int> {1,128,128,128}, std::vector<int> {1,128,128,128}, false });
+BatchNormOp_CPU<float> res5_bn2 = BatchNormOp_CPU<float> ({ 2097152, res5_bn2_bias, res5_bn2_weight, 1, 128, 1e-05, 1, False, NULL, NULL, res5_bn2_weight, res5_bn2_bias });
+DeconvolutionOp_CPU<float> deconv1 = DeconvolutionOp_CPU<float> ({ deconv1_weight, deconv1_bias, 1, false, std::vector<int> {4,4}, std::vector<int> {2,2}, std::vector<int> {1,1}, std::vector<int> {1,1}, std::vector<int> {1,128,128,128}, std::vector<int> {1,64,256,256}, false });
+ELUOp_CPU<float> de_elu1 = ELUOp_CPU<float> ({ 1, NOT_IN_PLACE });
+BatchNormOp_CPU<float> de_bn1 = BatchNormOp_CPU<float> ({ 4194304, de_bn1_bias, de_bn1_weight, 1, 64, 1e-05, 1, False, NULL, NULL, de_bn1_weight, de_bn1_bias });
+DeconvolutionOp_CPU<float> deconv2 = DeconvolutionOp_CPU<float> ({ deconv2_weight, deconv2_bias, 1, false, std::vector<int> {4,4}, std::vector<int> {2,2}, std::vector<int> {1,1}, std::vector<int> {1,1}, std::vector<int> {1,64,256,256}, std::vector<int> {1,32,512,512}, false });
+ELUOp_CPU<float> de_elu2 = ELUOp_CPU<float> ({ 1, NOT_IN_PLACE });
+BatchNormOp_CPU<float> de_bn2 = BatchNormOp_CPU<float> ({ 8388608, de_bn2_bias, de_bn2_weight, 1, 32, 1e-05, 1, False, NULL, NULL, de_bn2_weight, de_bn2_bias });
+DeconvolutionOp_CPU<float> deconv3 = DeconvolutionOp_CPU<float> ({ deconv3_weight, deconv3_bias, 1, false, std::vector<int> {9,9}, std::vector<int> {1,1}, std::vector<int> {4,4}, std::vector<int> {1,1}, std::vector<int> {1,32,512,512}, std::vector<int> {1,3,512,512}, false });
+TanHOp_CPU<float> de_tanh3 = TanHOp_CPU<float> ({{ NOT_IN_PLACE }});
+
+};
+} //namespace hypertea
+

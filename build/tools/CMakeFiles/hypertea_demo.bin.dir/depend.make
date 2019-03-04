@@ -23,8 +23,8 @@ tools/CMakeFiles/hypertea_demo.bin.dir/hypertea_demo.cpp.o: ../include/hypertea/
 tools/CMakeFiles/hypertea_demo.bin.dir/hypertea_demo.cpp.o: ../include/hypertea/util/mkl_alternate.hpp
 tools/CMakeFiles/hypertea_demo.bin.dir/hypertea_demo.cpp.o: ../include/hypertea/util/opencl_util.hpp
 tools/CMakeFiles/hypertea_demo.bin.dir/hypertea_demo.cpp.o: ../tools/conv_opencl.hpp
+tools/CMakeFiles/hypertea_demo.bin.dir/hypertea_demo.cpp.o: ../tools/demo_net_gpu.hpp
 tools/CMakeFiles/hypertea_demo.bin.dir/hypertea_demo.cpp.o: ../tools/hypertea_demo.cpp
-tools/CMakeFiles/hypertea_demo.bin.dir/hypertea_demo.cpp.o: ../tools/reference1.hpp
 tools/CMakeFiles/hypertea_demo.bin.dir/hypertea_demo.cpp.o: /usr/local/cuda/include/CL/cl.h
 tools/CMakeFiles/hypertea_demo.bin.dir/hypertea_demo.cpp.o: /usr/local/cuda/include/CL/cl_platform.h
 

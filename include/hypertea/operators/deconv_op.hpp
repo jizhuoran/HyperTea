@@ -47,7 +47,7 @@ class DeconvolutionOp_CPU : public BaseConvolutionOp_CPU<Dtype> {
   virtual void Forward(const std::vector<Dtype*> bottom_datas,
       const std::vector<Dtype*> top_datas);
 
-  virtual std::vector<Tensor<Dtype> *> Forward(const std::vector<Tensor<Dtype> *> inputs);
+  virtual TensorCPU<Dtype> Forward(TensorCPU<Dtype> &input_tensor);
 
 };
 
@@ -68,8 +68,12 @@ class DeconvolutionOp_GPU : public BaseConvolutionOp_GPU<Dtype> {
   virtual inline const char* type() const { return "Deconvolution"; }
 
  // protected:
-  virtual void Forward(const std::vector<cl_mem> bottom_datas,
-      const std::vector<cl_mem> top_datas);
+  // virtual void Forward(const std::vector<cl_mem> bottom_datas,
+  //     const std::vector<cl_mem> top_datas);
+
+  virtual TensorGPU<Dtype> Forward(TensorGPU<Dtype> input_tensor);
+
+  
 };
 
 #endif //USE_OPENCL

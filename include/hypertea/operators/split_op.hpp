@@ -24,6 +24,7 @@ class SplitOp_CPU : public CPUFunctor<Dtype> {
  // protected:
   virtual void Forward(const std::vector<Dtype*> bottom_datas,
       const std::vector<Dtype*> top_datas);
+  virtual TensorCPU<Dtype> Forward(TensorCPU<Dtype> &input) {}
 
   int data_count_;
 };

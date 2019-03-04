@@ -35,6 +35,8 @@ class EltwiseOp_CPU : public CPUFunctor<Dtype> {
   virtual void Forward(const std::vector<Dtype*> bottom_datas,
       const std::vector<Dtype*> top_datas);
   
+  virtual TensorCPU<Dtype> Forward(TensorCPU<Dtype> &input) {}
+
 private:
   
   int top_count_;

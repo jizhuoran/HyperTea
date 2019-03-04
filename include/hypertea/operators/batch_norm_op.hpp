@@ -41,45 +41,69 @@ class BatchNormOp_CPU : public CPUFunctor<Dtype> {
                        int channels,
                        float eps, float scale_factor,
                        bool use_global_stats,
-                       Dtype* mean, Dtype* variance)
+                       Dtype* mean, Dtype* variance,
+                       Dtype* weight, Dtype* bias,
+                       bool inplace = false)
       : CPUFunctor<Dtype>(), top_count_(top_count), num_(num),
         channels_(channels),
         eps_(eps), scale_factor_(scale_factor),
         use_global_stats_(use_global_stats),
-        mean_(mean), variance_(variance) {
+        mean_(mean), variance_(variance),
+        weight_(weight), bias_(bias),
+        inplace_(inplace) {
 
-          temp_ = (Dtype*)malloc(sizeof(Dtype) * top_count);
+          temp_ = new Dtype[top_count];
 
           spatial_dim_ = top_count/(num*channels);
 
-          spatial_sum_multiplier_ = (Dtype*)malloc(sizeof(Dtype) * spatial_dim_);
+          spatial_sum_multiplier_ = new Dtype[spatial_dim_];
           hypertea_set(spatial_dim_, float(1), spatial_sum_multiplier_);
 
-          num_by_chans_ = (Dtype*)malloc(sizeof(Dtype) * (num*channels));
+          num_by_chans_ = new Dtype[num*channels];
 
-          batch_sum_multiplier_ = (Dtype*)malloc(sizeof(Dtype) * num);
+          batch_sum_multiplier_ = new Dtype[num];
           hypertea_set(num, float(1), batch_sum_multiplier_);
 
           if(!use_global_stats) {
-            mean_ = (Dtype*)malloc(sizeof(Dtype) * channels);
-            variance_ = (Dtype*)malloc(sizeof(Dtype) * channels);
+            mean_ = new Dtype[channels];
+            variance_ = new Dtype[channels];
+          }
+
+          if (bias != NULL) {
+            bias_multiplier_ = new Dtype[top_count / channels];
+            hypertea_set(top_count / channels, Dtype(1), bias_multiplier_);
           }
 
         }
 
+  ~BatchNormOp_CPU() {
+    delete [] temp_;
+    delete [] spatial_sum_multiplier_;
+    delete [] num_by_chans_;
+    delete [] batch_sum_multiplier_;
+    delete [] mean_;
+    delete [] variance_;
+
+    if(bias_ != NULL) {
+      delete [] bias_multiplier_;
+    }
+
+  }
 
 
   virtual inline const char* type() const { return "BatchNorm"; }
 
  // protected:
-  virtual void Forward(const std::vector<Dtype*> bottom_datas,
-      const std::vector<Dtype*> top_datas);
+  // virtual void Forward(const std::vector<Dtype*> bottom_datas,
+  //     const std::vector<Dtype*> top_datas);
 
-  virtual std::vector<Tensor<Dtype> *> Forward(const std::vector<Tensor<Dtype> *> inputs);
+  virtual TensorCPU<Dtype> Forward(TensorCPU<Dtype> &input_tensor);
 
 
 
-  Dtype *mean_, *variance_, *temp_;
+  Dtype *mean_, *variance_;
+  Dtype *weight_, *bias_;
+  Dtype *temp_, *bias_multiplier_;
   bool use_global_stats_;
   
   float eps_;
@@ -90,6 +114,7 @@ class BatchNormOp_CPU : public CPUFunctor<Dtype> {
   int channels_, spatial_dim_;
   int top_count_, num_;
 
+  bool inplace_;
 
   // extra temporarary variables is used to carry out sums/broadcasting
   // using BLAS
@@ -107,16 +132,21 @@ template <typename Dtype>
 class BatchNormOp_GPU : public GPUFunctor<Dtype> {
  public:
 
-  explicit BatchNormOp_GPU(int top_count, int num,
-                       int channels,
-                       float eps, float scale_factor,
-                       bool use_global_stats,
-                       cl_mem mean, cl_mem variance)
+  explicit BatchNormOp_GPU(
+    int top_count, int num,
+    int channels,
+    float eps, float scale_factor,
+    bool use_global_stats,
+    cl_mem mean, cl_mem variance,
+    cl_mem weight, cl_mem bias,
+    bool inplace = false)
       : GPUFunctor<Dtype>(), top_count_(top_count), num_(num),
         channels_(channels),
         eps_(eps), scale_factor_(scale_factor),
         use_global_stats_(use_global_stats),
-        mean_(mean), variance_(variance) {
+        mean_(mean), variance_(variance),
+        weight_(weight), bias_(bias),
+        inplace_(inplace) {
 
           temp_ = clCreateBuffer(OpenCLHandler::Get().context, CL_MEM_READ_WRITE, sizeof(Dtype) * top_count, NULL, NULL);
 
@@ -142,10 +172,14 @@ class BatchNormOp_GPU : public GPUFunctor<Dtype> {
 
   virtual inline const char* type() const { return "BatchNorm"; }
 
-  virtual void Forward(const std::vector<cl_mem> bottom_datas,
-      const std::vector<cl_mem> top_datas);
+  // virtual void Forward(const std::vector<cl_mem> bottom_datas,
+  //     const std::vector<cl_mem> top_datas);
+  virtual TensorGPU<Dtype> Forward(TensorGPU<Dtype> input_tensor);
 
-  cl_mem mean_, variance_, temp_;
+  cl_mem mean_, variance_;
+  cl_mem weight_ = NULL;
+  cl_mem bias_ = NULL;
+  cl_mem temp_;
   bool use_global_stats_;
   
   float eps_;
@@ -161,6 +195,9 @@ class BatchNormOp_GPU : public GPUFunctor<Dtype> {
   cl_mem batch_sum_multiplier_;
   cl_mem num_by_chans_;
   cl_mem spatial_sum_multiplier_;
+
+
+  bool inplace_;
 };
 
 #endif //USE_OPENCL

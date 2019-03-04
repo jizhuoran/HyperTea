@@ -16,7 +16,7 @@
     cl_int error = condition; \
     if(error != CL_SUCCESS) { \
       LOG(ERROR) << "This is a error for OpenCL " << error; \
-      exit(0); \
+      exit(1); \
     } \
   } while (0)
 
@@ -26,7 +26,7 @@
     CLBlastStatusCode status = condition; \
     if(status != CLBlastSuccess) { \
       LOG(ERROR) << "This is a error for CLBlast " << status; \
-      exit(0); \
+      exit(1); \
     } \
   } while (0)
 
@@ -42,7 +42,7 @@
       int n = backtrace(buffer,10);\
       char **str = backtrace_symbols(buffer, n);\
       for (int i = 0; i < n; i++) {printf("%d:  %s\n", i, str[i]);}\
-      exit(0); \
+      exit(1); \
     } \
   } while (0)
 
@@ -56,7 +56,7 @@
       int n = backtrace(buffer,10);\
       char **str = backtrace_symbols(buffer, n);\
       for (int i = 0; i < n; i++) {printf("%d:  %s\n", i, str[i]);}\
-      exit(0); \
+      exit(1); \
     } \
   } while (0)
 

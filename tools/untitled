@@ -27,7 +27,7 @@ free(all_weights);
 void inference( std::vector<float> &data_from_user, std::vector<float> &deconv5_3_to_user) { 
 
 
-Tensor<float> data_tensor = Tensor<float>(data_from_user.data(), data_from_user.size());
+TensorCPU<float> data_tensor = TensorCPU<float>(data_from_user.data(), data_from_user.size());
 
 float* conv1_data = (float *)malloc(33554432);
 float* conv2_data = (float *)malloc(16777216);
@@ -178,7 +178,7 @@ res5_bn1.Forward({res5_conv1_data}, {res5_conv1_data});
 res5_scale1.Forward({res5_conv1_data}, {res5_conv1_data});
 
 
-Tensor<float> *temp1 = new Tensor<float>(res5_conv1_data, 8388608 / 4); 
+TensorCPU<float> *temp1 = new TensorCPU<float>(res5_conv1_data, 8388608 / 4); 
 
 
 auto temp2 = res5_ReLU1.Forward({temp1});

@@ -5,6 +5,11 @@ namespace hypertea {
  
 #ifdef USE_OPENCL
 
+void cl_mem_destory(void* ptr) {
+
+	OPENCL_CHECK(clReleaseMemObject((cl_mem) ptr));
+
+}
 
 static OpenCLHandler *thread_instance_ = NULL;
 

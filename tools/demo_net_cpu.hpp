@@ -27,7 +27,7 @@ free(all_weights);
 void inference( std::vector<float> &data_from_user, std::vector<float> &deconv5_3_to_user) { 
 
 
-auto x = scale1(bn1(ELU1(conv1(Tensor<float>(data_from_user)))));
+auto x = scale1(bn1(ELU1(conv1(TensorCPU<float>(data_from_user)))));
 x = scale2(bn2(ELU2(conv2(x))));
 x = scale3(bn3(ELU3(conv3(x))));
 x += res1_scale2(res1_bn2(res1_conv2(res1_ReLU1(res1_scale1(res1_bn1(res1_conv1(x)))))));

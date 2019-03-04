@@ -58,16 +58,16 @@ public:
   virtual void Forward(const std::vector<Dtype*> bottom_datas,
       const std::vector<Dtype*> top_datas) {}
 
-  virtual std::vector<Tensor<Dtype> *> Forward(const std::vector<Tensor<Dtype> *> inputs) { return {}; }
+  // virtual std::vector<Tensor<Dtype> *> Forward(const std::vector<Tensor<Dtype> *> inputs) { return {}; }
   
-  virtual Tensor<Dtype> Forward(Tensor<Dtype> &input) {
+  virtual TensorCPU<Dtype> Forward(TensorCPU<Dtype> &input_tensor) = 0;
 
-    return *(this->Forward({&input})[0]);
+    // return *(this->Forward({&input})[0]);
 
-  }
+  // }
 
 
-  Tensor<Dtype> operator()(Tensor<Dtype> input) {
+  TensorCPU<Dtype> operator()(TensorCPU<Dtype> &input) {
     return this->Forward(input);
   }
   
@@ -83,9 +83,19 @@ public:
   ~GPUFunctor() {}
 
 
-    virtual void Forward(const std::vector<cl_mem> bottom_datas,
+  virtual void Forward(const std::vector<cl_mem> bottom_datas,
       const std::vector<cl_mem> top_datas) {}
+
+  virtual TensorGPU<Dtype> Forward(TensorGPU<Dtype> input_tensor) {}
   
+  TensorGPU<Dtype> operator()(TensorGPU<Dtype> input) {
+    return this->Forward(input);
+  }
+
+  // TensorGPU<Dtype> operator()(TensorGPU<Dtype> &&input) {
+  //   return this->Forward(input);
+  // }
+
 };
 
 #endif //USE_OPENCL

@@ -27,11 +27,7 @@ class ELUOp_CPU : public CPUFunctor<Dtype> {
 
   virtual inline const char* type() const { return "ELU"; }
 
-  // virtual void Forward(const std::vector<Dtype*> bottom_datas,
-      // const std::vector<Dtype*> top_datas);
-  
-  // virtual std::vector<Tensor<Dtype> *> Forward(const std::vector<Tensor<Dtype> *> inputs);
-  virtual Tensor<Dtype> Forward(Tensor<Dtype> &input_tensor);
+  virtual TensorCPU<Dtype> Forward(TensorCPU<Dtype> &input_tensor);
 
 
 
@@ -50,19 +46,20 @@ class ELUOp_GPU : public GPUFunctor<Dtype> {
  public:
   
 
-  explicit ELUOp_GPU(int data_count, float alpha)
-      : GPUFunctor<Dtype>(), data_count_(data_count), alpha_(alpha) {}
+  explicit ELUOp_GPU(float alpha, bool inplace = false)
+      : GPUFunctor<Dtype>(), alpha_(alpha), inplace_(inplace) {}
 
   virtual inline const char* type() const { return "ELU"; }
 
-  virtual void Forward(const std::vector<cl_mem> bottom_datas,
-      const std::vector<cl_mem> top_datas);
+  // virtual void Forward(const std::vector<cl_mem> bottom_datas,
+  //     const std::vector<cl_mem> top_datas);
+  virtual TensorGPU<Dtype> Forward(TensorGPU<Dtype> input_tensor);
 
 
   private:
-    int data_count_;
     float alpha_;
 
+    bool inplace_;
 
 
 };

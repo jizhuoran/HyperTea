@@ -14,6 +14,11 @@
 
 namespace hypertea {
 
+
+void cl_mem_destory(void* ptr);
+
+
+
 class OpenCLHandler
 {
 public:
