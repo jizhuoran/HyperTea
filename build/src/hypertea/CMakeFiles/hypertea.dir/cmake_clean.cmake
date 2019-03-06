@@ -1,5 +1,6 @@
 file(REMOVE_RECURSE
   "CMakeFiles/hypertea.dir/operator.cpp.o"
+  "CMakeFiles/hypertea.dir/operators/MIOpen_batch_norm_op.cpp.o"
   "CMakeFiles/hypertea.dir/operators/base_conv_op.cpp.o"
   "CMakeFiles/hypertea.dir/operators/batch_norm_op.cpp.o"
   "CMakeFiles/hypertea.dir/operators/conv_op.cpp.o"

@@ -5,6 +5,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
   "/home/zrji/hypertea/src/hypertea/operator.cpp" "/home/zrji/hypertea/build/src/hypertea/CMakeFiles/hypertea.dir/operator.cpp.o"
+  "/home/zrji/hypertea/src/hypertea/operators/MIOpen_batch_norm_op.cpp" "/home/zrji/hypertea/build/src/hypertea/CMakeFiles/hypertea.dir/operators/MIOpen_batch_norm_op.cpp.o"
   "/home/zrji/hypertea/src/hypertea/operators/base_conv_op.cpp" "/home/zrji/hypertea/build/src/hypertea/CMakeFiles/hypertea.dir/operators/base_conv_op.cpp.o"
   "/home/zrji/hypertea/src/hypertea/operators/batch_norm_op.cpp" "/home/zrji/hypertea/build/src/hypertea/CMakeFiles/hypertea.dir/operators/batch_norm_op.cpp.o"
   "/home/zrji/hypertea/src/hypertea/operators/conv_op.cpp" "/home/zrji/hypertea/build/src/hypertea/CMakeFiles/hypertea.dir/operators/conv_op.cpp.o"

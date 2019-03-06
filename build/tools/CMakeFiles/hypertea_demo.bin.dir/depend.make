@@ -5,6 +5,7 @@ tools/CMakeFiles/hypertea_demo.bin.dir/hypertea_demo.cpp.o: ../include/hypertea/
 tools/CMakeFiles/hypertea_demo.bin.dir/hypertea_demo.cpp.o: ../include/hypertea/glog_wrapper.hpp
 tools/CMakeFiles/hypertea_demo.bin.dir/hypertea_demo.cpp.o: ../include/hypertea/hypertea.hpp
 tools/CMakeFiles/hypertea_demo.bin.dir/hypertea_demo.cpp.o: ../include/hypertea/operator.hpp
+tools/CMakeFiles/hypertea_demo.bin.dir/hypertea_demo.cpp.o: ../include/hypertea/operators/MIOpen_batch_norm_op.hpp
 tools/CMakeFiles/hypertea_demo.bin.dir/hypertea_demo.cpp.o: ../include/hypertea/operators/base_conv_op.hpp
 tools/CMakeFiles/hypertea_demo.bin.dir/hypertea_demo.cpp.o: ../include/hypertea/operators/batch_norm_op.hpp
 tools/CMakeFiles/hypertea_demo.bin.dir/hypertea_demo.cpp.o: ../include/hypertea/operators/conv_op.hpp

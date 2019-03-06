@@ -146,7 +146,7 @@ int main(int argc, char** argv) {
 
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 
-    for (int i = 0; i < 1; ++i) {
+    for (int i = 0; i < 100; ++i) {
     	tmp_net.inference(converter, converter1);
     }
   

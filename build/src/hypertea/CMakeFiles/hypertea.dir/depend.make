@@ -14,6 +14,20 @@ src/hypertea/CMakeFiles/hypertea.dir/operator.cpp.o: ../src/hypertea/operator.cp
 src/hypertea/CMakeFiles/hypertea.dir/operator.cpp.o: /usr/local/cuda/include/CL/cl.h
 src/hypertea/CMakeFiles/hypertea.dir/operator.cpp.o: /usr/local/cuda/include/CL/cl_platform.h
 
+src/hypertea/CMakeFiles/hypertea.dir/operators/MIOpen_batch_norm_op.cpp.o: ../include/hypertea/common.hpp
+src/hypertea/CMakeFiles/hypertea.dir/operators/MIOpen_batch_norm_op.cpp.o: ../include/hypertea/glog_wrapper.hpp
+src/hypertea/CMakeFiles/hypertea.dir/operators/MIOpen_batch_norm_op.cpp.o: ../include/hypertea/operator.hpp
+src/hypertea/CMakeFiles/hypertea.dir/operators/MIOpen_batch_norm_op.cpp.o: ../include/hypertea/operators/MIOpen_batch_norm_op.hpp
+src/hypertea/CMakeFiles/hypertea.dir/operators/MIOpen_batch_norm_op.cpp.o: ../include/hypertea/tensor.hpp
+src/hypertea/CMakeFiles/hypertea.dir/operators/MIOpen_batch_norm_op.cpp.o: ../include/hypertea/util/device_alternate.hpp
+src/hypertea/CMakeFiles/hypertea.dir/operators/MIOpen_batch_norm_op.cpp.o: ../include/hypertea/util/half.hpp
+src/hypertea/CMakeFiles/hypertea.dir/operators/MIOpen_batch_norm_op.cpp.o: ../include/hypertea/util/math_functions.hpp
+src/hypertea/CMakeFiles/hypertea.dir/operators/MIOpen_batch_norm_op.cpp.o: ../include/hypertea/util/mkl_alternate.hpp
+src/hypertea/CMakeFiles/hypertea.dir/operators/MIOpen_batch_norm_op.cpp.o: ../include/hypertea/util/opencl_util.hpp
+src/hypertea/CMakeFiles/hypertea.dir/operators/MIOpen_batch_norm_op.cpp.o: ../src/hypertea/operators/MIOpen_batch_norm_op.cpp
+src/hypertea/CMakeFiles/hypertea.dir/operators/MIOpen_batch_norm_op.cpp.o: /usr/local/cuda/include/CL/cl.h
+src/hypertea/CMakeFiles/hypertea.dir/operators/MIOpen_batch_norm_op.cpp.o: /usr/local/cuda/include/CL/cl_platform.h
+
 src/hypertea/CMakeFiles/hypertea.dir/operators/base_conv_op.cpp.o: ../include/hypertea/common.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/base_conv_op.cpp.o: ../include/hypertea/glog_wrapper.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/base_conv_op.cpp.o: ../include/hypertea/operator.hpp

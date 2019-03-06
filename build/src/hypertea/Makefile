@@ -198,6 +198,33 @@ operator.cpp.s:
 	cd /home/zrji/hypertea/build && $(MAKE) -f src/hypertea/CMakeFiles/hypertea.dir/build.make src/hypertea/CMakeFiles/hypertea.dir/operator.cpp.s
 .PHONY : operator.cpp.s
 
+operators/MIOpen_batch_norm_op.o: operators/MIOpen_batch_norm_op.cpp.o
+
+.PHONY : operators/MIOpen_batch_norm_op.o
+
+# target to build an object file
+operators/MIOpen_batch_norm_op.cpp.o:
+	cd /home/zrji/hypertea/build && $(MAKE) -f src/hypertea/CMakeFiles/hypertea.dir/build.make src/hypertea/CMakeFiles/hypertea.dir/operators/MIOpen_batch_norm_op.cpp.o
+.PHONY : operators/MIOpen_batch_norm_op.cpp.o
+
+operators/MIOpen_batch_norm_op.i: operators/MIOpen_batch_norm_op.cpp.i
+
+.PHONY : operators/MIOpen_batch_norm_op.i
+
+# target to preprocess a source file
+operators/MIOpen_batch_norm_op.cpp.i:
+	cd /home/zrji/hypertea/build && $(MAKE) -f src/hypertea/CMakeFiles/hypertea.dir/build.make src/hypertea/CMakeFiles/hypertea.dir/operators/MIOpen_batch_norm_op.cpp.i
+.PHONY : operators/MIOpen_batch_norm_op.cpp.i
+
+operators/MIOpen_batch_norm_op.s: operators/MIOpen_batch_norm_op.cpp.s
+
+.PHONY : operators/MIOpen_batch_norm_op.s
+
+# target to generate assembly for a file
+operators/MIOpen_batch_norm_op.cpp.s:
+	cd /home/zrji/hypertea/build && $(MAKE) -f src/hypertea/CMakeFiles/hypertea.dir/build.make src/hypertea/CMakeFiles/hypertea.dir/operators/MIOpen_batch_norm_op.cpp.s
+.PHONY : operators/MIOpen_batch_norm_op.cpp.s
+
 operators/base_conv_op.o: operators/base_conv_op.cpp.o
 
 .PHONY : operators/base_conv_op.o
@@ -646,6 +673,9 @@ help:
 	@echo "... operator.o"
 	@echo "... operator.i"
 	@echo "... operator.s"
+	@echo "... operators/MIOpen_batch_norm_op.o"
+	@echo "... operators/MIOpen_batch_norm_op.i"
+	@echo "... operators/MIOpen_batch_norm_op.s"
 	@echo "... operators/base_conv_op.o"
 	@echo "... operators/base_conv_op.i"
 	@echo "... operators/base_conv_op.s"
