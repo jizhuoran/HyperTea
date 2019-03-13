@@ -24,6 +24,7 @@ tools/CMakeFiles/hypertea_demo.bin.dir/hypertea_demo.cpp.o
  ../include/hypertea/util/math_functions.hpp
  ../include/hypertea/util/mkl_alternate.hpp
  ../include/hypertea/util/opencl_util.hpp
+ /home/zrji/hypertea/tools/bn_opencl.hpp
  /home/zrji/hypertea/tools/conv_opencl.hpp
  /home/zrji/hypertea/tools/demo_net_gpu.hpp
  /home/zrji/hypertea/tools/hypertea_demo.cpp

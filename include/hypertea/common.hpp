@@ -19,7 +19,7 @@
 #include <string>
 #include <utility>  // pair
 #include <vector>
-
+#include <assert.h>
 
 #ifdef USE_OPENCL
 #include <CL/cl.h>

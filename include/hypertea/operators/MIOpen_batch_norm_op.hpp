@@ -43,47 +43,38 @@ class MIOpenBatchNormOp_GPU : public GPUFunctor<Dtype> {
  public:
 
   explicit MIOpenBatchNormOp_GPU(
-    int top_count, int num,
-    int channels,
-    float eps, float scale_factor,
-    bool use_global_stats,
+    std::string kernel_name,
     cl_mem mean, cl_mem variance,
     cl_mem weight, cl_mem bias,
+    std::vector<size_t> local,
+    std::vector<size_t> global,
+    int channels,
     bool inplace = false)
-      : GPUFunctor<Dtype>(), top_count_(top_count), num_(num),
-        channels_(channels),
-        eps_(eps), scale_factor_(scale_factor),
-        use_global_stats_(use_global_stats),
+      : GPUFunctor<Dtype>(), kernel_name_(kernel_name),
         mean_(mean), variance_(variance),
         weight_(weight), bias_(bias),
+        local_size_(local), global_size_(global),
         inplace_(inplace) {
 
-          temp_ = clCreateBuffer(OpenCLHandler::Get().context, CL_MEM_READ_WRITE, sizeof(Dtype) * top_count, NULL, NULL);
-
-          spatial_dim_ = top_count/(num*channels);
-
-          spatial_sum_multiplier_ = clCreateBuffer(OpenCLHandler::Get().context, CL_MEM_READ_WRITE, sizeof(Dtype) * spatial_dim_, NULL, NULL);
-          hypertea_gpu_set<float>(spatial_dim_, float(1.), spatial_sum_multiplier_);
-
-          num_by_chans_ = clCreateBuffer(OpenCLHandler::Get().context, CL_MEM_READ_WRITE, sizeof(Dtype) * num * channels, NULL, NULL);
-
-          batch_sum_multiplier_ = clCreateBuffer(OpenCLHandler::Get().context, CL_MEM_READ_WRITE, sizeof(Dtype) * num, NULL, NULL);
-          hypertea_gpu_set<float>(num, float(1.), batch_sum_multiplier_);
-
-          if(!use_global_stats) {
-            mean_ = clCreateBuffer(OpenCLHandler::Get().context, CL_MEM_READ_WRITE, sizeof(Dtype) * channels, NULL, NULL);
-            variance_ = clCreateBuffer(OpenCLHandler::Get().context, CL_MEM_READ_WRITE, sizeof(Dtype) * channels, NULL, NULL);
+          if(weight_ == NULL) {
+            weight_ = clCreateBuffer(OpenCLHandler::Get().context, CL_MEM_READ_WRITE, sizeof(Dtype) * channels, NULL, NULL);
+            hypertea_gpu_set<float>(channels, float(1.), weight_);
           }
 
-          build_program();
+          if(bias_ == NULL) {
+            bias_ = clCreateBuffer(OpenCLHandler::Get().context, CL_MEM_READ_WRITE, sizeof(Dtype) * channels, NULL, NULL);
+            hypertea_gpu_set<float>(channels, float(0.), bias_);
+          }
+
 
         }
 
 
-  std::string MIOpen_BN_code(std::string params);
-  void build_program();
-  std::vector<size_t> vld_;
-  std::vector<size_t> vgd_;
+  // std::string MIOpen_BN_code(std::string params);
+  // void build_program();
+  std::vector<size_t> local_size_;
+  std::vector<size_t> global_size_;
+  std::string kernel_name_;
   bool single_ = true;
   float inhw_ = 1.0;
 
@@ -94,28 +85,11 @@ class MIOpenBatchNormOp_GPU : public GPUFunctor<Dtype> {
   //     const std::vector<cl_mem> top_datas);
   virtual TensorGPU<Dtype> Forward(TensorGPU<Dtype> input_tensor);
 
-  cl_mem mean_, variance_;
+  cl_mem mean_ = NULL;
+  cl_mem variance_ = NULL;
   cl_mem weight_ = NULL;
   cl_mem bias_ = NULL;
-  cl_mem temp_;
-  bool use_global_stats_;
   
-  float eps_;
-
-  float scale_factor_;
-
-
-  int channels_, spatial_dim_;
-  int top_count_, num_;
-
-  // extra temporarary variables is used to carry out sums/broadcasting
-  // using BLAS
-  cl_mem batch_sum_multiplier_;
-  cl_mem num_by_chans_;
-  cl_mem spatial_sum_multiplier_;
-
-  cl_program bn_program;
-
   bool inplace_;
 };
 

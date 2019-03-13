@@ -30,6 +30,11 @@ public:
 
 	void DeviceQuery();
 	void build_opencl_program(std::string kernel_code, cl_program &program);
+	void build_opencl_program(std::string kernel_code, cl_program &program, std::string save_binary_file);
+
+	void load_opencl_program(std::string save_binary_file, cl_program &program, size_t size);
+
+
   	std::string opencl_math_code(bool is_half);
 
 
@@ -44,6 +49,7 @@ public:
 
 	cl_program math_program;
 	cl_program conv_program;
+	cl_program bn_program;
 
 
 private:

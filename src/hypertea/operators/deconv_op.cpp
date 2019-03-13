@@ -49,8 +49,6 @@ TensorCPU<float> DeconvolutionOp_CPU<float>::Forward(TensorCPU<float> &input_ten
 template <typename Dtype>
 TensorGPU<Dtype> DeconvolutionOp_GPU<Dtype>::Forward(TensorGPU<Dtype> input_tensor){
 
-  std::cout << "come to here!!" << std::endl;
-
   const cl_mem input_data = input_tensor.immutable_data();
   TensorGPU<Dtype> output_tensor(this->top_count_);
   cl_mem output_data = output_tensor.mutable_data();

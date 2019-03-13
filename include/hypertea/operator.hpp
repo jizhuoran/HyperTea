@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <string>
 #include <vector>
+#include <numeric>
 
 #include "hypertea/common.hpp"
 #include "hypertea/util/math_functions.hpp"

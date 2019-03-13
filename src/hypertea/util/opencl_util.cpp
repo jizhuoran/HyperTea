@@ -23,6 +23,225 @@ OpenCLHandler& OpenCLHandler::Get() {
 
 
 
+std::string test_cl_code = R"(
+
+#define Dtype float
+#define Dtype4 float4
+
+
+static inline void ReduceKernel(__local Dtype* lcl_mem,
+                                unsigned int sum_stride,
+                                unsigned int unit_id,
+                                unsigned int unit_len)
+{
+    Dtype sum              = (Dtype)0.;
+    unsigned int lcl_offset = unit_id * unit_len;
+
+    for(unsigned int i = 0; i < unit_len; i += sum_stride) {
+        sum += lcl_mem[lcl_offset + i];
+    }
+    lcl_mem[lcl_offset] = sum;
+}
+
+static inline void
+regLDSreduce(Dtype* value, __local Dtype* data, unsigned int localID, Dtype scale)
+{
+    data[localID] = *value;
+    barrier(CLK_LOCAL_MEM_FENCE);
+    if(localID < (16 >> 2))
+        ReduceKernel(data, 1, localID, 4);
+    barrier(CLK_LOCAL_MEM_FENCE);
+    if(localID < (16 >> 4))
+        ReduceKernel(data, 4, localID, 16);
+    barrier(CLK_LOCAL_MEM_FENCE);
+    if(localID == 0)
+        ReduceKernel(data, 16, localID, 16);
+    barrier(CLK_LOCAL_MEM_FENCE);
+    *value = data[0] * scale;
+}
+        
+
+__attribute__((reqd_work_group_size(1, 1024, 1))) __kernel void
+MIOpenBatchNormFwdTrainSpatialNorm(const __global Dtype* __restrict in,
+                                   __global Dtype* __restrict out,
+                                   const __global Dtype* __restrict scale,
+                                   const __global Dtype* __restrict bias)
+{
+
+    // SPATIAL
+    Dtype mean        = (Dtype)0.;
+    Dtype invVariance = (Dtype)0.;
+    Dtype inhat       = (Dtype)0.;
+    Dtype pvt_scale   = (Dtype)0.;
+    Dtype pvt_bias    = (Dtype)0.;
+    __local Dtype lcl_mean, lcl_ivar, lcl_scale, lcl_bias;
+
+    unsigned int ygrp_id = get_group_id(1);
+    unsigned int xgid    = get_global_id(0);
+    unsigned int ygid    = get_global_id(1);
+    unsigned int ygrp_sz = get_local_size(1);
+    unsigned int index;
+    unsigned int cidx           = xgid * 33554432;
+    unsigned int meanstashindex = cidx + ygrp_sz * ygrp_id + 1;
+    unsigned int varstashindex  = cidx + ygrp_sz * ygrp_id + 3;
+
+    // #4 apply the normalization :: x_hat = (x_i - mean) / sqrt(variance_accum + epsilon)
+    if(get_local_id(1) == 0) {
+        lcl_scale = *(scale + xgid);
+        lcl_bias  = *(bias + xgid);
+        lcl_mean  = *(out + meanstashindex); // load stashed mean
+        lcl_ivar  = *(out + varstashindex);
+    }
+    barrier(CLK_LOCAL_MEM_FENCE);
+
+    if(ygid < 33554432) {
+        mean        = lcl_mean;
+        invVariance = lcl_ivar;
+        pvt_scale   = lcl_scale;
+        pvt_bias    = lcl_bias;
+        for(unsigned int n = 0; n < 1; n++) { // apply normalization
+            index        = n * 1073741824 + cidx + ygid;
+            Dtype inhat = (*(in + index) - mean) * invVariance;
+            // #5 Gamma and Beta adjust :: y_i = gamma*x_hat + beta
+            out[index] = mad(pvt_scale, inhat, pvt_bias);
+        } // end for(n)
+    }     // end if(inImgIndex)
+} // end spatial norm
+
+__attribute__((reqd_work_group_size(1, 1024, 1))) __kernel void
+MIOpenBatchNormFwdTrainSpatialFinalMeanVariance(
+    __global Dtype* __restrict meanvarbuff,
+    Dtype INHW,
+    Dtype epsilon
+    ) {
+    Dtype variance             = (Dtype)0.;
+    Dtype invVariance          = (Dtype)0.;
+    Dtype mean                 = (Dtype)0.;
+    unsigned int lid            = get_local_id(1);
+    unsigned int ygrp_id        = get_group_id(1);
+    unsigned int xgid           = get_global_id(0);
+    unsigned int ygrp_sz        = get_local_size(1);
+    unsigned int yngrps         = get_num_groups(1);
+    unsigned int cidx           = xgid * 33554432;
+    unsigned int meanstashindex = cidx + ygrp_sz * ygrp_id + 1;
+    unsigned int varstashindex  = cidx + ygrp_sz * ygrp_id + 3;
+    unsigned int commitID       = 0;
+
+    for(int gn = 0; gn < yngrps; gn++) {
+        unsigned int offset    = gn * ygrp_sz + lid;
+        unsigned int meanindex = cidx + ygrp_sz * offset;
+        unsigned int varindex  = cidx + ygrp_sz * offset + 2;
+        if(offset < yngrps) { 
+            // modify to span larger number of groups
+            mean += *(meanvarbuff + meanindex);
+            variance += *(meanvarbuff + varindex); // load per group variance
+        }
+    }
+
+
+    __local Dtype lcl_data[16];
+    lcl_data[lid] = mean;
+    barrier(CLK_LOCAL_MEM_FENCE);
+
+    
+    for(unsigned int red = (1024 >> 1); red > 256; red >>= 1) {
+        if(lid < red)
+            lcl_data[lid] += lcl_data[lid + red];
+        barrier(CLK_LOCAL_MEM_FENCE);
+    }
+    regLDSreduce(&mean, lcl_data, lid, (Dtype)INHW);
+        
+
+    lcl_data[lid] = variance;
+    barrier(CLK_LOCAL_MEM_FENCE);
+
+    
+        for(unsigned int red = (1024 >> 1); red > 256; red >>= 1) {
+            if(lid < red)
+                lcl_data[lid] += lcl_data[lid + red];
+            barrier(CLK_LOCAL_MEM_FENCE);
+        }
+        regLDSreduce(&variance, lcl_data, lid, (Dtype)INHW);
+        
+
+
+
+    barrier(CLK_LOCAL_MEM_FENCE | CLK_GLOBAL_MEM_FENCE);
+    variance    = mad(-mean, mean, variance);
+    invVariance = rsqrt(variance + epsilon);
+    if(lid == commitID) {
+        meanvarbuff[meanstashindex] = mean;        // stash mean
+        meanvarbuff[varstashindex]  = invVariance; // stash mean
+    }
+
+
+}
+
+__attribute__((reqd_work_group_size(1, 1024, 1))) __kernel void
+MIOpenBatchNormFwdTrainSpatialMeanVariance(const __global Dtype* __restrict in,
+                                           __global Dtype* __restrict mvbuff) {
+
+    unsigned int ylid    = get_local_id(1);
+    unsigned int ygrp_id = get_group_id(1);
+    unsigned int xgid    = get_global_id(0);
+    unsigned int ygid    = get_global_id(1);
+    unsigned int ygrp_sz = get_local_size(1);
+    unsigned int index;
+    unsigned int cidx      = xgid * 33554432;
+    unsigned int meanindex = cidx + ygrp_sz * ygrp_id;
+    unsigned int varindex  = meanindex + 2;
+    Dtype mean            = (Dtype)0.;
+    Dtype variance        = (Dtype)0.;
+    Dtype value           = (Dtype)0.;
+
+    if(ygid < 33554432) {
+        for(unsigned int n = 0; n < 1; n++) {
+            index = n * 1073741824 + cidx + ygid;
+            value = *(in + index);
+            mean += value;
+            variance = mad(value, value, variance);
+        }
+    }
+
+
+
+    __local Dtype lcl_data[16];
+    lcl_data[ylid] = mean;
+    barrier(CLK_LOCAL_MEM_FENCE);
+
+    for(unsigned int red = (1024 >> 1); red > 256; red >>= 1) {
+        if(ylid < red)
+            lcl_data[ylid] += lcl_data[ylid + red];
+        barrier(CLK_LOCAL_MEM_FENCE);
+    }
+    regLDSreduce(&mean, lcl_data, ylid, 1);
+    barrier(CLK_LOCAL_MEM_FENCE);
+
+    lcl_data[ylid] = variance;
+    barrier(CLK_LOCAL_MEM_FENCE);
+
+    for(unsigned int red = (1024 >> 1); red > 256; red >>= 1) {
+        if(ylid < red)
+            lcl_data[ylid] += lcl_data[ylid + red];
+        barrier(CLK_LOCAL_MEM_FENCE);
+    }
+    regLDSreduce(&variance, lcl_data, ylid, 1);
+
+    barrier(CLK_LOCAL_MEM_FENCE);
+
+    if(ylid == 0) {
+        mvbuff[meanindex] = mean;
+        mvbuff[varindex]  = variance;
+    }
+} // end spatial mean kernel
+        
+
+
+
+
+)";
+
+
 OpenCLHandler::OpenCLHandler() {
 
 	OPENCL_CHECK(clGetPlatformIDs(1, &platformId, &retNumPlatforms));
@@ -38,7 +257,81 @@ OpenCLHandler::OpenCLHandler() {
 
 	build_opencl_program(opencl_math_code(false), math_program);
 
+	cl_program temp_program;
+
+	build_opencl_program(test_cl_code, temp_program);
+
+
+
 }
+
+void OpenCLHandler::load_opencl_program(std::string save_binary_file, cl_program &program, size_t size) {
+
+  cl_int ret = -1;
+
+
+  char *buffer;
+  FILE *f;
+
+  f = fopen(save_binary_file.c_str(), "rb");
+
+  buffer = (char*)malloc(size + 1);
+  size_t readed_size = fread(buffer, 1, size, f);
+  fclose(f);
+
+  buffer[size] = 0;
+
+  // const unsigned char** binary = const_cast<const unsigned char**>(reinterpret_cast<unsigned char**>(& buffer));
+
+  LOG(INFO) << "The size is " << size << "and the readed size is " << readed_size;
+
+
+  program = clCreateProgramWithBinary(context, 1, &deviceID,
+                                        &size, (const unsigned char **)&buffer, NULL, &ret);
+
+
+  LOG(INFO) << "pass this line";
+
+
+  OPENCL_CHECK(ret);
+
+  ret = clBuildProgram(program, 1, &deviceID, NULL, NULL, NULL);
+
+
+  if (ret != CL_SUCCESS) {
+    char *buff_erro;
+    cl_int errcode;
+    size_t build_log_len;
+    errcode = clGetProgramBuildInfo(program, deviceID, CL_PROGRAM_BUILD_LOG, 0, NULL, &build_log_len);
+    if (errcode) {
+      LOG(ERROR) << "clGetProgramBuildInfo failed at line " << __LINE__ << " with code " << errcode;
+      exit(-1);
+    }
+
+    buff_erro = (char *)malloc(build_log_len);
+    if (!buff_erro) {
+      LOG(ERROR) << "malloc failed at line " << __LINE__;
+      exit(-2);
+    }
+
+    errcode = clGetProgramBuildInfo(program, deviceID, CL_PROGRAM_BUILD_LOG, build_log_len, buff_erro, NULL);
+    if (errcode) {
+        LOG(ERROR) << "clGetProgramBuildInfo failed at line " << __LINE__ << " with code " << errcode;
+        exit(-3);
+    }
+    
+    LOG(ERROR) << "Build log: " << buff_erro;
+
+    free(buff_erro);
+
+    LOG(ERROR) << "clBuildProgram failed";
+
+    exit(EXIT_FAILURE);
+  }
+
+  delete[] buffer;
+}
+
 
 void OpenCLHandler::build_opencl_program(std::string kernel_code, cl_program &program) {
 
@@ -86,6 +379,44 @@ void OpenCLHandler::build_opencl_program(std::string kernel_code, cl_program &pr
   }
 }
 
+
+void OpenCLHandler::build_opencl_program(std::string kernel_code, cl_program &program, std::string save_binary_file) {
+
+
+  build_opencl_program(kernel_code, program);
+
+
+  cl_uint num_devices;
+  clGetProgramInfo(program, CL_PROGRAM_NUM_DEVICES, 0, &num_devices, NULL);
+
+  assert(("We do not support multiple devices", num_devices == 1));
+
+  size_t binary_kernel_size;
+  clGetProgramInfo(program, CL_PROGRAM_BINARY_SIZES, sizeof(size_t), &binary_kernel_size, NULL);
+
+
+  unsigned char* binary = new unsigned char[binary_kernel_size];
+
+  clGetProgramInfo(program, CL_PROGRAM_BINARIES, sizeof(unsigned char *), &binary, NULL);
+
+  FILE *f = fopen(save_binary_file.c_str(), "wb");
+
+  auto pos = fwrite(binary, sizeof(char), binary_kernel_size, f);
+
+  assert(("We fail to write the binary kernel", pos == binary_kernel_size));
+
+  LOG(INFO) << "we have written " << pos << "bytes";
+
+  cl_int ret = -1;
+
+  program = clCreateProgramWithBinary(context, 1, &deviceID,
+                                        &binary_kernel_size, (const unsigned char **)&binary, NULL, &ret);
+
+  OPENCL_CHECK(ret);
+
+  delete [] binary;
+
+}
 
 
 
@@ -227,7 +558,6 @@ void OpenCLHandler::DeviceQuery(){
 
    
 }
-
 
 
 

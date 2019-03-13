@@ -31,6 +31,8 @@ utility
 -
 vector
 -
+assert.h
+-
 CL/cl.h
 -
 hypertea/util/device_alternate.hpp
@@ -80,6 +82,8 @@ algorithm
 string
 -
 vector
+-
+numeric
 -
 hypertea/common.hpp
 ../include/hypertea/hypertea/common.hpp
@@ -218,6 +222,8 @@ CL/cl.h
 hypertea/util/device_alternate.hpp
 ../include/hypertea/util/hypertea/util/device_alternate.hpp
 
+/home/zrji/hypertea/tools/bn_opencl.hpp
+
 /home/zrji/hypertea/tools/conv_opencl.hpp
 
 /home/zrji/hypertea/tools/demo_net_gpu.hpp
@@ -237,6 +243,8 @@ chrono
 -
 ../tools/conv_opencl.hpp
 /home/zrji/hypertea/tools/conv_opencl.hpp
+../tools/bn_opencl.hpp
+/home/zrji/hypertea/tools/bn_opencl.hpp
 ../tools/demo_net_gpu.hpp
 /home/zrji/hypertea/tools/demo_net_gpu.hpp
 

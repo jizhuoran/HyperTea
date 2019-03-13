@@ -5,6 +5,7 @@
 #include <chrono>
 
 #include "../tools/conv_opencl.hpp"
+#include "../tools/bn_opencl.hpp"
 #include "../tools/demo_net_gpu.hpp"
 
 
@@ -119,7 +120,7 @@ int main(int argc, char** argv) {
     image = readPPM("./examples/style_transfer/HKU.ppm");
 
     std::vector<float> converter(512*512*3*1, 0);
-    std::vector<float> converter1(512*512*3*1, 0);
+    std::vector<float> converter1;//(512*512*3*1, 0);
 
     for (int y = 0; y < 512; y++) {
       for (int x = 0; x < 512; x++) {

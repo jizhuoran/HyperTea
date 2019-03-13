@@ -1,17 +1,29 @@
-
 #include "hypertea/hypertea.hpp"
+#include "bn_opencl.hpp"
+#include "conv_opencl.hpp"
+
 
 namespace hypertea {
 
 class new_net {
 public:
 
-    new_net() {
+    static new_net *get() {
+        return hypertea_net_;
+    }
+
+
+    static new_net *get(const std::string &param_file) {
+        hypertea_net_ = new new_net(param_file);
+        return hypertea_net_;
+    }
+
+    new_net(const std::string &param_file) {
 
         int weight_size = 7285260;
         unsigned char* all_weights = (unsigned char*) malloc(weight_size);
 
-        FILE *f = fopen("pytorch_weight", "rb");
+        FILE *f = fopen(param_file.c_str(), "rb");
         size_t read_size = fread(all_weights, 1, weight_size, f);
         if (read_size != weight_size) { 
             LOG(ERROR) << "Weight File Size Mismatch" << read_size << " and " << weight_size << std::endl;
@@ -72,12 +84,13 @@ public:
         OPENCL_CHECK(clEnqueueWriteBuffer(OpenCLHandler::Get().commandQueue, deconv3_weight, CL_TRUE, 0, 31104, all_weights + 7254156, 0, NULL, NULL));
 
         free(all_weights);
-        OpenCLHandler::Get().load_opencl_program("conv_cl", OpenCLHandler::Get().conv_program);
-        OpenCLHandler::Get().load_opencl_program("bn_cl", OpenCLHandler::Get().bn_program);
-        // OpenCLHandler::Get().build_opencl_program(conv_opencl_funcs, OpenCLHandler::Get().conv_program, "conv_cl");
-        // OpenCLHandler::Get().build_opencl_program(bn_opencl_funcs, OpenCLHandler::Get().bn_program, "bn_cl");
+        // OpenCLHandler::Get().build_opencl_program(conv_opencl_funcs, OpenCLHandler::Get().conv_program, "/sdcard/caffe/conv_function");
+        // OpenCLHandler::Get().build_opencl_program(bn_opencl_funcs, OpenCLHandler::Get().bn_program, "/sdcard/caffe/bn_function");
 
-    }
+        OpenCLHandler::Get().load_opencl_program("/sdcard/caffe/bn_function", OpenCLHandler::Get().bn_program, 53968);
+        OpenCLHandler::Get().load_opencl_program("/sdcard/caffe/conv_function", OpenCLHandler::Get().conv_program, 91672);
+
+    }   
 
 
     ~new_net() {
@@ -159,12 +172,18 @@ public:
 
         temp = (temp + 1) * 127.5;
 
+
+        data_to_user.resize(temp.count());
         OPENCL_CHECK(clEnqueueReadBuffer(OpenCLHandler::Get().commandQueue, temp.immutable_data(), CL_TRUE, 0, data_to_user.size() * sizeof(data_to_user[0]), data_to_user.data(), 0, NULL, NULL));
 
     }
 
 
 private:
+
+
+    static new_net *hypertea_net_;
+
 
     cl_mem conv1_bias = clCreateBuffer(OpenCLHandler::Get().context, CL_MEM_READ_ONLY, 128, NULL, NULL);
     cl_mem conv1_weight = clCreateBuffer(OpenCLHandler::Get().context, CL_MEM_READ_ONLY, 31104, NULL, NULL);
@@ -264,5 +283,9 @@ private:
     TanHOp_GPU<float> de_tanh3 = TanHOp_GPU<float> ( NOT_IN_PLACE );
 
 };
+
+new_net *new_net::hypertea_net_ = NULL;
+
+
 } //namespace hypertea
         
