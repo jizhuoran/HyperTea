@@ -75,6 +75,8 @@ hypertea/operators/batch_norm_op.hpp
 ../include/hypertea/hypertea/operators/batch_norm_op.hpp
 hypertea/operators/MIOpen_batch_norm_op.hpp
 ../include/hypertea/hypertea/operators/MIOpen_batch_norm_op.hpp
+hypertea/operators/native_deconv_op.hpp
+../include/hypertea/hypertea/operators/native_deconv_op.hpp
 
 ../include/hypertea/operator.hpp
 algorithm
@@ -89,6 +91,8 @@ hypertea/common.hpp
 ../include/hypertea/hypertea/common.hpp
 hypertea/util/math_functions.hpp
 ../include/hypertea/hypertea/util/math_functions.hpp
+hypertea/util/benchmark.hpp
+../include/hypertea/hypertea/util/benchmark.hpp
 
 ../include/hypertea/operators/MIOpen_batch_norm_op.hpp
 vector
@@ -136,6 +140,14 @@ vector
 hypertea/operator.hpp
 ../include/hypertea/operators/hypertea/operator.hpp
 
+../include/hypertea/operators/native_deconv_op.hpp
+vector
+-
+hypertea/operator.hpp
+../include/hypertea/operators/hypertea/operator.hpp
+hypertea/util/math_functions.hpp
+../include/hypertea/operators/hypertea/util/math_functions.hpp
+
 ../include/hypertea/operators/relu_op.hpp
 vector
 -
@@ -165,6 +177,12 @@ vector
 -
 hypertea/util/math_functions.hpp
 ../include/hypertea/hypertea/util/math_functions.hpp
+
+../include/hypertea/util/benchmark.hpp
+sys/time.h
+-
+hypertea/util/opencl_util.hpp
+../include/hypertea/util/hypertea/util/opencl_util.hpp
 
 ../include/hypertea/util/device_alternate.hpp
 cxxabi.h

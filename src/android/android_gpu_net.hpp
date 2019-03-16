@@ -1,22 +1,26 @@
+
 #include "hypertea/hypertea.hpp"
 #include "bn_opencl.hpp"
 #include "conv_opencl.hpp"
-
 
 namespace hypertea {
 
 class new_net {
 public:
 
+    
+    
     static new_net *get() {
-        return hypertea_net_;
+        return new_net_jni_;
     }
 
 
     static new_net *get(const std::string &param_file) {
-        hypertea_net_ = new new_net(param_file);
-        return hypertea_net_;
-    }
+            new_net_jni_ = new new_net(param_file);
+            return new_net_jni_;
+    } 
+
+    
 
     new_net(const std::string &param_file) {
 
@@ -84,13 +88,10 @@ public:
         OPENCL_CHECK(clEnqueueWriteBuffer(OpenCLHandler::Get().commandQueue, deconv3_weight, CL_TRUE, 0, 31104, all_weights + 7254156, 0, NULL, NULL));
 
         free(all_weights);
-        // OpenCLHandler::Get().build_opencl_program(conv_opencl_funcs, OpenCLHandler::Get().conv_program, "/sdcard/caffe/conv_function");
-        // OpenCLHandler::Get().build_opencl_program(bn_opencl_funcs, OpenCLHandler::Get().bn_program, "/sdcard/caffe/bn_function");
+        OpenCLHandler::Get().build_opencl_program(conv_opencl_funcs, OpenCLHandler::Get().conv_program);
+        OpenCLHandler::Get().build_opencl_program(bn_opencl_funcs, OpenCLHandler::Get().bn_program);
 
-        OpenCLHandler::Get().load_opencl_program("/sdcard/caffe/bn_function", OpenCLHandler::Get().bn_program, 53968);
-        OpenCLHandler::Get().load_opencl_program("/sdcard/caffe/conv_function", OpenCLHandler::Get().conv_program, 91672);
-
-    }   
+    }
 
 
     ~new_net() {
@@ -172,7 +173,6 @@ public:
 
         temp = (temp + 1) * 127.5;
 
-
         data_to_user.resize(temp.count());
         OPENCL_CHECK(clEnqueueReadBuffer(OpenCLHandler::Get().commandQueue, temp.immutable_data(), CL_TRUE, 0, data_to_user.size() * sizeof(data_to_user[0]), data_to_user.data(), 0, NULL, NULL));
 
@@ -181,9 +181,7 @@ public:
 
 private:
 
-
-    static new_net *hypertea_net_;
-
+    static new_net *new_net_jni_;
 
     cl_mem conv1_bias = clCreateBuffer(OpenCLHandler::Get().context, CL_MEM_READ_ONLY, 128, NULL, NULL);
     cl_mem conv1_weight = clCreateBuffer(OpenCLHandler::Get().context, CL_MEM_READ_ONLY, 31104, NULL, NULL);
@@ -241,51 +239,50 @@ private:
 
     ConvolutionOp_GPU<float> conv1 = ConvolutionOp_GPU<float> ("conv1_forward", 8388608, conv1_weight, conv1_bias, std::vector<int> {16,4,1}, std::vector<int> {32768,8,1});
     ELUOp_GPU<float> elu1 = ELUOp_GPU<float> ( 1, NOT_IN_PLACE );
-    MIOpenBatchNormOp_GPU<float> bn1 = MIOpenBatchNormOp_GPU<float> ("bn1_forward", NULL, NULL, bn1_weight, bn1_bias, std::vector<size_t> {1024,1,1}, std::vector<size_t> {32768,1,1}, 32);
+    BatchNormOp_GPU<float> bn1 = BatchNormOp_GPU<float> (8388608, 1, 32, 1e-05, 1, false, NULL, NULL, bn1_weight, bn1_bias);
     ConvolutionOp_GPU<float> conv2 = ConvolutionOp_GPU<float> ("conv2_forward", 4194304, conv2_weight, conv2_bias, std::vector<int> {16,4,1}, std::vector<int> {8192,16,1});
     ELUOp_GPU<float> elu2 = ELUOp_GPU<float> ( 1, NOT_IN_PLACE );
-    MIOpenBatchNormOp_GPU<float> bn2 = MIOpenBatchNormOp_GPU<float> ("bn2_forward", NULL, NULL, bn2_weight, bn2_bias, std::vector<size_t> {1024,1,1}, std::vector<size_t> {65536,1,1}, 64);
+    BatchNormOp_GPU<float> bn2 = BatchNormOp_GPU<float> (4194304, 1, 64, 1e-05, 1, false, NULL, NULL, bn2_weight, bn2_bias);
     ConvolutionOp_GPU<float> conv3 = ConvolutionOp_GPU<float> ("conv3_forward", 2097152, conv3_weight, conv3_bias, std::vector<int> {16,4,1}, std::vector<int> {2048,32,1});
     ELUOp_GPU<float> elu3 = ELUOp_GPU<float> ( 1, NOT_IN_PLACE );
-    MIOpenBatchNormOp_GPU<float> bn3 = MIOpenBatchNormOp_GPU<float> ("bn3_forward", NULL, NULL, bn3_weight, bn3_bias, std::vector<size_t> {1024,1,1}, std::vector<size_t> {131072,1,1}, 128);
+    BatchNormOp_GPU<float> bn3 = BatchNormOp_GPU<float> (2097152, 1, 128, 1e-05, 1, false, NULL, NULL, bn3_weight, bn3_bias);
     ConvolutionOp_GPU<float> res1_conv1 = ConvolutionOp_GPU<float> ("res1_conv1_forward", 2097152, res1_conv1_weight, NULL, std::vector<int> {16,4,1}, std::vector<int> {2048,32,1});
-    MIOpenBatchNormOp_GPU<float> res1_bn1 = MIOpenBatchNormOp_GPU<float> ("res1_bn1_forward", NULL, NULL, res1_bn1_weight, res1_bn1_bias, std::vector<size_t> {1024,1,1}, std::vector<size_t> {131072,1,1}, 128);
+    BatchNormOp_GPU<float> res1_bn1 = BatchNormOp_GPU<float> (2097152, 1, 128, 1e-05, 1, false, NULL, NULL, res1_bn1_weight, res1_bn1_bias);
     ReLUOp_GPU<float> res1_relu1 = ReLUOp_GPU<float> ( 0, NOT_IN_PLACE );
     ConvolutionOp_GPU<float> res1_conv2 = ConvolutionOp_GPU<float> ("res1_conv2_forward", 2097152, res1_conv2_weight, NULL, std::vector<int> {16,4,1}, std::vector<int> {2048,32,1});
-    MIOpenBatchNormOp_GPU<float> res1_bn2 = MIOpenBatchNormOp_GPU<float> ("res1_bn2_forward", NULL, NULL, res1_bn2_weight, res1_bn2_bias, std::vector<size_t> {1024,1,1}, std::vector<size_t> {131072,1,1}, 128);
+    BatchNormOp_GPU<float> res1_bn2 = BatchNormOp_GPU<float> (2097152, 1, 128, 1e-05, 1, false, NULL, NULL, res1_bn2_weight, res1_bn2_bias);
     ConvolutionOp_GPU<float> res2_conv1 = ConvolutionOp_GPU<float> ("res2_conv1_forward", 2097152, res2_conv1_weight, NULL, std::vector<int> {16,4,1}, std::vector<int> {2048,32,1});
-    MIOpenBatchNormOp_GPU<float> res2_bn1 = MIOpenBatchNormOp_GPU<float> ("res2_bn1_forward", NULL, NULL, res2_bn1_weight, res2_bn1_bias, std::vector<size_t> {1024,1,1}, std::vector<size_t> {131072,1,1}, 128);
+    BatchNormOp_GPU<float> res2_bn1 = BatchNormOp_GPU<float> (2097152, 1, 128, 1e-05, 1, false, NULL, NULL, res2_bn1_weight, res2_bn1_bias);
     ReLUOp_GPU<float> res2_relu1 = ReLUOp_GPU<float> ( 0, NOT_IN_PLACE );
     ConvolutionOp_GPU<float> res2_conv2 = ConvolutionOp_GPU<float> ("res2_conv2_forward", 2097152, res2_conv2_weight, NULL, std::vector<int> {16,4,1}, std::vector<int> {2048,32,1});
-    MIOpenBatchNormOp_GPU<float> res2_bn2 = MIOpenBatchNormOp_GPU<float> ("res2_bn2_forward", NULL, NULL, res2_bn2_weight, res2_bn2_bias, std::vector<size_t> {1024,1,1}, std::vector<size_t> {131072,1,1}, 128);
+    BatchNormOp_GPU<float> res2_bn2 = BatchNormOp_GPU<float> (2097152, 1, 128, 1e-05, 1, false, NULL, NULL, res2_bn2_weight, res2_bn2_bias);
     ConvolutionOp_GPU<float> res3_conv1 = ConvolutionOp_GPU<float> ("res3_conv1_forward", 2097152, res3_conv1_weight, NULL, std::vector<int> {16,4,1}, std::vector<int> {2048,32,1});
-    MIOpenBatchNormOp_GPU<float> res3_bn1 = MIOpenBatchNormOp_GPU<float> ("res3_bn1_forward", NULL, NULL, res3_bn1_weight, res3_bn1_bias, std::vector<size_t> {1024,1,1}, std::vector<size_t> {131072,1,1}, 128);
+    BatchNormOp_GPU<float> res3_bn1 = BatchNormOp_GPU<float> (2097152, 1, 128, 1e-05, 1, false, NULL, NULL, res3_bn1_weight, res3_bn1_bias);
     ReLUOp_GPU<float> res3_relu1 = ReLUOp_GPU<float> ( 0, NOT_IN_PLACE );
     ConvolutionOp_GPU<float> res3_conv2 = ConvolutionOp_GPU<float> ("res3_conv2_forward", 2097152, res3_conv2_weight, NULL, std::vector<int> {16,4,1}, std::vector<int> {2048,32,1});
-    MIOpenBatchNormOp_GPU<float> res3_bn2 = MIOpenBatchNormOp_GPU<float> ("res3_bn2_forward", NULL, NULL, res3_bn2_weight, res3_bn2_bias, std::vector<size_t> {1024,1,1}, std::vector<size_t> {131072,1,1}, 128);
+    BatchNormOp_GPU<float> res3_bn2 = BatchNormOp_GPU<float> (2097152, 1, 128, 1e-05, 1, false, NULL, NULL, res3_bn2_weight, res3_bn2_bias);
     ConvolutionOp_GPU<float> res4_conv1 = ConvolutionOp_GPU<float> ("res4_conv1_forward", 2097152, res4_conv1_weight, NULL, std::vector<int> {16,4,1}, std::vector<int> {2048,32,1});
-    MIOpenBatchNormOp_GPU<float> res4_bn1 = MIOpenBatchNormOp_GPU<float> ("res4_bn1_forward", NULL, NULL, res4_bn1_weight, res4_bn1_bias, std::vector<size_t> {1024,1,1}, std::vector<size_t> {131072,1,1}, 128);
+    BatchNormOp_GPU<float> res4_bn1 = BatchNormOp_GPU<float> (2097152, 1, 128, 1e-05, 1, false, NULL, NULL, res4_bn1_weight, res4_bn1_bias);
     ReLUOp_GPU<float> res4_relu1 = ReLUOp_GPU<float> ( 0, NOT_IN_PLACE );
     ConvolutionOp_GPU<float> res4_conv2 = ConvolutionOp_GPU<float> ("res4_conv2_forward", 2097152, res4_conv2_weight, NULL, std::vector<int> {16,4,1}, std::vector<int> {2048,32,1});
-    MIOpenBatchNormOp_GPU<float> res4_bn2 = MIOpenBatchNormOp_GPU<float> ("res4_bn2_forward", NULL, NULL, res4_bn2_weight, res4_bn2_bias, std::vector<size_t> {1024,1,1}, std::vector<size_t> {131072,1,1}, 128);
+    BatchNormOp_GPU<float> res4_bn2 = BatchNormOp_GPU<float> (2097152, 1, 128, 1e-05, 1, false, NULL, NULL, res4_bn2_weight, res4_bn2_bias);
     ConvolutionOp_GPU<float> res5_conv1 = ConvolutionOp_GPU<float> ("res5_conv1_forward", 2097152, res5_conv1_weight, NULL, std::vector<int> {16,4,1}, std::vector<int> {2048,32,1});
-    MIOpenBatchNormOp_GPU<float> res5_bn1 = MIOpenBatchNormOp_GPU<float> ("res5_bn1_forward", NULL, NULL, res5_bn1_weight, res5_bn1_bias, std::vector<size_t> {1024,1,1}, std::vector<size_t> {131072,1,1}, 128);
+    BatchNormOp_GPU<float> res5_bn1 = BatchNormOp_GPU<float> (2097152, 1, 128, 1e-05, 1, false, NULL, NULL, res5_bn1_weight, res5_bn1_bias);
     ReLUOp_GPU<float> res5_relu1 = ReLUOp_GPU<float> ( 0, NOT_IN_PLACE );
     ConvolutionOp_GPU<float> res5_conv2 = ConvolutionOp_GPU<float> ("res5_conv2_forward", 2097152, res5_conv2_weight, NULL, std::vector<int> {16,4,1}, std::vector<int> {2048,32,1});
-    MIOpenBatchNormOp_GPU<float> res5_bn2 = MIOpenBatchNormOp_GPU<float> ("res5_bn2_forward", NULL, NULL, res5_bn2_weight, res5_bn2_bias, std::vector<size_t> {1024,1,1}, std::vector<size_t> {131072,1,1}, 128);
-    DeconvolutionOp_GPU<float> deconv1 = DeconvolutionOp_GPU<float> ("deconv1_forward", 4194304, deconv1_weight, deconv1_bias, std::vector<int> {16,4,1}, std::vector<int> {8192,16,1});
+    BatchNormOp_GPU<float> res5_bn2 = BatchNormOp_GPU<float> (2097152, 1, 128, 1e-05, 1, false, NULL, NULL, res5_bn2_weight, res5_bn2_bias);
+    NativeDeconvolutionOp_GPU<float> deconv1 = NativeDeconvolutionOp_GPU<float> ("deconv1_col2Im", 4194304, 1024, deconv1_weight, deconv1_bias, std::vector<int> {1,128,128,128}, std::vector<int> {1,64,256,256}, false, std::vector<int> {256,1,1}, std::vector<int> {4194304,1,1});
     ELUOp_GPU<float> de_elu1 = ELUOp_GPU<float> ( 1, NOT_IN_PLACE );
-    MIOpenBatchNormOp_GPU<float> de_bn1 = MIOpenBatchNormOp_GPU<float> ("de_bn1_forward", NULL, NULL, de_bn1_weight, de_bn1_bias, std::vector<size_t> {1024,1,1}, std::vector<size_t> {65536,1,1}, 64);
-    DeconvolutionOp_GPU<float> deconv2 = DeconvolutionOp_GPU<float> ("deconv2_forward", 8388608, deconv2_weight, deconv2_bias, std::vector<int> {16,4,1}, std::vector<int> {32768,8,1});
+    BatchNormOp_GPU<float> de_bn1 = BatchNormOp_GPU<float> (4194304, 1, 64, 1e-05, 1, false, NULL, NULL, de_bn1_weight, de_bn1_bias);
+    NativeDeconvolutionOp_GPU<float> deconv2 = NativeDeconvolutionOp_GPU<float> ("deconv2_col2Im", 8388608, 512, deconv2_weight, deconv2_bias, std::vector<int> {1,64,256,256}, std::vector<int> {1,32,512,512}, false, std::vector<int> {256,1,1}, std::vector<int> {8388608,1,1});
     ELUOp_GPU<float> de_elu2 = ELUOp_GPU<float> ( 1, NOT_IN_PLACE );
-    MIOpenBatchNormOp_GPU<float> de_bn2 = MIOpenBatchNormOp_GPU<float> ("de_bn2_forward", NULL, NULL, de_bn2_weight, de_bn2_bias, std::vector<size_t> {1024,1,1}, std::vector<size_t> {32768,1,1}, 32);
-    DeconvolutionOp_GPU<float> deconv3 = DeconvolutionOp_GPU<float> ("deconv3_forward", 786432, deconv3_weight, deconv3_bias, std::vector<int> {16,4,1}, std::vector<int> {32768,4,1});
+    BatchNormOp_GPU<float> de_bn2 = BatchNormOp_GPU<float> (8388608, 1, 32, 1e-05, 1, false, NULL, NULL, de_bn2_weight, de_bn2_bias);
+    NativeDeconvolutionOp_GPU<float> deconv3 = NativeDeconvolutionOp_GPU<float> ("deconv3_col2Im", 786432, 243, deconv3_weight, deconv3_bias, std::vector<int> {1,32,512,512}, std::vector<int> {1,3,512,512}, false, std::vector<int> {256,1,1}, std::vector<int> {786432,1,1});
     TanHOp_GPU<float> de_tanh3 = TanHOp_GPU<float> ( NOT_IN_PLACE );
 
 };
 
-new_net *new_net::hypertea_net_ = NULL;
-
+new_net *new_net::new_net_jni_ = nullptr;
 
 } //namespace hypertea
         

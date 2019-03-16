@@ -32,7 +32,7 @@ public:
 	void build_opencl_program(std::string kernel_code, cl_program &program);
 	void build_opencl_program(std::string kernel_code, cl_program &program, std::string save_binary_file);
 
-	void load_opencl_program(std::string save_binary_file, cl_program &program, size_t size);
+	void load_opencl_program(std::string save_binary_file, cl_program &program);
 
 
   	std::string opencl_math_code(bool is_half);

@@ -52,11 +52,41 @@ android/log.h
 iostream
 -
 
+../include/hypertea/operator.hpp
+algorithm
+-
+string
+-
+vector
+-
+numeric
+-
+hypertea/common.hpp
+../include/hypertea/hypertea/common.hpp
+hypertea/util/math_functions.hpp
+../include/hypertea/hypertea/util/math_functions.hpp
+hypertea/util/benchmark.hpp
+../include/hypertea/hypertea/util/benchmark.hpp
+
+../include/hypertea/operators/native_deconv_op.hpp
+vector
+-
+hypertea/operator.hpp
+../include/hypertea/operators/hypertea/operator.hpp
+hypertea/util/math_functions.hpp
+../include/hypertea/operators/hypertea/util/math_functions.hpp
+
 ../include/hypertea/tensor.hpp
 vector
 -
 hypertea/util/math_functions.hpp
 ../include/hypertea/hypertea/util/math_functions.hpp
+
+../include/hypertea/util/benchmark.hpp
+sys/time.h
+-
+hypertea/util/opencl_util.hpp
+../include/hypertea/util/hypertea/util/opencl_util.hpp
 
 ../include/hypertea/util/device_alternate.hpp
 cxxabi.h
@@ -112,11 +142,11 @@ CL/cl.h
 hypertea/util/device_alternate.hpp
 ../include/hypertea/util/hypertea/util/device_alternate.hpp
 
-/home/zrji/hypertea/src/hypertea/util/opencl_util.cpp
-hypertea/util/opencl_util.hpp
-/home/zrji/hypertea/src/hypertea/util/hypertea/util/opencl_util.hpp
-hypertea/common.hpp
-/home/zrji/hypertea/src/hypertea/util/hypertea/common.hpp
+/home/zrji/hypertea/src/hypertea/operators/native_deconv_op.cpp
+vector
+-
+hypertea/operators/native_deconv_op.hpp
+/home/zrji/hypertea/src/hypertea/operators/hypertea/operators/native_deconv_op.hpp
 
 /usr/local/cuda/include/CL/cl.h
 OpenCL/cl_platform.h

@@ -7,6 +7,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/hypertea.dir/operators/deconv_op.cpp.o"
   "CMakeFiles/hypertea.dir/operators/eltwise_op.cpp.o"
   "CMakeFiles/hypertea.dir/operators/elu_op.cpp.o"
+  "CMakeFiles/hypertea.dir/operators/native_deconv_op.cpp.o"
   "CMakeFiles/hypertea.dir/operators/relu_op.cpp.o"
   "CMakeFiles/hypertea.dir/operators/scale_op.cpp.o"
   "CMakeFiles/hypertea.dir/operators/split_op.cpp.o"

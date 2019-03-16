@@ -8,6 +8,7 @@
 
 #include "hypertea/common.hpp"
 #include "hypertea/util/math_functions.hpp"
+#include "hypertea/util/benchmark.hpp"
 
 
 namespace hypertea {
@@ -90,7 +91,13 @@ public:
   virtual TensorGPU<Dtype> Forward(TensorGPU<Dtype> input_tensor) {}
   
   TensorGPU<Dtype> operator()(TensorGPU<Dtype> input) {
-    return this->Forward(input);
+    GPUTimer timer;
+    timer.Start();
+    auto output_tensor = this->Forward(input);
+    timer.Stop();
+    LOG(INFO) << "The time used for operator " << this->type() << " is " << timer.MilliSeconds() << "ms." << std::endl;
+
+    return output_tensor;
   }
 
   // TensorGPU<Dtype> operator()(TensorGPU<Dtype> &&input) {

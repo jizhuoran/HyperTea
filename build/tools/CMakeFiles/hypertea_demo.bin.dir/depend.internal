@@ -13,11 +13,13 @@ tools/CMakeFiles/hypertea_demo.bin.dir/hypertea_demo.cpp.o
  ../include/hypertea/operators/deconv_op.hpp
  ../include/hypertea/operators/eltwise_op.hpp
  ../include/hypertea/operators/elu_op.hpp
+ ../include/hypertea/operators/native_deconv_op.hpp
  ../include/hypertea/operators/relu_op.hpp
  ../include/hypertea/operators/scale_op.hpp
  ../include/hypertea/operators/split_op.hpp
  ../include/hypertea/operators/tanh_op.hpp
  ../include/hypertea/tensor.hpp
+ ../include/hypertea/util/benchmark.hpp
  ../include/hypertea/util/device_alternate.hpp
  ../include/hypertea/util/half.hpp
  ../include/hypertea/util/im2col.hpp

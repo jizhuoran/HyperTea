@@ -387,6 +387,33 @@ operators/elu_op.cpp.s:
 	cd /home/zrji/hypertea/build && $(MAKE) -f src/hypertea/CMakeFiles/hypertea.dir/build.make src/hypertea/CMakeFiles/hypertea.dir/operators/elu_op.cpp.s
 .PHONY : operators/elu_op.cpp.s
 
+operators/native_deconv_op.o: operators/native_deconv_op.cpp.o
+
+.PHONY : operators/native_deconv_op.o
+
+# target to build an object file
+operators/native_deconv_op.cpp.o:
+	cd /home/zrji/hypertea/build && $(MAKE) -f src/hypertea/CMakeFiles/hypertea.dir/build.make src/hypertea/CMakeFiles/hypertea.dir/operators/native_deconv_op.cpp.o
+.PHONY : operators/native_deconv_op.cpp.o
+
+operators/native_deconv_op.i: operators/native_deconv_op.cpp.i
+
+.PHONY : operators/native_deconv_op.i
+
+# target to preprocess a source file
+operators/native_deconv_op.cpp.i:
+	cd /home/zrji/hypertea/build && $(MAKE) -f src/hypertea/CMakeFiles/hypertea.dir/build.make src/hypertea/CMakeFiles/hypertea.dir/operators/native_deconv_op.cpp.i
+.PHONY : operators/native_deconv_op.cpp.i
+
+operators/native_deconv_op.s: operators/native_deconv_op.cpp.s
+
+.PHONY : operators/native_deconv_op.s
+
+# target to generate assembly for a file
+operators/native_deconv_op.cpp.s:
+	cd /home/zrji/hypertea/build && $(MAKE) -f src/hypertea/CMakeFiles/hypertea.dir/build.make src/hypertea/CMakeFiles/hypertea.dir/operators/native_deconv_op.cpp.s
+.PHONY : operators/native_deconv_op.cpp.s
+
 operators/relu_op.o: operators/relu_op.cpp.o
 
 .PHONY : operators/relu_op.o
@@ -694,6 +721,9 @@ help:
 	@echo "... operators/elu_op.o"
 	@echo "... operators/elu_op.i"
 	@echo "... operators/elu_op.s"
+	@echo "... operators/native_deconv_op.o"
+	@echo "... operators/native_deconv_op.i"
+	@echo "... operators/native_deconv_op.s"
 	@echo "... operators/relu_op.o"
 	@echo "... operators/relu_op.i"
 	@echo "... operators/relu_op.s"

@@ -17,5 +17,6 @@
 #include "hypertea/operators/tanh_op.hpp"
 #include "hypertea/operators/batch_norm_op.hpp"
 #include "hypertea/operators/MIOpen_batch_norm_op.hpp"
+#include "hypertea/operators/native_deconv_op.hpp"
 
 #endif  // HYPERTEA_HYPERTEA_HPP_

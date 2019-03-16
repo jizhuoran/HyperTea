@@ -6,6 +6,7 @@ src/hypertea/CMakeFiles/hypertea.dir/operator.cpp.o
  ../include/hypertea/glog_wrapper.hpp
  ../include/hypertea/operator.hpp
  ../include/hypertea/tensor.hpp
+ ../include/hypertea/util/benchmark.hpp
  ../include/hypertea/util/device_alternate.hpp
  ../include/hypertea/util/half.hpp
  ../include/hypertea/util/math_functions.hpp
@@ -20,6 +21,7 @@ src/hypertea/CMakeFiles/hypertea.dir/operators/MIOpen_batch_norm_op.cpp.o
  ../include/hypertea/operator.hpp
  ../include/hypertea/operators/MIOpen_batch_norm_op.hpp
  ../include/hypertea/tensor.hpp
+ ../include/hypertea/util/benchmark.hpp
  ../include/hypertea/util/device_alternate.hpp
  ../include/hypertea/util/half.hpp
  ../include/hypertea/util/math_functions.hpp
@@ -34,6 +36,7 @@ src/hypertea/CMakeFiles/hypertea.dir/operators/base_conv_op.cpp.o
  ../include/hypertea/operator.hpp
  ../include/hypertea/operators/base_conv_op.hpp
  ../include/hypertea/tensor.hpp
+ ../include/hypertea/util/benchmark.hpp
  ../include/hypertea/util/device_alternate.hpp
  ../include/hypertea/util/half.hpp
  ../include/hypertea/util/im2col.hpp
@@ -49,6 +52,7 @@ src/hypertea/CMakeFiles/hypertea.dir/operators/batch_norm_op.cpp.o
  ../include/hypertea/operator.hpp
  ../include/hypertea/operators/batch_norm_op.hpp
  ../include/hypertea/tensor.hpp
+ ../include/hypertea/util/benchmark.hpp
  ../include/hypertea/util/device_alternate.hpp
  ../include/hypertea/util/half.hpp
  ../include/hypertea/util/math_functions.hpp
@@ -64,6 +68,7 @@ src/hypertea/CMakeFiles/hypertea.dir/operators/conv_op.cpp.o
  ../include/hypertea/operators/base_conv_op.hpp
  ../include/hypertea/operators/conv_op.hpp
  ../include/hypertea/tensor.hpp
+ ../include/hypertea/util/benchmark.hpp
  ../include/hypertea/util/device_alternate.hpp
  ../include/hypertea/util/half.hpp
  ../include/hypertea/util/im2col.hpp
@@ -80,6 +85,7 @@ src/hypertea/CMakeFiles/hypertea.dir/operators/deconv_op.cpp.o
  ../include/hypertea/operators/base_conv_op.hpp
  ../include/hypertea/operators/deconv_op.hpp
  ../include/hypertea/tensor.hpp
+ ../include/hypertea/util/benchmark.hpp
  ../include/hypertea/util/device_alternate.hpp
  ../include/hypertea/util/half.hpp
  ../include/hypertea/util/im2col.hpp
@@ -95,6 +101,7 @@ src/hypertea/CMakeFiles/hypertea.dir/operators/eltwise_op.cpp.o
  ../include/hypertea/operator.hpp
  ../include/hypertea/operators/eltwise_op.hpp
  ../include/hypertea/tensor.hpp
+ ../include/hypertea/util/benchmark.hpp
  ../include/hypertea/util/device_alternate.hpp
  ../include/hypertea/util/half.hpp
  ../include/hypertea/util/math_functions.hpp
@@ -109,6 +116,7 @@ src/hypertea/CMakeFiles/hypertea.dir/operators/elu_op.cpp.o
  ../include/hypertea/operator.hpp
  ../include/hypertea/operators/elu_op.hpp
  ../include/hypertea/tensor.hpp
+ ../include/hypertea/util/benchmark.hpp
  ../include/hypertea/util/device_alternate.hpp
  ../include/hypertea/util/half.hpp
  ../include/hypertea/util/math_functions.hpp
@@ -117,12 +125,28 @@ src/hypertea/CMakeFiles/hypertea.dir/operators/elu_op.cpp.o
  /home/zrji/hypertea/src/hypertea/operators/elu_op.cpp
  /usr/local/cuda/include/CL/cl.h
  /usr/local/cuda/include/CL/cl_platform.h
+src/hypertea/CMakeFiles/hypertea.dir/operators/native_deconv_op.cpp.o
+ ../include/hypertea/common.hpp
+ ../include/hypertea/glog_wrapper.hpp
+ ../include/hypertea/operator.hpp
+ ../include/hypertea/operators/native_deconv_op.hpp
+ ../include/hypertea/tensor.hpp
+ ../include/hypertea/util/benchmark.hpp
+ ../include/hypertea/util/device_alternate.hpp
+ ../include/hypertea/util/half.hpp
+ ../include/hypertea/util/math_functions.hpp
+ ../include/hypertea/util/mkl_alternate.hpp
+ ../include/hypertea/util/opencl_util.hpp
+ /home/zrji/hypertea/src/hypertea/operators/native_deconv_op.cpp
+ /usr/local/cuda/include/CL/cl.h
+ /usr/local/cuda/include/CL/cl_platform.h
 src/hypertea/CMakeFiles/hypertea.dir/operators/relu_op.cpp.o
  ../include/hypertea/common.hpp
  ../include/hypertea/glog_wrapper.hpp
  ../include/hypertea/operator.hpp
  ../include/hypertea/operators/relu_op.hpp
  ../include/hypertea/tensor.hpp
+ ../include/hypertea/util/benchmark.hpp
  ../include/hypertea/util/device_alternate.hpp
  ../include/hypertea/util/half.hpp
  ../include/hypertea/util/math_functions.hpp
@@ -137,6 +161,7 @@ src/hypertea/CMakeFiles/hypertea.dir/operators/scale_op.cpp.o
  ../include/hypertea/operator.hpp
  ../include/hypertea/operators/scale_op.hpp
  ../include/hypertea/tensor.hpp
+ ../include/hypertea/util/benchmark.hpp
  ../include/hypertea/util/device_alternate.hpp
  ../include/hypertea/util/half.hpp
  ../include/hypertea/util/math_functions.hpp
@@ -151,6 +176,7 @@ src/hypertea/CMakeFiles/hypertea.dir/operators/split_op.cpp.o
  ../include/hypertea/operator.hpp
  ../include/hypertea/operators/split_op.hpp
  ../include/hypertea/tensor.hpp
+ ../include/hypertea/util/benchmark.hpp
  ../include/hypertea/util/device_alternate.hpp
  ../include/hypertea/util/half.hpp
  ../include/hypertea/util/math_functions.hpp
@@ -165,6 +191,7 @@ src/hypertea/CMakeFiles/hypertea.dir/operators/tanh_op.cpp.o
  ../include/hypertea/operator.hpp
  ../include/hypertea/operators/tanh_op.hpp
  ../include/hypertea/tensor.hpp
+ ../include/hypertea/util/benchmark.hpp
  ../include/hypertea/util/device_alternate.hpp
  ../include/hypertea/util/half.hpp
  ../include/hypertea/util/math_functions.hpp

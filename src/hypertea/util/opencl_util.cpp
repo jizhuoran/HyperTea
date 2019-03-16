@@ -1,6 +1,8 @@
 #include "hypertea/util/opencl_util.hpp"
 #include "hypertea/common.hpp"
 
+#include <fstream>
+
 namespace hypertea {
  
 #ifdef USE_OPENCL
@@ -265,29 +267,46 @@ OpenCLHandler::OpenCLHandler() {
 
 }
 
-void OpenCLHandler::load_opencl_program(std::string save_binary_file, cl_program &program, size_t size) {
+void OpenCLHandler::load_opencl_program(std::string save_binary_file, cl_program &program) {
+
+
+  std::ifstream file;
+
+
+  file.open(save_binary_file, std::ios::in | std::ios::binary);  
+  file.seekg(0, std::ios::end);
+
+  size_t kernel_size = file.tellg();
+  file.seekg(0, std::ios::beg);
+
+  LOG(INFO) << "The kernel we read is size of " << kernel_size << std::endl;
+
+  char* buffer = new char[kernel_size];
+
+  file.read(buffer, kernel_size);
+  file.close();
 
   cl_int ret = -1;
 
 
-  char *buffer;
-  FILE *f;
+  // int8_t *buffer;
+  // FILE *f;
 
-  f = fopen(save_binary_file.c_str(), "rb");
+  // f = fopen(save_binary_file.c_str(), "rb");
 
-  buffer = (char*)malloc(size + 1);
-  size_t readed_size = fread(buffer, 1, size, f);
-  fclose(f);
+  // buffer = (int8_t*)malloc(size + 1);
+  // size_t readed_size = fread(buffer, 1, size, f);
+  // fclose(f);
 
-  buffer[size] = 0;
+  // buffer[size] = 0;
 
   // const unsigned char** binary = const_cast<const unsigned char**>(reinterpret_cast<unsigned char**>(& buffer));
 
-  LOG(INFO) << "The size is " << size << "and the readed size is " << readed_size;
+  // LOG(INFO) << "The size is " << size << "and the readed size is " << readed_size;
 
 
   program = clCreateProgramWithBinary(context, 1, &deviceID,
-                                        &size, (const unsigned char **)&buffer, NULL, &ret);
+                                        &kernel_size, (const unsigned char **)&buffer, NULL, &ret);
 
 
   LOG(INFO) << "pass this line";
@@ -399,20 +418,30 @@ void OpenCLHandler::build_opencl_program(std::string kernel_code, cl_program &pr
 
   clGetProgramInfo(program, CL_PROGRAM_BINARIES, sizeof(unsigned char *), &binary, NULL);
 
-  FILE *f = fopen(save_binary_file.c_str(), "wb");
+  LOG(INFO) << "The kernel we write is size of " << binary_kernel_size << std::endl;
 
-  auto pos = fwrite(binary, sizeof(char), binary_kernel_size, f);
 
-  assert(("We fail to write the binary kernel", pos == binary_kernel_size));
+  std::fstream file;
+  file.open(save_binary_file, std::ios::out | std::ios::binary);
+  file.write((const char*)binary, binary_kernel_size); // ideally, you should memcpy it to a char buffer.
 
-  LOG(INFO) << "we have written " << pos << "bytes";
+  file.close();
 
-  cl_int ret = -1;
 
-  program = clCreateProgramWithBinary(context, 1, &deviceID,
-                                        &binary_kernel_size, (const unsigned char **)&binary, NULL, &ret);
+  // FILE *f = fopen(save_binary_file.c_str(), "wb");
 
-  OPENCL_CHECK(ret);
+  // auto pos = fwrite((int8_t*)binary, sizeof(char), binary_kernel_size, f);
+
+  // assert(("We fail to write the binary kernel", pos == binary_kernel_size));
+
+  // LOG(INFO) << "we have written " << pos << "bytes";
+
+  // cl_int ret = -1;
+
+  // program = clCreateProgramWithBinary(context, 1, &deviceID,
+                                        // &binary_kernel_size, (const unsigned char **)&binary, NULL, &ret);
+
+  // OPENCL_CHECK(ret);
 
   delete [] binary;
 
@@ -1228,7 +1257,68 @@ std::string OpenCLHandler::opencl_math_code(bool is_half) {
 	  if (lid == 0) {
 	    asum[get_group_id(1)] = lm[0];
 	  }
-	})";
+	}
+
+
+
+  __kernel void Col2Im(__global Dtype* col,
+                     const int col_h,
+                     const int col_w,
+                     const int wei_h,
+                     const int wei_w,
+                     const int pad_h,
+                     const int pad_w,
+                     const int stride_h,
+                     const int stride_w,
+                     const int dilation_h,
+                     const int dilation_w,
+                     const int height,
+                     const int width,
+                     __global Dtype* im,
+                     const int im_offset) {
+    __global Dtype* im_off = im + im_offset;
+    int gid               = (int)get_global_id(0);
+
+    int im_ch  = gid / (width * height);
+    int im_pix = gid % (width * height);
+    int im_h   = (im_pix / width) + pad_h;
+    int im_w   = (im_pix % width) + pad_w;
+
+    int start_h = (im_h < dilation_h * (wei_h - 1) + 1)
+                      ? 0
+                      : (im_h - (dilation_h * (wei_h - 1) + 1)) / stride_h + 1;
+    int end_h   = min(col_h, im_h / stride_h + 1);
+    int start_w = (im_w < dilation_w * (wei_w - 1) + 1)
+                      ? 0
+                      : (im_w - (dilation_w * (wei_w - 1) + 1)) / stride_w + 1;
+    int end_w = min(col_w, im_w / stride_w + 1);
+
+    int ch_offset = im_ch * col_w * col_h * wei_w * wei_h;
+    col += ch_offset;
+
+    Dtype tmp = (Dtype)0;
+    for(int cy = start_h; cy < end_h; cy++)
+    {
+        for(int cx = start_w; cx < end_w; cx++)
+        {
+            if((im_h - cy * stride_h) % dilation_h == 0 && (im_w - cx * stride_w) % dilation_w == 0)
+            {
+                int col_off_y = cy + (((im_h - cy * stride_h) / dilation_h) * wei_w * col_h);
+                int col_off_x = cx + (((im_w - cx * stride_w) / dilation_w) * col_w * col_h);
+
+                tmp += (Dtype)(col[col_off_y * col_w + col_off_x]);
+            }
+        }
+    }
+    im_off[gid] = tmp;
+  }
+
+
+
+
+
+
+  )";
 
 
 

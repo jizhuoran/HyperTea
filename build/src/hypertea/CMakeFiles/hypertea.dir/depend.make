@@ -5,6 +5,7 @@ src/hypertea/CMakeFiles/hypertea.dir/operator.cpp.o: ../include/hypertea/common.
 src/hypertea/CMakeFiles/hypertea.dir/operator.cpp.o: ../include/hypertea/glog_wrapper.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operator.cpp.o: ../include/hypertea/operator.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operator.cpp.o: ../include/hypertea/tensor.hpp
+src/hypertea/CMakeFiles/hypertea.dir/operator.cpp.o: ../include/hypertea/util/benchmark.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operator.cpp.o: ../include/hypertea/util/device_alternate.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operator.cpp.o: ../include/hypertea/util/half.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operator.cpp.o: ../include/hypertea/util/math_functions.hpp
@@ -19,6 +20,7 @@ src/hypertea/CMakeFiles/hypertea.dir/operators/MIOpen_batch_norm_op.cpp.o: ../in
 src/hypertea/CMakeFiles/hypertea.dir/operators/MIOpen_batch_norm_op.cpp.o: ../include/hypertea/operator.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/MIOpen_batch_norm_op.cpp.o: ../include/hypertea/operators/MIOpen_batch_norm_op.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/MIOpen_batch_norm_op.cpp.o: ../include/hypertea/tensor.hpp
+src/hypertea/CMakeFiles/hypertea.dir/operators/MIOpen_batch_norm_op.cpp.o: ../include/hypertea/util/benchmark.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/MIOpen_batch_norm_op.cpp.o: ../include/hypertea/util/device_alternate.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/MIOpen_batch_norm_op.cpp.o: ../include/hypertea/util/half.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/MIOpen_batch_norm_op.cpp.o: ../include/hypertea/util/math_functions.hpp
@@ -33,6 +35,7 @@ src/hypertea/CMakeFiles/hypertea.dir/operators/base_conv_op.cpp.o: ../include/hy
 src/hypertea/CMakeFiles/hypertea.dir/operators/base_conv_op.cpp.o: ../include/hypertea/operator.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/base_conv_op.cpp.o: ../include/hypertea/operators/base_conv_op.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/base_conv_op.cpp.o: ../include/hypertea/tensor.hpp
+src/hypertea/CMakeFiles/hypertea.dir/operators/base_conv_op.cpp.o: ../include/hypertea/util/benchmark.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/base_conv_op.cpp.o: ../include/hypertea/util/device_alternate.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/base_conv_op.cpp.o: ../include/hypertea/util/half.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/base_conv_op.cpp.o: ../include/hypertea/util/im2col.hpp
@@ -48,6 +51,7 @@ src/hypertea/CMakeFiles/hypertea.dir/operators/batch_norm_op.cpp.o: ../include/h
 src/hypertea/CMakeFiles/hypertea.dir/operators/batch_norm_op.cpp.o: ../include/hypertea/operator.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/batch_norm_op.cpp.o: ../include/hypertea/operators/batch_norm_op.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/batch_norm_op.cpp.o: ../include/hypertea/tensor.hpp
+src/hypertea/CMakeFiles/hypertea.dir/operators/batch_norm_op.cpp.o: ../include/hypertea/util/benchmark.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/batch_norm_op.cpp.o: ../include/hypertea/util/device_alternate.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/batch_norm_op.cpp.o: ../include/hypertea/util/half.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/batch_norm_op.cpp.o: ../include/hypertea/util/math_functions.hpp
@@ -63,6 +67,7 @@ src/hypertea/CMakeFiles/hypertea.dir/operators/conv_op.cpp.o: ../include/hyperte
 src/hypertea/CMakeFiles/hypertea.dir/operators/conv_op.cpp.o: ../include/hypertea/operators/base_conv_op.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/conv_op.cpp.o: ../include/hypertea/operators/conv_op.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/conv_op.cpp.o: ../include/hypertea/tensor.hpp
+src/hypertea/CMakeFiles/hypertea.dir/operators/conv_op.cpp.o: ../include/hypertea/util/benchmark.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/conv_op.cpp.o: ../include/hypertea/util/device_alternate.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/conv_op.cpp.o: ../include/hypertea/util/half.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/conv_op.cpp.o: ../include/hypertea/util/im2col.hpp
@@ -79,6 +84,7 @@ src/hypertea/CMakeFiles/hypertea.dir/operators/deconv_op.cpp.o: ../include/hyper
 src/hypertea/CMakeFiles/hypertea.dir/operators/deconv_op.cpp.o: ../include/hypertea/operators/base_conv_op.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/deconv_op.cpp.o: ../include/hypertea/operators/deconv_op.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/deconv_op.cpp.o: ../include/hypertea/tensor.hpp
+src/hypertea/CMakeFiles/hypertea.dir/operators/deconv_op.cpp.o: ../include/hypertea/util/benchmark.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/deconv_op.cpp.o: ../include/hypertea/util/device_alternate.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/deconv_op.cpp.o: ../include/hypertea/util/half.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/deconv_op.cpp.o: ../include/hypertea/util/im2col.hpp
@@ -94,6 +100,7 @@ src/hypertea/CMakeFiles/hypertea.dir/operators/eltwise_op.cpp.o: ../include/hype
 src/hypertea/CMakeFiles/hypertea.dir/operators/eltwise_op.cpp.o: ../include/hypertea/operator.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/eltwise_op.cpp.o: ../include/hypertea/operators/eltwise_op.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/eltwise_op.cpp.o: ../include/hypertea/tensor.hpp
+src/hypertea/CMakeFiles/hypertea.dir/operators/eltwise_op.cpp.o: ../include/hypertea/util/benchmark.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/eltwise_op.cpp.o: ../include/hypertea/util/device_alternate.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/eltwise_op.cpp.o: ../include/hypertea/util/half.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/eltwise_op.cpp.o: ../include/hypertea/util/math_functions.hpp
@@ -108,6 +115,7 @@ src/hypertea/CMakeFiles/hypertea.dir/operators/elu_op.cpp.o: ../include/hypertea
 src/hypertea/CMakeFiles/hypertea.dir/operators/elu_op.cpp.o: ../include/hypertea/operator.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/elu_op.cpp.o: ../include/hypertea/operators/elu_op.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/elu_op.cpp.o: ../include/hypertea/tensor.hpp
+src/hypertea/CMakeFiles/hypertea.dir/operators/elu_op.cpp.o: ../include/hypertea/util/benchmark.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/elu_op.cpp.o: ../include/hypertea/util/device_alternate.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/elu_op.cpp.o: ../include/hypertea/util/half.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/elu_op.cpp.o: ../include/hypertea/util/math_functions.hpp
@@ -117,11 +125,27 @@ src/hypertea/CMakeFiles/hypertea.dir/operators/elu_op.cpp.o: ../src/hypertea/ope
 src/hypertea/CMakeFiles/hypertea.dir/operators/elu_op.cpp.o: /usr/local/cuda/include/CL/cl.h
 src/hypertea/CMakeFiles/hypertea.dir/operators/elu_op.cpp.o: /usr/local/cuda/include/CL/cl_platform.h
 
+src/hypertea/CMakeFiles/hypertea.dir/operators/native_deconv_op.cpp.o: ../include/hypertea/common.hpp
+src/hypertea/CMakeFiles/hypertea.dir/operators/native_deconv_op.cpp.o: ../include/hypertea/glog_wrapper.hpp
+src/hypertea/CMakeFiles/hypertea.dir/operators/native_deconv_op.cpp.o: ../include/hypertea/operator.hpp
+src/hypertea/CMakeFiles/hypertea.dir/operators/native_deconv_op.cpp.o: ../include/hypertea/operators/native_deconv_op.hpp
+src/hypertea/CMakeFiles/hypertea.dir/operators/native_deconv_op.cpp.o: ../include/hypertea/tensor.hpp
+src/hypertea/CMakeFiles/hypertea.dir/operators/native_deconv_op.cpp.o: ../include/hypertea/util/benchmark.hpp
+src/hypertea/CMakeFiles/hypertea.dir/operators/native_deconv_op.cpp.o: ../include/hypertea/util/device_alternate.hpp
+src/hypertea/CMakeFiles/hypertea.dir/operators/native_deconv_op.cpp.o: ../include/hypertea/util/half.hpp
+src/hypertea/CMakeFiles/hypertea.dir/operators/native_deconv_op.cpp.o: ../include/hypertea/util/math_functions.hpp
+src/hypertea/CMakeFiles/hypertea.dir/operators/native_deconv_op.cpp.o: ../include/hypertea/util/mkl_alternate.hpp
+src/hypertea/CMakeFiles/hypertea.dir/operators/native_deconv_op.cpp.o: ../include/hypertea/util/opencl_util.hpp
+src/hypertea/CMakeFiles/hypertea.dir/operators/native_deconv_op.cpp.o: ../src/hypertea/operators/native_deconv_op.cpp
+src/hypertea/CMakeFiles/hypertea.dir/operators/native_deconv_op.cpp.o: /usr/local/cuda/include/CL/cl.h
+src/hypertea/CMakeFiles/hypertea.dir/operators/native_deconv_op.cpp.o: /usr/local/cuda/include/CL/cl_platform.h
+
 src/hypertea/CMakeFiles/hypertea.dir/operators/relu_op.cpp.o: ../include/hypertea/common.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/relu_op.cpp.o: ../include/hypertea/glog_wrapper.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/relu_op.cpp.o: ../include/hypertea/operator.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/relu_op.cpp.o: ../include/hypertea/operators/relu_op.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/relu_op.cpp.o: ../include/hypertea/tensor.hpp
+src/hypertea/CMakeFiles/hypertea.dir/operators/relu_op.cpp.o: ../include/hypertea/util/benchmark.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/relu_op.cpp.o: ../include/hypertea/util/device_alternate.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/relu_op.cpp.o: ../include/hypertea/util/half.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/relu_op.cpp.o: ../include/hypertea/util/math_functions.hpp
@@ -136,6 +160,7 @@ src/hypertea/CMakeFiles/hypertea.dir/operators/scale_op.cpp.o: ../include/hypert
 src/hypertea/CMakeFiles/hypertea.dir/operators/scale_op.cpp.o: ../include/hypertea/operator.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/scale_op.cpp.o: ../include/hypertea/operators/scale_op.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/scale_op.cpp.o: ../include/hypertea/tensor.hpp
+src/hypertea/CMakeFiles/hypertea.dir/operators/scale_op.cpp.o: ../include/hypertea/util/benchmark.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/scale_op.cpp.o: ../include/hypertea/util/device_alternate.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/scale_op.cpp.o: ../include/hypertea/util/half.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/scale_op.cpp.o: ../include/hypertea/util/math_functions.hpp
@@ -150,6 +175,7 @@ src/hypertea/CMakeFiles/hypertea.dir/operators/split_op.cpp.o: ../include/hypert
 src/hypertea/CMakeFiles/hypertea.dir/operators/split_op.cpp.o: ../include/hypertea/operator.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/split_op.cpp.o: ../include/hypertea/operators/split_op.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/split_op.cpp.o: ../include/hypertea/tensor.hpp
+src/hypertea/CMakeFiles/hypertea.dir/operators/split_op.cpp.o: ../include/hypertea/util/benchmark.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/split_op.cpp.o: ../include/hypertea/util/device_alternate.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/split_op.cpp.o: ../include/hypertea/util/half.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/split_op.cpp.o: ../include/hypertea/util/math_functions.hpp
@@ -164,6 +190,7 @@ src/hypertea/CMakeFiles/hypertea.dir/operators/tanh_op.cpp.o: ../include/hyperte
 src/hypertea/CMakeFiles/hypertea.dir/operators/tanh_op.cpp.o: ../include/hypertea/operator.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/tanh_op.cpp.o: ../include/hypertea/operators/tanh_op.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/tanh_op.cpp.o: ../include/hypertea/tensor.hpp
+src/hypertea/CMakeFiles/hypertea.dir/operators/tanh_op.cpp.o: ../include/hypertea/util/benchmark.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/tanh_op.cpp.o: ../include/hypertea/util/device_alternate.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/tanh_op.cpp.o: ../include/hypertea/util/half.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/tanh_op.cpp.o: ../include/hypertea/util/math_functions.hpp

@@ -120,7 +120,7 @@ int main(int argc, char** argv) {
     image = readPPM("./examples/style_transfer/HKU.ppm");
 
     std::vector<float> converter(512*512*3*1, 0);
-    std::vector<float> converter1;//(512*512*3*1, 0);
+    std::vector<float> converter1(512*512*3*1, 0);
 
     for (int y = 0; y < 512; y++) {
       for (int x = 0; x < 512; x++) {
@@ -147,7 +147,7 @@ int main(int argc, char** argv) {
 
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 
-    for (int i = 0; i < 100; ++i) {
+    for (int i = 0; i < 1; ++i) {
     	tmp_net.inference(converter, converter1);
     }
   
