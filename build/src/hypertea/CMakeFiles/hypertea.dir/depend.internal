@@ -155,6 +155,8 @@ src/hypertea/CMakeFiles/hypertea.dir/operators/relu_op.cpp.o
  /home/zrji/hypertea/src/hypertea/operators/relu_op.cpp
  /usr/local/cuda/include/CL/cl.h
  /usr/local/cuda/include/CL/cl_platform.h
+src/hypertea/CMakeFiles/hypertea.dir/operators/rnn_op.cpp.o
+ /home/zrji/hypertea/src/hypertea/operators/rnn_op.cpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/scale_op.cpp.o
  ../include/hypertea/common.hpp
  ../include/hypertea/glog_wrapper.hpp
@@ -219,8 +221,6 @@ src/hypertea/CMakeFiles/hypertea.dir/util/benchmark.cpp.o
  ../include/hypertea/util/benchmark.hpp
  ../include/hypertea/util/device_alternate.hpp
  ../include/hypertea/util/half.hpp
- ../include/hypertea/util/math_functions.hpp
- ../include/hypertea/util/mkl_alternate.hpp
  ../include/hypertea/util/opencl_util.hpp
  /home/zrji/hypertea/src/hypertea/util/benchmark.cpp
  /usr/local/cuda/include/CL/cl.h
@@ -266,6 +266,7 @@ src/hypertea/CMakeFiles/hypertea.dir/util/math_functions_cl.cpp.o
  /usr/local/cuda/include/CL/cl_gl_ext.h
  /usr/local/cuda/include/CL/cl_platform.h
  /usr/local/cuda/include/CL/opencl.h
+ /usr/local/include/clblast.h
  /usr/local/include/clblast_c.h
 src/hypertea/CMakeFiles/hypertea.dir/util/opencl_util.cpp.o
  ../include/hypertea/common.hpp
@@ -273,8 +274,6 @@ src/hypertea/CMakeFiles/hypertea.dir/util/opencl_util.cpp.o
  ../include/hypertea/tensor.hpp
  ../include/hypertea/util/device_alternate.hpp
  ../include/hypertea/util/half.hpp
- ../include/hypertea/util/math_functions.hpp
- ../include/hypertea/util/mkl_alternate.hpp
  ../include/hypertea/util/opencl_util.hpp
  /home/zrji/hypertea/src/hypertea/util/opencl_util.cpp
  /usr/local/cuda/include/CL/cl.h

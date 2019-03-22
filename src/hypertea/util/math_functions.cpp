@@ -338,6 +338,39 @@ void hypertea_abs<float>(const int n, const float* a, float* y) {
 }
 
 
+template <typename Dtype>
+TensorCPU<Dtype> hypertea_sigmoid(const TensorCPU<Dtype> x) {
+
+  TensorCPU<Dtype> result(x);
+  Dtype* data = result.mutable_data();
+
+  for (int i = 0; i < result.count(); ++i) {
+    data[i] = 0.5 * tanh(0.5 * data[i]) + 0.5;
+  }
+
+  return result;
+
+}
+template TensorCPU<float> hypertea_sigmoid<float>(const TensorCPU<float> x);
+
+
+template <typename Dtype>
+TensorCPU<Dtype> hypertea_tanh(const TensorCPU<Dtype> x) {
+
+  TensorCPU<Dtype> result(x);
+  Dtype* data = result.mutable_data();
+  
+  for (int i = 0; i < result.count(); ++i) {
+    data[i] = tanh(data[i]);
+  }
+
+  return result;
+
+}
+template TensorCPU<float> hypertea_tanh<float>(const TensorCPU<float> x);
+
+
+
 template <>
 float hypertea_cpu_strided_dot<float>(const int n, const float* x, const int incx,
     const float* y, const int incy) {

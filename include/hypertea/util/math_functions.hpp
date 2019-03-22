@@ -14,6 +14,11 @@
 
 namespace hypertea {
 
+template<typename T> T to_dtype_(const float x);
+
+template<> inline float to_dtype_<float>(const float x) {return x;}
+template<> inline half to_dtype_<half> (const float x) {return float2half_impl(x);}
+
 // Hypertea gemm provides a simpler interface to the gemm functions, with the
 // limitation that the data has to be contiguous in memory.
 template <typename Dtype>
@@ -106,6 +111,13 @@ void hypertea_log(const int n, const Dtype* a, Dtype* y);
 
 template <typename Dtype>
 void hypertea_abs(const int n, const Dtype* a, Dtype* y);
+
+template <typename Dtype>
+TensorCPU<Dtype> hypertea_sigmoid(const TensorCPU<Dtype> x);
+
+template <typename Dtype>
+TensorCPU<Dtype> hypertea_tanh(const TensorCPU<Dtype> x);
+
 
 template <typename Dtype>
 Dtype hypertea_cpu_dot(const int n, const Dtype* x, const Dtype* y);

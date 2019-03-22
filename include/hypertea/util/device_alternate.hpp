@@ -60,6 +60,20 @@
     } \
   } while (0)
 
+
+#define CLBLAST_CPP_CHECK(condition) \
+  do { \
+    auto status = condition; \
+    if(status != clblast::StatusCode::kSuccess) { \
+      std::cerr << "This is a error for CLBlast "<< static_cast<int>(status) << " in " << __LINE__ << " in " << __FILE__ << std::endl;\
+      void *buffer[100];\
+      int n = backtrace(buffer,10);\
+      char **str = backtrace_symbols(buffer, n);\
+      for (int i = 0; i < n; i++) {printf("%d:  %s\n", i, str[i]);}\
+      exit(1); \
+    } \
+  } while (0)
+
   
 #endif //END ANDROID  
 #endif //END OPENCL

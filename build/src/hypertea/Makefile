@@ -441,6 +441,33 @@ operators/relu_op.cpp.s:
 	cd /home/zrji/hypertea/build && $(MAKE) -f src/hypertea/CMakeFiles/hypertea.dir/build.make src/hypertea/CMakeFiles/hypertea.dir/operators/relu_op.cpp.s
 .PHONY : operators/relu_op.cpp.s
 
+operators/rnn_op.o: operators/rnn_op.cpp.o
+
+.PHONY : operators/rnn_op.o
+
+# target to build an object file
+operators/rnn_op.cpp.o:
+	cd /home/zrji/hypertea/build && $(MAKE) -f src/hypertea/CMakeFiles/hypertea.dir/build.make src/hypertea/CMakeFiles/hypertea.dir/operators/rnn_op.cpp.o
+.PHONY : operators/rnn_op.cpp.o
+
+operators/rnn_op.i: operators/rnn_op.cpp.i
+
+.PHONY : operators/rnn_op.i
+
+# target to preprocess a source file
+operators/rnn_op.cpp.i:
+	cd /home/zrji/hypertea/build && $(MAKE) -f src/hypertea/CMakeFiles/hypertea.dir/build.make src/hypertea/CMakeFiles/hypertea.dir/operators/rnn_op.cpp.i
+.PHONY : operators/rnn_op.cpp.i
+
+operators/rnn_op.s: operators/rnn_op.cpp.s
+
+.PHONY : operators/rnn_op.s
+
+# target to generate assembly for a file
+operators/rnn_op.cpp.s:
+	cd /home/zrji/hypertea/build && $(MAKE) -f src/hypertea/CMakeFiles/hypertea.dir/build.make src/hypertea/CMakeFiles/hypertea.dir/operators/rnn_op.cpp.s
+.PHONY : operators/rnn_op.cpp.s
+
 operators/scale_op.o: operators/scale_op.cpp.o
 
 .PHONY : operators/scale_op.o
@@ -727,6 +754,9 @@ help:
 	@echo "... operators/relu_op.o"
 	@echo "... operators/relu_op.i"
 	@echo "... operators/relu_op.s"
+	@echo "... operators/rnn_op.o"
+	@echo "... operators/rnn_op.i"
+	@echo "... operators/rnn_op.s"
 	@echo "... operators/scale_op.o"
 	@echo "... operators/scale_op.i"
 	@echo "... operators/scale_op.s"

@@ -77,6 +77,8 @@ hypertea/operators/MIOpen_batch_norm_op.hpp
 ../include/hypertea/hypertea/operators/MIOpen_batch_norm_op.hpp
 hypertea/operators/native_deconv_op.hpp
 ../include/hypertea/hypertea/operators/native_deconv_op.hpp
+hypertea/operators/rnn_op.hpp
+../include/hypertea/hypertea/operators/rnn_op.hpp
 
 ../include/hypertea/operator.hpp
 algorithm
@@ -154,6 +156,12 @@ vector
 hypertea/operator.hpp
 ../include/hypertea/operators/hypertea/operator.hpp
 
+../include/hypertea/operators/rnn_op.hpp
+vector
+-
+hypertea/operator.hpp
+../include/hypertea/operators/hypertea/operator.hpp
+
 ../include/hypertea/operators/scale_op.hpp
 vector
 -
@@ -175,8 +183,10 @@ hypertea/operator.hpp
 ../include/hypertea/tensor.hpp
 vector
 -
-hypertea/util/math_functions.hpp
-../include/hypertea/hypertea/util/math_functions.hpp
+assert.h
+-
+hypertea/common.hpp
+../include/hypertea/hypertea/common.hpp
 
 ../include/hypertea/util/benchmark.hpp
 sys/time.h

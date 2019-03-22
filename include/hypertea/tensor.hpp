@@ -2,7 +2,8 @@
 #define HYPERTEA_TENSOR_H_
 
 #include <vector>
-#include "hypertea/util/math_functions.hpp"
+#include <assert.h>
+#include "hypertea/common.hpp"
 
 namespace hypertea {
 
@@ -13,7 +14,7 @@ template<typename Dtype> TensorCPU<Dtype> operator+ (const TensorCPU<Dtype>& lhs
 template<typename Dtype> TensorCPU<Dtype> operator+ (const TensorCPU<Dtype>& lhs, const float rhs);
 template<typename Dtype> TensorCPU<Dtype> operator- (const TensorCPU<Dtype>& lhs, const TensorCPU<Dtype>& rhs);
 template<typename Dtype> TensorCPU<Dtype> operator- (const TensorCPU<Dtype>& lhs, const float rhs);
-
+template<typename Dtype> TensorCPU<Dtype> operator* (const TensorCPU<Dtype>& lhs, const TensorCPU<Dtype>& rhs);
 template<typename Dtype> TensorCPU<Dtype> operator* (const TensorCPU<Dtype>& lhs, const float rhs);
 
 
@@ -35,6 +36,11 @@ public:
 	
 	const int size() const {return count_; }
 	const int count() const {return count_; }
+	const std::vector<int> shape() const {return ((shape_.size() == 0) ? std::vector<int>{count_}:shape_);}
+
+	void reshape(std::vector<int> shape) {
+		shape_ = shape;
+	}
 
 
 	// virtual Tensor add(Tensor & other, Dtype alpha=1);
@@ -50,6 +56,7 @@ public:
 protected:
 
 	int count_ = 0;
+	std::vector<int> shape_;
 	// std::vector<int> shape_;
 
 };
@@ -140,12 +147,21 @@ public:
 		this->count_ = count;
 	}
 
+	TensorCPU(const TensorCPU& other) {
+		data_ = other.duplicate_data();
+		this->count_ = other.count();
+	}
 
 	~TensorCPU() {}
 
 
 	Dtype* mutable_data() const {return data_.get();}
 	const Dtype* immutable_data() const {return data_.get();}
+
+	std::shared_ptr<Dtype> duplicate_data() const;
+
+
+
 
 	TensorCPU add(TensorCPU & other, Dtype alpha=1);
 
@@ -159,7 +175,7 @@ public:
 	friend TensorCPU<Dtype> operator+ <>(const TensorCPU<Dtype>& lhs, const float rhs);
 	friend TensorCPU<Dtype> operator- <>(const TensorCPU<Dtype>& lhs, const TensorCPU<Dtype>& rhs);
 	friend TensorCPU<Dtype> operator- <>(const TensorCPU<Dtype>& lhs, const float rhs);
-
+	friend TensorCPU<Dtype> operator* <>(const TensorCPU<Dtype>& lhs, const TensorCPU<Dtype>& rhs);
 	friend TensorCPU<Dtype> operator* <>(const TensorCPU<Dtype>& lhs, const float rhs);
 
 private:

@@ -1,7 +1,17 @@
 #include "hypertea/tensor.hpp"
+#include "hypertea/util/math_functions.hpp"
 
 
 namespace hypertea {
+
+
+template <typename Dtype>
+std::shared_ptr<Dtype> TensorCPU<Dtype>::duplicate_data() const {
+  Dtype* t = new Dtype[this->count_];
+  hypertea_copy(this->count_, data_.get(), t);
+  return std::shared_ptr<Dtype>(t, std::default_delete<Dtype[]>());
+}
+template std::shared_ptr<float> TensorCPU<float>::duplicate_data() const;
 
 
 
@@ -60,7 +70,7 @@ TensorCPU<Dtype> operator+(const TensorCPU<Dtype>& lhs, const TensorCPU<Dtype>& 
 
 	return result;
 }
-template TensorCPU<float> operator+(const TensorCPU<float>& a, const TensorCPU<float>& rhs);
+template TensorCPU<float> operator+(const TensorCPU<float>& lhs, const TensorCPU<float>& rhs);
 
 
 template <typename Dtype>
@@ -71,7 +81,7 @@ TensorCPU<Dtype> operator+(const TensorCPU<Dtype>& lhs, const float rhs) {
     hypertea_add_scalar<Dtype>(lhs.count(), rhs, result.mutable_data());
   return result;
 }
-template TensorCPU<float> operator+(const TensorCPU<float>& a, const float rhs);
+template TensorCPU<float> operator+(const TensorCPU<float>& lhs, const float rhs);
 
 
 
@@ -85,7 +95,7 @@ TensorCPU<Dtype> operator-(const TensorCPU<Dtype>& lhs, const TensorCPU<Dtype>& 
 
 	return result;
 }
-template TensorCPU<float> operator-(const TensorCPU<float>& a, const TensorCPU<float>& rhs);
+template TensorCPU<float> operator-(const TensorCPU<float>& lhs, const TensorCPU<float>& rhs);
 
 
 template <typename Dtype>
@@ -96,7 +106,7 @@ TensorCPU<Dtype> operator-(const TensorCPU<Dtype>& lhs, const float rhs) {
     hypertea_add_scalar<Dtype>(lhs.count(), -rhs, result.mutable_data());
   return result;
 }
-template TensorCPU<float> operator-(const TensorCPU<float>& a, const float rhs);
+template TensorCPU<float> operator-(const TensorCPU<float>& lhs, const float rhs);
 
 
 
@@ -111,7 +121,34 @@ TensorCPU<Dtype> operator*(const TensorCPU<Dtype>& lhs, float rhs) {
 template TensorCPU<float> operator*(const TensorCPU<float>& a, const float rhs);
 
 
+template <typename Dtype>
+TensorCPU<Dtype> operator*(const TensorCPU<Dtype>& lhs, const TensorCPU<Dtype>& rhs) {
+    
+    assert(lhs.shape()[1] == rhs.shape()[0]);
 
+    int M = lhs.shape()[0];
+    int K = lhs.shape()[1];
+    int N = rhs.shape()[1];
+
+    TensorCPU<Dtype> result(M*N);
+    result.reshape(std::vector<int> {M, N});
+
+    hypertea_cpu_gemm<Dtype>(
+      CblasNoTrans, CblasNoTrans,
+      M, N, K,
+      1,
+      lhs.immutable_data(), 
+      rhs.immutable_data(),
+      0,
+      result.mutable_data()
+    );
+
+
+
+    // hypertea_cpu_scale<Dtype>(lhs.count(), rhs, lhs.immutable_data(), result.mutable_data());
+  return result;
+}
+template TensorCPU<float> operator*(const TensorCPU<float>& lhs, const TensorCPU<float>& rhs);
 
 
 

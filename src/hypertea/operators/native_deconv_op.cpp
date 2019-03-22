@@ -74,10 +74,6 @@ TensorGPU<Dtype> NativeDeconvolutionOp_GPU<Dtype>::Forward(TensorGPU<Dtype> inpu
 
 
 
-// #ifdef CPU_ONLY
-// STUB_GPU(DeconvolutionOp_CPU);
-// #endif
-
 INSTANTIATE_CLASS_GPU(NativeDeconvolutionOp_GPU);
 // REGISTER_LAYER_CLASS(Deconvolution);
 

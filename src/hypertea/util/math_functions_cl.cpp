@@ -8,14 +8,20 @@
 #ifdef USE_OPENCL
 
 #include <clblast_c.h>
+#include <clblast.h>
 
 namespace hypertea {
 
-template <>
-void hypertea_gpu_gemm<float>(const CBLAS_TRANSPOSE TransA,
-    const CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
-    const float alpha, const cl_mem A, const cl_mem B, const float beta,
-    cl_mem C) {
+template <typename Dtype>
+void hypertea_gpu_gemm(
+  const CBLAS_TRANSPOSE TransA,
+  const CBLAS_TRANSPOSE TransB, 
+  const int M, const int N, const int K,
+  const float alpha, 
+  const cl_mem A, 
+  const cl_mem B, 
+  const float beta,
+  cl_mem C) {
   
 
 
@@ -23,98 +29,148 @@ void hypertea_gpu_gemm<float>(const CBLAS_TRANSPOSE TransA,
   size_t ldb = (TransB == CblasNoTrans) ? N : K;
   size_t ldc = N;
 
-  CLBlastTranspose_ blastTransA =
-      (TransA == CblasNoTrans) ? CLBlastTransposeNo : CLBlastTransposeYes;
-  CLBlastTranspose_ blastTransB =
-      (TransB == CblasNoTrans) ? CLBlastTransposeNo : CLBlastTransposeYes;
+  Dtype alpha_(to_dtype_<Dtype>(alpha));
+  Dtype beta_(to_dtype_<Dtype>(beta));
 
-  CLBLAST_CHECK(CLBlastSgemm(CLBlastLayoutRowMajor,
+  auto blastTransA =
+      (TransA == CblasNoTrans) ? clblast::Transpose::kNo : clblast::Transpose::kYes;
+  auto blastTransB =
+      (TransB == CblasNoTrans) ? clblast::Transpose::kNo : clblast::Transpose::kYes;
+
+  CLBLAST_CPP_CHECK(clblast::Gemm<Dtype>(clblast::Layout::kRowMajor,
                                           blastTransA, blastTransB,
                                           M, N, K,
-                                          alpha,
+                                          alpha_,
                                           (cl_mem) A, 0, lda,
                                           (cl_mem) B, 0, ldb,
-                                          beta,
+                                          beta_,
                                           (cl_mem) C, 0, ldc,
                                           &OpenCLHandler::Get().commandQueue, NULL));
-
 }
 
+template void hypertea_gpu_gemm<float>(
+  const CBLAS_TRANSPOSE TransA,
+  const CBLAS_TRANSPOSE TransB, 
+  const int M, const int N, const int K,
+  const float alpha, 
+  const cl_mem A, 
+  const cl_mem B, 
+  const float beta,
+  cl_mem C);
 
-template <>
-void hypertea_gpu_gemm<half>(const CBLAS_TRANSPOSE TransA,
-    const CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
-    const float alpha, const cl_mem A, const cl_mem B, const float beta,
-    cl_mem C) {
+template void hypertea_gpu_gemm<half>(
+  const CBLAS_TRANSPOSE TransA,
+  const CBLAS_TRANSPOSE TransB, 
+  const int M, const int N, const int K,
+  const float alpha, 
+  const cl_mem A, 
+  const cl_mem B, 
+  const float beta,
+  cl_mem C);
+
+// template <>
+// void hypertea_gpu_gemm<half>(const CBLAS_TRANSPOSE TransA,
+//     const CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
+//     const float alpha, const cl_mem A, const cl_mem B, const float beta,
+//     cl_mem C) {
   
-  size_t lda = (TransA == CblasNoTrans) ? K : M;
-  size_t ldb = (TransB == CblasNoTrans) ? N : K;
-  size_t ldc = N;
+//   size_t lda = (TransA == CblasNoTrans) ? K : M;
+//   size_t ldb = (TransB == CblasNoTrans) ? N : K;
+//   size_t ldc = N;
 
-  CLBlastTranspose_ blastTransA =
-      (TransA == CblasNoTrans) ? CLBlastTransposeNo : CLBlastTransposeYes;
-  CLBlastTranspose_ blastTransB =
-      (TransB == CblasNoTrans) ? CLBlastTransposeNo : CLBlastTransposeYes;
+//   CLBlastTranspose_ blastTransA =
+//       (TransA == CblasNoTrans) ? CLBlastTransposeNo : CLBlastTransposeYes;
+//   CLBlastTranspose_ blastTransB =
+//       (TransB == CblasNoTrans) ? CLBlastTransposeNo : CLBlastTransposeYes;
 
 
-  half alpha_half = float2half_impl(alpha);
-  half beta_half = float2half_impl(beta);
+//   half alpha_half = float2half_impl(alpha);
+//   half beta_half = float2half_impl(beta);
 
-  CLBLAST_CHECK(CLBlastHgemm(CLBlastLayoutRowMajor,
-                              blastTransA, blastTransB,
-                              M, N, K,
-                              alpha_half,
-                              (cl_mem) A, 0, lda,
-                              (cl_mem) B, 0, ldb,
-                              beta_half,
-                              (cl_mem) C, 0, ldc,
-                              &OpenCLHandler::Get().commandQueue, NULL));
+//   CLBLAST_CHECK(CLBlastHgemm(CLBlastLayoutRowMajor,
+//                               blastTransA, blastTransB,
+//                               M, N, K,
+//                               alpha_half,
+//                               (cl_mem) A, 0, lda,
+//                               (cl_mem) B, 0, ldb,
+//                               beta_half,
+//                               (cl_mem) C, 0, ldc,
+//                               &OpenCLHandler::Get().commandQueue, NULL));
 
+// }
+
+
+template <typename Dtype>
+void hypertea_gpu_gemv(
+  const CBLAS_TRANSPOSE TransA, 
+  const int M, const int N,
+  const float alpha, 
+  const cl_mem A, 
+  const cl_mem x, 
+  const float beta,
+  cl_mem y) {
+
+
+  Dtype alpha_(to_dtype_<Dtype>(alpha));
+  Dtype beta_(to_dtype_<Dtype>(beta));
+
+
+  auto blastTransA =
+    (TransA != CblasNoTrans) ? clblast::Transpose::kNo : clblast::Transpose::kYes;
+
+  CLBLAST_CPP_CHECK(clblast::Gemv<Dtype>(clblast::Layout::kColMajor,
+                                blastTransA, 
+                                N, M,
+                                alpha_,
+                                (cl_mem) A, 0, N,
+                                (cl_mem) x, 0, 1,
+                                beta_,
+                                (cl_mem) y, 0, 1,
+                                &OpenCLHandler::Get().commandQueue, NULL));
 }
 
+template void hypertea_gpu_gemv<float>(
+  const CBLAS_TRANSPOSE TransA, 
+  const int M, const int N,
+  const float alpha, 
+  const cl_mem A, 
+  const cl_mem x, 
+  const float beta,
+  cl_mem y);
 
-template <>
-void hypertea_gpu_gemv<float>(const CBLAS_TRANSPOSE TransA, const int M, const int N,
-    const float alpha, const cl_mem A, const cl_mem x, const float beta,
-    cl_mem y) {
-
-    CLBlastTranspose_ blastTransA =
-      (TransA != CblasNoTrans) ? CLBlastTransposeNo : CLBlastTransposeYes;
-
-    CLBLAST_CHECK(CLBlastSgemv(CLBlastLayoutColMajor, 
-                                            blastTransA, 
-                                            N, M,
-                                            alpha,
-                                            (cl_mem) A, 0, N,
-                                            (cl_mem) x, 0, 1,
-                                            beta,
-                                            (cl_mem) y, 0, 1,
-                                            &OpenCLHandler::Get().commandQueue, NULL));
-}
-
-template <>
-void hypertea_gpu_gemv<half>(const CBLAS_TRANSPOSE TransA, const int M, const int N,
-    const float alpha, const cl_mem A, const cl_mem x, const float beta,
-    cl_mem y) {
-      CLBlastTranspose_ blastTransA =
-      (TransA != CblasNoTrans) ? CLBlastTransposeNo : CLBlastTransposeYes;
+template void hypertea_gpu_gemv<half>(
+  const CBLAS_TRANSPOSE TransA, 
+  const int M, const int N,
+  const float alpha, 
+  const cl_mem A, 
+  const cl_mem x, 
+  const float beta,
+  cl_mem y);
 
 
+// template <>
+// void hypertea_gpu_gemv<half>(const CBLAS_TRANSPOSE TransA, const int M, const int N,
+//     const float alpha, const cl_mem A, const cl_mem x, const float beta,
+//     cl_mem y) {
+//       CLBlastTranspose_ blastTransA =
+//       (TransA != CblasNoTrans) ? CLBlastTransposeNo : CLBlastTransposeYes;
 
-    half alpha_half = float2half_impl(alpha);
-    half beta_half = float2half_impl(beta);
 
-    CLBLAST_CHECK(CLBlastHgemv(CLBlastLayoutColMajor, 
-                                            blastTransA, 
-                                            N, M,
-                                            (cl_half) alpha_half,
-                                            (cl_mem) A, 0, N,
-                                            (cl_mem) x, 0, 1,
-                                            (cl_half) beta_half,
-                                            (cl_mem) y, 0, 1,
-                                            &OpenCLHandler::Get().commandQueue, NULL));
 
-}
+//     half alpha_half = float2half_impl(alpha);
+//     half beta_half = float2half_impl(beta);
+
+//     CLBLAST_CHECK(CLBlastHgemv(CLBlastLayoutColMajor, 
+//                                             blastTransA, 
+//                                             N, M,
+//                                             (cl_half) alpha_half,
+//                                             (cl_mem) A, 0, N,
+//                                             (cl_mem) x, 0, 1,
+//                                             (cl_half) beta_half,
+//                                             (cl_mem) y, 0, 1,
+//                                             &OpenCLHandler::Get().commandQueue, NULL));
+
+// }
 
 template <>
 void hypertea_gpu_bsum<float>(const int m, const int n, const cl_mem X, const float alpha, const float beta,
