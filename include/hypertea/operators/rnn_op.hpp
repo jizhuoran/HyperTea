@@ -46,6 +46,9 @@ public:
 
       TensorCPU<Dtype> r(b_ih[i].duplicate_data(), b_ih[i].count());
 
+      std::cout << "The shape is " << w_ih[i].shape()[0] << " and " << w_ih[i].shape()[1] << std::endl;
+
+
       hypertea_cpu_gemv<float>(CblasNoTrans, w_ih[i].shape()[0],
         w_ih[i].shape()[1], 1, w_ih[i].immutable_data(), input.immutable_data(),
         1, r.mutable_data());
@@ -112,39 +115,27 @@ public:
 template <typename Dtype>
 class Cell_CPU {
 public:
-  Cell_CPU();
-  ~Cell_CPU();
+  Cell_CPU() = default;
+  ~Cell_CPU() = default;
   
   virtual TensorCPU<Dtype> Forward(TensorCPU<Dtype> &input_tensor, 
                                    TensorCPU<Dtype> &hidden_tensor,
-                                   CellParams<Dtype> & params);
+                                   const CellParams<Dtype> & params);
 
 };
 
 template <typename Dtype>
 class GRUCell_CPU : public Cell_CPU<Dtype> {
 public:
-  GRUCell_CPU();
-  ~GRUCell_CPU();
+  GRUCell_CPU() = default;
+  ~GRUCell_CPU() = default;
   
   virtual TensorCPU<Dtype> Forward(TensorCPU<Dtype> &input_tensor, 
                                    TensorCPU<Dtype> &hidden_tensor,
-                                   CellParams<Dtype> & params) {
-
-    auto chunked_igates = params.linear_ih(input_tensor);
-    auto chunked_hgates = params.linear_hh(hidden_tensor);
-
-    auto reset_gate = hypertea_sigmoid(chunked_igates[0] + chunked_hgates[0]);
-    auto input_gate = hypertea_sigmoid(chunked_igates[1] + chunked_hgates[1]);
-    auto new_gate = hypertea_tanh(chunked_igates[2] + reset_gate * chunked_hgates[2]);
-
-    return new_gate + input_gate * (hidden_tensor - new_gate);
-
-  }
+                                   const CellParams<Dtype> & params);
 
 };
 
-INSTANTIATE_CLASS_CPU(GRUCell_CPU);
 
 
 // template <typename Dtype>

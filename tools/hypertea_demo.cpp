@@ -6,7 +6,7 @@
 
 #include "../tools/conv_opencl.hpp"
 #include "../tools/bn_opencl.hpp"
-#include "../tools/demo_net_gpu.hpp"
+#include "../tools/reference1.hpp"
 
 
 

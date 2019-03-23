@@ -27,7 +27,7 @@ free(all_weights);
 void inference( std::vector<float> &data_from_user, std::vector<float> &deconv5_3_to_user) { 
 
 
-Tensor<float> data_data(data_from_user);
+TensorCPU<float> data_data(data_from_user);
 
 
 data_data = conv1(data_data);
@@ -96,7 +96,7 @@ res5_conv1_data = image_scale1(res5_conv1_data);
 res5_conv1_data = image_scale2(res5_conv1_data);
 
 
-hypertea_copy(deconv5_3_to_user.size(), res5_conv1_data.data(), deconv5_3_to_user.data());
+hypertea_copy(deconv5_3_to_user.size(), res5_conv1_data.immutable_data(), deconv5_3_to_user.data());
 
 
 }

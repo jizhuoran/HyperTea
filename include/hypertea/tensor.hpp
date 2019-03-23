@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <assert.h>
+#include <numeric>
 #include "hypertea/common.hpp"
 
 namespace hypertea {
@@ -66,7 +67,6 @@ template <typename Dtype>
 class TensorGPU : public Tensor<Dtype>
 {
 public:
-	TensorGPU() {}
 
 	TensorGPU(int count) {
 		data_.reset((void*)clCreateBuffer(OpenCLHandler::Get().context, CL_MEM_READ_WRITE, count * sizeof(Dtype), NULL, NULL), [=](void *ptr){clReleaseMemObject((cl_mem) ptr);});
@@ -112,6 +112,8 @@ private:
 
 	std::shared_ptr<void> data_;
 
+	TensorGPU();
+
 	// virtual Tensor add(Tensor & other, Dtype alpha=1) {}
 
 	// virtual Tensor& operator+=(const Tensor & other) {}
@@ -127,30 +129,61 @@ template <typename Dtype>
 class TensorCPU : public Tensor<Dtype>
 {
 public:
-	TensorCPU() {}
 
 	TensorCPU(int count) {
 		data_.reset(new Dtype[count], std::default_delete<Dtype[]>() );
 		this->count_ = count;
+		this->shape_ = std::vector<int> {count};
 	}
-	TensorCPU(std::vector<Dtype> data) {
+
+	TensorCPU(std::vector<Dtype> data, const std::vector<int>& shape = {}) {
 		data_.reset(new Dtype[data.size()], std::default_delete<Dtype[]>() );
 		memcpy(data_.get(), data.data(), data.size() * sizeof(Dtype));
 		this->count_ = data.size();
+
+		if(shape.size() == 0) {
+			this->shape_ = std::vector<int> {data.size()};
+		} else {
+			this->shape_ = shape;
+		}
+
 	}
-	TensorCPU(Dtype* data_ptr, int count) {
-		data_.reset(data_ptr, std::default_delete<Dtype[]>() );
-		this->count_ = count;
-	}
-	TensorCPU(std::shared_ptr<Dtype> data_ptr, int count) {
-		data_ = data_ptr;
-		this->count_ = count;
+	
+	TensorCPU(std::vector<int> shape) {
+		this->shape_ = shape;
+		this->count_ = std::accumulate(shape.begin(), shape.end(), 1);
+		data_.reset(new Dtype[this->count_], std::default_delete<Dtype[]>() );
 	}
 
-	TensorCPU(const TensorCPU& other) {
-		data_ = other.duplicate_data();
-		this->count_ = other.count();
+
+	
+
+	TensorCPU(Dtype* data_ptr, int count, const std::vector<int>& shape = {}) {
+		data_.reset(data_ptr, std::default_delete<Dtype[]>() );
+		this->count_ = count;
+
+		if(shape.size() == 0) {
+			this->shape_ = std::vector<int> {count};
+		} else {
+			this->shape_ = shape;
+		}
+
 	}
+	TensorCPU(std::shared_ptr<Dtype> data_ptr, int count, const std::vector<int>& shape = {}) {
+		data_ = data_ptr;
+		this->count_ = count;
+
+		if(shape.size() == 0) {
+			this->shape_ = std::vector<int> {count};
+		} else {
+			this->shape_ = shape;
+		}
+	}
+
+	// TensorCPU(const TensorCPU& other) {
+	// 	data_ = other.duplicate_data();
+	// 	this->count_ = other.count();
+	// }
 
 	~TensorCPU() {}
 
@@ -181,6 +214,7 @@ public:
 private:
 	std::shared_ptr<Dtype> data_;
 
+	TensorCPU();
 
 };
 
