@@ -86,115 +86,175 @@ public:
   
 };
 
-// struct CellParams {
-  // CellParams(const Tensor& _w_ih, const Tensor& _w_hh, const Tensor& _b_ih, const Tensor& _b_hh)
-    // : w_ih(_w_ih), w_hh(_w_hh), b_ih(_b_ih), b_hh(_b_hh) {};
-
-
-
-  // const Tensor& w_ih;
-  // const Tensor& w_hh;
-  // const Tensor& b_ih; /* optional */
-  // const Tensor& b_hh; /* optional */
-
-  // Tensor matmul_ih(Tensor input) const {
-  //   return at::matmul(input, w_ih.t());
-  // }
-  // Tensor matmul_hh(Tensor h) const {
-  //   return at::matmul(h, w_hh.t());
-  // }
-  // Tensor linear_ih(Tensor input) const {
-  //   return at::linear(input, w_ih, b_ih);
-  // }
-  // Tensor linear_hh(Tensor h) const {
-  //   return at::linear(h, w_hh, b_hh);
-  // }
-// };
-
 
 template <typename Dtype>
 class Cell_CPU {
 public:
-  Cell_CPU() = default;
-  ~Cell_CPU() = default;
+
+  Cell_CPU() 
+    :weight_ih_(nullptr),
+    weight_hh_(nullptr),
+    bias_ih_(nullptr),
+    bias_hh_(nullptr) {}
+
+  Cell_CPU(
+      const int input_dim, const int hidden_dim,
+      Dtype* weight_ih,
+      Dtype* weight_hh,
+      Dtype* bias_ih,
+      Dtype* bias_hh
+  ) : input_dim_(input_dim), hidden_dim_(hidden_dim),
+      weight_ih_(weight_ih),
+      weight_hh_(weight_hh),
+      bias_ih_(bias_ih),
+      bias_hh_(bias_hh) { }
+
+  ~Cell_CPU() {
+
+  }
   
-  virtual TensorCPU<Dtype> Forward(TensorCPU<Dtype> &input_tensor, 
-                                   TensorCPU<Dtype> &hidden_tensor,
-                                   const CellParams<Dtype> & params);
+  // virtual TensorCPU<Dtype> Forward(TensorCPU<Dtype> &input_tensor, 
+  //                                  TensorCPU<Dtype> &hidden_tensor,
+  //                                  const CellParams<Dtype> & params) {}
+
+  virtual void Forward(
+    Dtype* input_data,
+    Dtype* hidden_data,
+    Dtype* output_data
+  ) { std::cout << "Why we come to this function" << std::endl;}
+
+protected:
+
+  int input_dim_, hidden_dim_;
+
+  Dtype* weight_ih_;
+  Dtype* weight_hh_;
+  Dtype* bias_ih_;
+  Dtype* bias_hh_;
+
+
+
 
 };
 
 template <typename Dtype>
 class GRUCell_CPU : public Cell_CPU<Dtype> {
 public:
-  GRUCell_CPU() = default;
-  ~GRUCell_CPU() = default;
+  GRUCell_CPU(
+      const int input_dim, const int hidden_dim,
+      Dtype* weight_ih,
+      Dtype* weight_hh,
+      Dtype* bias_ih,
+      Dtype* bias_hh) : 
+        Cell_CPU<Dtype>(
+          input_dim, hidden_dim, 
+          weight_ih, weight_hh,
+          bias_ih, bias_hh
+        ) {
+    
+    intermediate_i = new Dtype[3 * this->hidden_dim_];
+    intermediate_h = new Dtype[3 * this->hidden_dim_];
+
+  }
+
+  ~GRUCell_CPU() {
+    delete [] intermediate_i;
+    delete [] intermediate_h;
+  }
   
-  virtual TensorCPU<Dtype> Forward(TensorCPU<Dtype> &input_tensor, 
-                                   TensorCPU<Dtype> &hidden_tensor,
-                                   const CellParams<Dtype> & params);
+  // virtual TensorCPU<Dtype> Forward(TensorCPU<Dtype> &input_tensor, 
+  //                                  TensorCPU<Dtype> &hidden_tensor,
+  //                                  const CellParams<Dtype> & params);
+
+
+  virtual void Forward(
+    Dtype* input_data,
+    Dtype* hidden_data,
+    Dtype* output_data
+  );
+
+
+private:
+  Dtype* intermediate_i;
+  Dtype* intermediate_h;
+
 
 };
 
 
 
-// template <typename Dtype>
-// class ReLUOp_CPU : public CPUFunctor<Dtype> {
-//  public:
-//   /**
-//    * @param param provides ReLUParameter relu_param,
-//    *     with ReLULayer options:
-//    *   - negative_slope (\b optional, default 0).
-//    *     the value @f$ \nu @f$ by which negative values are multiplied.
-//    */
-//   explicit ReLUOp_CPU(float negative_slope, bool inplace = false)
-//       : CPUFunctor<Dtype>(), negative_slope_(negative_slope), inplace_(inplace) {}
 
-//   virtual inline const char* type() const { return "ReLU"; }
+template <typename Dtype>
+class RNNOp_CPU : public CPUFunctor<Dtype> {
 
-//   // virtual void Forward(const std::vector<Dtype*> bottom_datas,
-//   //     const std::vector<Dtype*> top_datas);
+public:
+  RNNOp_CPU(
+    int batch_size,
+    int input_dim,
+    int hidden_dim,
+    Cell_CPU<Dtype>* cell) 
+      : batch_size_(batch_size),
+        input_dim_(input_dim), 
+        hidden_dim_(hidden_dim),
+        cell_(cell) {}
 
-//   // virtual std::vector<Tensor<Dtype> *> Forward(const std::vector<Tensor<Dtype> *> inputs);
-//   virtual TensorCPU<Dtype> Forward(TensorCPU<Dtype> &input_tensor);
+  ~RNNOp_CPU()  {
+    delete cell_;
+  }
+
+  int batch_size_;
+  int input_dim_, hidden_dim_;
+
+  Cell_CPU<Dtype>* cell_;
+
+};
+
+
+
+template <typename Dtype>
+class GRUOp_CPU : public RNNOp_CPU<Dtype> {
+public:
+  GRUOp_CPU(
+    int batch_size,
+    int input_dim,
+    int hidden_dim,
+    Dtype* const weight_ih,
+    Dtype* const weight_hh,
+    Dtype* const bias_ih,
+    Dtype* const bias_hh) 
+      : RNNOp_CPU<Dtype>(batch_size, input_dim, hidden_dim, 
+                         new GRUCell_CPU<Dtype>(
+                              input_dim, hidden_dim, 
+                              weight_ih, weight_hh,
+                              bias_ih, bias_hh)
+                        ) { }
+  ~GRUOp_CPU() = default;
+
+
+
+  virtual inline const char* type() const { return "GRU"; }
+
+  // virtual void Forward(const std::vector<Dtype*> bottom_datas,
+      // const std::vector<Dtype*> top_datas);
+  virtual TensorCPU<Dtype> Forward(TensorCPU<Dtype> &input_tensor) {
+    auto hidden_tensor = TensorCPU<Dtype>(this->hidden_dim_, Dtype(.0));
+    Forward(input_tensor, hidden_tensor);
+  }
+  
+  TensorCPU<Dtype> Forward(TensorCPU<Dtype> &input_tensor, TensorCPU<Dtype> &hidden_tensor);
   
 
-//   private:
-//     // int data_count_;
-//     float negative_slope_;
-//     bool inplace_;
-
-// };
-
-// #ifdef USE_OPENCL
-
-// template <typename Dtype>
-// class ReLUOp_GPU : public GPUFunctor<Dtype> {
-//  public:
-//   /**
-//    * @param param provides ReLUParameter relu_param,
-//    *     with ReLULayer options:
-//    *   - negative_slope (\b optional, default 0).
-//    *     the value @f$ \nu @f$ by which negative values are multiplied.
-//    */
-//   explicit ReLUOp_GPU(float negative_slope, bool inplace = false)
-//       : GPUFunctor<Dtype>(), negative_slope_(negative_slope), inplace_(inplace) {}
-
-//   virtual inline const char* type() const { return "ReLU"; }
-
-//   // virtual void Forward(const std::vector<cl_mem> bottom_datas,
-//   //     const std::vector<cl_mem> top_datas);
-
-//   virtual TensorGPU<Dtype> Forward(TensorGPU<Dtype> input_tensor);
+private:
 
 
-//   private:
-//     float negative_slope_;
-//     bool inplace_;
 
-// };
 
-// #endif //USE_OPENCL
+
+
+};
+
+
+
 
 }  // namespace hypertea
 

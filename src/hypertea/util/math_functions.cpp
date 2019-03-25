@@ -339,35 +339,23 @@ void hypertea_abs<float>(const int n, const float* a, float* y) {
 
 
 template <typename Dtype>
-TensorCPU<Dtype> hypertea_sigmoid(const TensorCPU<Dtype> x) {
+void hypertea_sigmoid(const int N, const Dtype* x, Dtype* y) {
 
-  TensorCPU<Dtype> result(x.duplicate_data(), x.count(), x.shape());
-  Dtype* data = result.mutable_data();
-
-  for (int i = 0; i < result.count(); ++i) {
-    data[i] = 0.5 * tanh(0.5 * data[i]) + 0.5;
+  for (int i = 0; i < N; ++i) {
+    y[i] = 0.5 * tanh(0.5 * x[i]) + 0.5;
   }
-
-  return result;
-
 }
-template TensorCPU<float> hypertea_sigmoid<float>(const TensorCPU<float> x);
+template void hypertea_sigmoid<float>(const int N, const float* x, float* y);
 
 
 template <typename Dtype>
-TensorCPU<Dtype> hypertea_tanh(const TensorCPU<Dtype> x) {
+void hypertea_tanh(const int N, const Dtype* x, Dtype* y) {
 
-  TensorCPU<Dtype> result(x.duplicate_data(), x.count(), x.shape());
-  Dtype* data = result.mutable_data();
-  
-  for (int i = 0; i < result.count(); ++i) {
-    data[i] = tanh(data[i]);
+  for (int i = 0; i < N; ++i) {
+    y[i] = tanh(x[i]);
   }
-
-  return result;
-
 }
-template TensorCPU<float> hypertea_tanh<float>(const TensorCPU<float> x);
+template void hypertea_tanh<float>(const int N, const float* x, float* y);
 
 
 

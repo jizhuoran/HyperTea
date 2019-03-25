@@ -136,6 +136,8 @@ public:
 		this->shape_ = std::vector<int> {count};
 	}
 
+	TensorCPU(int count, Dtype value);
+
 	TensorCPU(std::vector<Dtype> data, const std::vector<int>& shape = {}) {
 		data_.reset(new Dtype[data.size()], std::default_delete<Dtype[]>() );
 		memcpy(data_.get(), data.data(), data.size() * sizeof(Dtype));
@@ -151,7 +153,7 @@ public:
 	
 	TensorCPU(std::vector<int> shape) {
 		this->shape_ = shape;
-		this->count_ = std::accumulate(shape.begin(), shape.end(), 1);
+		this->count_ = std::accumulate(shape.begin(), shape.end(), 1, std::multiplies<int>());
 		data_.reset(new Dtype[this->count_], std::default_delete<Dtype[]>() );
 	}
 

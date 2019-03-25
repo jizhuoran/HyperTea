@@ -113,10 +113,10 @@ template <typename Dtype>
 void hypertea_abs(const int n, const Dtype* a, Dtype* y);
 
 template <typename Dtype>
-TensorCPU<Dtype> hypertea_sigmoid(const TensorCPU<Dtype> x);
+void hypertea_sigmoid(const int N, const Dtype* x, Dtype* y);
 
 template <typename Dtype>
-TensorCPU<Dtype> hypertea_tanh(const TensorCPU<Dtype> x);
+void hypertea_tanh(const int N, const Dtype* x, Dtype* y);
 
 
 template <typename Dtype>

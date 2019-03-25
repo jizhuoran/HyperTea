@@ -6,6 +6,20 @@ namespace hypertea {
 
 
 template <typename Dtype>
+TensorCPU<Dtype>::TensorCPU(int count, Dtype value) {
+    data_.reset(new Dtype[count], std::default_delete<Dtype[]>() );
+
+    hypertea_set(count, value, data_.get());
+
+    this->count_ = count;
+    this->shape_ = std::vector<int> {count};
+}
+template TensorCPU<float>::TensorCPU(int count, float value);
+
+
+
+
+template <typename Dtype>
 std::shared_ptr<Dtype> TensorCPU<Dtype>::duplicate_data() const {
   Dtype* t = new Dtype[this->count_];
   hypertea_copy(this->count_, data_.get(), t);
@@ -56,7 +70,7 @@ TensorCPU<Dtype>& TensorCPU<Dtype>::operator*=(const Dtype other) {
 }
 template TensorCPU<float>& TensorCPU<float>::operator*=(const float other);
 
-
+ 
 
 
 
