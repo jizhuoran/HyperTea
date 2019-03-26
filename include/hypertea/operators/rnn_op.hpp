@@ -202,6 +202,11 @@ public:
     delete cell_;
   }
 
+  
+  virtual TensorCPU<Dtype> Forward(TensorCPU<Dtype> &input_tensor, TensorCPU<Dtype> &hidden_tensor) = 0;
+
+private:
+
   int batch_size_;
   int input_dim_, hidden_dim_;
 
@@ -211,47 +216,47 @@ public:
 
 
 
+
+
 template <typename Dtype>
-class GRUOp_CPU : public RNNOp_CPU<Dtype> {
-public:
-  GRUOp_CPU(
-    int batch_size,
-    int input_dim,
-    int hidden_dim,
-    Dtype* const weight_ih,
-    Dtype* const weight_hh,
-    Dtype* const bias_ih,
-    Dtype* const bias_hh) 
-      : RNNOp_CPU<Dtype>(batch_size, input_dim, hidden_dim, 
-                         new GRUCell_CPU<Dtype>(
-                              input_dim, hidden_dim, 
-                              weight_ih, weight_hh,
-                              bias_ih, bias_hh)
-                        ) { }
-  ~GRUOp_CPU() = default;
+class UnidirectionalRNN_CPU : public RNNOp_CPU<Dtype> {
+
+}
+
+
+// template <typename Dtype>
+// class GRUOp_CPU : public RNNOp_CPU<Dtype> {
+// public:
+//   GRUOp_CPU(
+//     int batch_size,
+//     int input_dim,
+//     int hidden_dim,
+//     Dtype* const weight_ih,
+//     Dtype* const weight_hh,
+//     Dtype* const bias_ih,
+//     Dtype* const bias_hh) 
+//       : RNNOp_CPU<Dtype>(batch_size, input_dim, hidden_dim, 
+//                          new GRUCell_CPU<Dtype>(
+//                               input_dim, hidden_dim, 
+//                               weight_ih, weight_hh,
+//                               bias_ih, bias_hh)
+//                         ) { }
+//   ~GRUOp_CPU() = default;
 
 
 
-  virtual inline const char* type() const { return "GRU"; }
+//   virtual inline const char* type() const { return "GRU"; }
 
-  // virtual void Forward(const std::vector<Dtype*> bottom_datas,
-      // const std::vector<Dtype*> top_datas);
-  virtual TensorCPU<Dtype> Forward(TensorCPU<Dtype> &input_tensor) {
-    auto hidden_tensor = TensorCPU<Dtype>(this->hidden_dim_, Dtype(.0));
-    Forward(input_tensor, hidden_tensor);
-  }
+//   // virtual void Forward(const std::vector<Dtype*> bottom_datas,
+//       // const std::vector<Dtype*> top_datas);
+//   virtual TensorCPU<Dtype> Forward(TensorCPU<Dtype> &input_tensor) {
+//     auto hidden_tensor = TensorCPU<Dtype>(this->hidden_dim_, Dtype(.0));
+//     Forward(input_tensor, hidden_tensor);
+//   }
   
-  TensorCPU<Dtype> Forward(TensorCPU<Dtype> &input_tensor, TensorCPU<Dtype> &hidden_tensor);
-  
+//   TensorCPU<Dtype> Forward(TensorCPU<Dtype> &input_tensor, TensorCPU<Dtype> &hidden_tensor);
 
-private:
-
-
-
-
-
-
-};
+// };
 
 
 
