@@ -5,6 +5,9 @@
 namespace hypertea {
 
 
+
+
+
 template <typename Dtype>
 void GRUCell_CPU<Dtype>::Forward(
     Dtype* input_data,

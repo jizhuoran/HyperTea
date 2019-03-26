@@ -77,8 +77,12 @@ void test_uni_single_gru() {
   auto output_tensor = hypertea::TensorCPU<float>(32);
 
   hypertea::StackedRNN<float> gru( std::vector<hypertea::RNNOp_CPU<float>* >{
-      new hypertea::UnidirectionalRNN_CPU<float> (1, 64, 32, 
-        new hypertea::GRUCell_CPU<float>(64, 32, _w_ih0.data(), _w_hh0.data(), _b_ih0.data(), _b_hh0.data()))
+      new hypertea::UnidirectionalRNN_CPU<float> (
+        1, 64, 32, 
+        _w_ih0.data(), _w_hh0.data(), 
+        _b_ih0.data(), _b_hh0.data(), 
+        hypertea::RNN_CELL_TYPE::GRU_CELL
+      )
     }
   );
 
@@ -115,9 +119,14 @@ void test_bi_single_gru() {
   auto output_tensor = hypertea::TensorCPU<float>(32);
 
   hypertea::StackedRNN<float> gru( std::vector<hypertea::RNNOp_CPU<float>* >{
-      new hypertea::BidirectionalRNN_CPU<float> (1, 64, 32, 
-        new hypertea::GRUCell_CPU<float>(64, 32, _w_ih0.data(), _w_hh0.data(), _b_ih0.data(), _b_hh0.data()),
-        new hypertea::GRUCell_CPU<float>(64, 32, r_w_ih0.data(), r_w_hh0.data(), r_b_ih0.data(), r_b_hh0.data()))
+      new hypertea::BidirectionalRNN_CPU<float> (
+        1, 64, 32, 
+        _w_ih0.data(), r_w_ih0.data(), 
+        _w_hh0.data(), r_w_hh0.data(), 
+        _b_ih0.data(), r_b_ih0.data(), 
+        _b_hh0.data(), r_b_hh0.data(), 
+        hypertea::RNN_CELL_TYPE::GRU_CELL
+      )
     }
   );
 
@@ -164,12 +173,25 @@ void test_uni_multi3_gru() {
   auto output_tensor = hypertea::TensorCPU<float>(32);
 
   hypertea::StackedRNN<float> gru( std::vector<hypertea::RNNOp_CPU<float>* >{
-      new hypertea::UnidirectionalRNN_CPU<float> (1, 64, 32, 
-        new hypertea::GRUCell_CPU<float>(64, 32, _w_ih0.data(), _w_hh0.data(), _b_ih0.data(), _b_hh0.data())),
-      new hypertea::UnidirectionalRNN_CPU<float> (1, 32, 32, 
-        new hypertea::GRUCell_CPU<float>(32, 32, _w_ih1.data(), _w_hh1.data(), _b_ih1.data(), _b_hh1.data())),
-      new hypertea::UnidirectionalRNN_CPU<float> (1, 32, 32, 
-        new hypertea::GRUCell_CPU<float>(32, 32, _w_ih2.data(), _w_hh2.data(), _b_ih2.data(), _b_hh2.data()))
+    new hypertea::UnidirectionalRNN_CPU<float> (
+      1, 64, 32, 
+      _w_ih0.data(), _w_hh0.data(), 
+      _b_ih0.data(), _b_hh0.data(), 
+      hypertea::RNN_CELL_TYPE::GRU_CELL
+    ),
+
+    new hypertea::UnidirectionalRNN_CPU<float> (
+      1, 32, 32, 
+      _w_ih1.data(), _w_hh1.data(), 
+      _b_ih1.data(), _b_hh1.data(), 
+      hypertea::RNN_CELL_TYPE::GRU_CELL
+    ),
+    new hypertea::UnidirectionalRNN_CPU<float> (
+      1, 32, 32, 
+      _w_ih2.data(), _w_hh2.data(), 
+      _b_ih2.data(), _b_hh2.data(), 
+      hypertea::RNN_CELL_TYPE::GRU_CELL
+    )
     }
   );
 
@@ -229,17 +251,30 @@ void test_bi_multi3_gru() {
   auto output_tensor = hypertea::TensorCPU<float>(32);
 
   hypertea::StackedRNN<float> gru( std::vector<hypertea::RNNOp_CPU<float>* >{
-      new hypertea::BidirectionalRNN_CPU<float> (1, 64, 32, 
-        new hypertea::GRUCell_CPU<float>(64, 32, _w_ih0.data(), _w_hh0.data(), _b_ih0.data(), _b_hh0.data()),
-        new hypertea::GRUCell_CPU<float>(64, 32, r_w_ih0.data(), r_w_hh0.data(), r_b_ih0.data(), r_b_hh0.data())
+
+      new hypertea::BidirectionalRNN_CPU<float> (
+        1, 64, 32, 
+        _w_ih0.data(), r_w_ih0.data(), 
+        _w_hh0.data(), r_w_hh0.data(), 
+        _b_ih0.data(), r_b_ih0.data(), 
+        _b_hh0.data(), r_b_hh0.data(), 
+        hypertea::RNN_CELL_TYPE::GRU_CELL
       ),
-      new hypertea::BidirectionalRNN_CPU<float> (1, 64, 32, 
-        new hypertea::GRUCell_CPU<float>(64, 32, _w_ih1.data(), _w_hh1.data(), _b_ih1.data(), _b_hh1.data()),
-        new hypertea::GRUCell_CPU<float>(64, 32, r_w_ih1.data(), r_w_hh1.data(), r_b_ih1.data(), r_b_hh1.data())
-      ),
-      new hypertea::BidirectionalRNN_CPU<float> (1, 64, 32, 
-        new hypertea::GRUCell_CPU<float>(64, 32, _w_ih2.data(), _w_hh2.data(), _b_ih2.data(), _b_hh2.data()),
-        new hypertea::GRUCell_CPU<float>(64, 32, r_w_ih2.data(), r_w_hh2.data(), r_b_ih2.data(), r_b_hh2.data())
+      new hypertea::BidirectionalRNN_CPU<float> (
+        1, 64, 32, 
+        _w_ih1.data(), r_w_ih1.data(), 
+        _w_hh1.data(), r_w_hh1.data(), 
+        _b_ih1.data(), r_b_ih1.data(), 
+        _b_hh1.data(), r_b_hh1.data(), 
+        hypertea::RNN_CELL_TYPE::GRU_CELL
+      ),      
+      new hypertea::BidirectionalRNN_CPU<float> (
+        1, 64, 32, 
+        _w_ih2.data(), r_w_ih2.data(), 
+        _w_hh2.data(), r_w_hh2.data(), 
+        _b_ih2.data(), r_b_ih2.data(), 
+        _b_hh2.data(), r_b_hh2.data(), 
+        hypertea::RNN_CELL_TYPE::GRU_CELL
       )
     }
   );
@@ -286,8 +321,12 @@ void test_uni_single_lstm() {
   auto output_tensor = hypertea::TensorCPU<float>(32);
 
   hypertea::StackedRNN<float> lstm( std::vector<hypertea::RNNOp_CPU<float>* >{
-      new hypertea::UnidirectionalRNN_CPU<float> (1, 64, 32, 
-        new hypertea::LSTMCell_CPU<float>(64, 32, _w_ih0.data(), _w_hh0.data(), _b_ih0.data(), _b_hh0.data()))
+      new hypertea::UnidirectionalRNN_CPU<float> (
+        1, 64, 32, 
+        _w_ih0.data(), _w_hh0.data(), 
+        _b_ih0.data(), _b_hh0.data(), 
+        hypertea::RNN_CELL_TYPE::LSTM_CELL
+      )
     }
   );
 
@@ -322,9 +361,14 @@ void test_bi_single_lstm() {
   auto output_tensor = hypertea::TensorCPU<float>(32);
 
   hypertea::StackedRNN<float> lstm( std::vector<hypertea::RNNOp_CPU<float>* >{
-      new hypertea::BidirectionalRNN_CPU<float> (1, 64, 32, 
-        new hypertea::LSTMCell_CPU<float>(64, 32, _w_ih0.data(), _w_hh0.data(), _b_ih0.data(), _b_hh0.data()),
-        new hypertea::LSTMCell_CPU<float>(64, 32, r_w_ih0.data(), r_w_hh0.data(), r_b_ih0.data(), r_b_hh0.data()))
+      new hypertea::BidirectionalRNN_CPU<float> (
+        1, 64, 32, 
+        _w_ih0.data(), r_w_ih0.data(), 
+        _w_hh0.data(), r_w_hh0.data(), 
+        _b_ih0.data(), r_b_ih0.data(), 
+        _b_hh0.data(), r_b_hh0.data(), 
+        hypertea::RNN_CELL_TYPE::LSTM_CELL
+      )
     }
   );
 
@@ -370,12 +414,25 @@ void test_uni_multi3_lstm() {
   auto output_tensor = hypertea::TensorCPU<float>(32);
 
   hypertea::StackedRNN<float> lstm( std::vector<hypertea::RNNOp_CPU<float>* >{
-      new hypertea::UnidirectionalRNN_CPU<float> (1, 64, 32, 
-        new hypertea::LSTMCell_CPU<float>(64, 32, _w_ih0.data(), _w_hh0.data(), _b_ih0.data(), _b_hh0.data())),
-      new hypertea::UnidirectionalRNN_CPU<float> (1, 32, 32, 
-        new hypertea::LSTMCell_CPU<float>(32, 32, _w_ih1.data(), _w_hh1.data(), _b_ih1.data(), _b_hh1.data())),
-      new hypertea::UnidirectionalRNN_CPU<float> (1, 32, 32, 
-        new hypertea::LSTMCell_CPU<float>(32, 32, _w_ih2.data(), _w_hh2.data(), _b_ih2.data(), _b_hh2.data()))
+      new hypertea::UnidirectionalRNN_CPU<float> (
+        1, 64, 32, 
+        _w_ih0.data(), _w_hh0.data(), 
+        _b_ih0.data(), _b_hh0.data(), 
+        hypertea::RNN_CELL_TYPE::LSTM_CELL
+      ),
+
+      new hypertea::UnidirectionalRNN_CPU<float> (
+        1, 32, 32, 
+        _w_ih1.data(), _w_hh1.data(), 
+        _b_ih1.data(), _b_hh1.data(), 
+        hypertea::RNN_CELL_TYPE::LSTM_CELL
+      ),
+      new hypertea::UnidirectionalRNN_CPU<float> (
+        1, 32, 32, 
+        _w_ih2.data(), _w_hh2.data(), 
+        _b_ih2.data(), _b_hh2.data(), 
+        hypertea::RNN_CELL_TYPE::LSTM_CELL
+      )
     }
   );
 
@@ -435,17 +492,29 @@ void test_bi_multi3_lstm() {
   auto output_tensor = hypertea::TensorCPU<float>(32);
 
   hypertea::StackedRNN<float> lstm( std::vector<hypertea::RNNOp_CPU<float>* >{
-      new hypertea::BidirectionalRNN_CPU<float> (1, 64, 32, 
-        new hypertea::LSTMCell_CPU<float>(64, 32, _w_ih0.data(), _w_hh0.data(), _b_ih0.data(), _b_hh0.data()),
-        new hypertea::LSTMCell_CPU<float>(64, 32, r_w_ih0.data(), r_w_hh0.data(), r_b_ih0.data(), r_b_hh0.data())
+      new hypertea::BidirectionalRNN_CPU<float> (
+        1, 64, 32, 
+        _w_ih0.data(), r_w_ih0.data(), 
+        _w_hh0.data(), r_w_hh0.data(), 
+        _b_ih0.data(), r_b_ih0.data(), 
+        _b_hh0.data(), r_b_hh0.data(), 
+        hypertea::RNN_CELL_TYPE::LSTM_CELL
       ),
-      new hypertea::BidirectionalRNN_CPU<float> (1, 64, 32, 
-        new hypertea::LSTMCell_CPU<float>(64, 32, _w_ih1.data(), _w_hh1.data(), _b_ih1.data(), _b_hh1.data()),
-        new hypertea::LSTMCell_CPU<float>(64, 32, r_w_ih1.data(), r_w_hh1.data(), r_b_ih1.data(), r_b_hh1.data())
-      ),
-      new hypertea::BidirectionalRNN_CPU<float> (1, 64, 32, 
-        new hypertea::LSTMCell_CPU<float>(64, 32, _w_ih2.data(), _w_hh2.data(), _b_ih2.data(), _b_hh2.data()),
-        new hypertea::LSTMCell_CPU<float>(64, 32, r_w_ih2.data(), r_w_hh2.data(), r_b_ih2.data(), r_b_hh2.data())
+      new hypertea::BidirectionalRNN_CPU<float> (
+        1, 64, 32, 
+        _w_ih1.data(), r_w_ih1.data(), 
+        _w_hh1.data(), r_w_hh1.data(), 
+        _b_ih1.data(), r_b_ih1.data(), 
+        _b_hh1.data(), r_b_hh1.data(), 
+        hypertea::RNN_CELL_TYPE::LSTM_CELL
+      ),      
+      new hypertea::BidirectionalRNN_CPU<float> (
+        1, 64, 32, 
+        _w_ih2.data(), r_w_ih2.data(), 
+        _w_hh2.data(), r_w_hh2.data(), 
+        _b_ih2.data(), r_b_ih2.data(), 
+        _b_hh2.data(), r_b_hh2.data(), 
+        hypertea::RNN_CELL_TYPE::LSTM_CELL
       )
     }
   );
@@ -472,6 +541,7 @@ void test_lstm() {
 }
 
 
+
 int main(int argc, char** argv) {
 
   test_gru();
@@ -485,14 +555,18 @@ int main(int argc, char** argv) {
   auto _b_ih0 = random_generator.generate_random_vector(4*32);
   auto _b_hh0 = random_generator.generate_random_vector(4*32);
 
+  auto r_w_ih0 = random_generator.generate_random_vector(4*32*64);
+  auto r_w_hh0 = random_generator.generate_random_vector(4*32*32);
+  auto r_b_ih0 = random_generator.generate_random_vector(4*32);
+  auto r_b_hh0 = random_generator.generate_random_vector(4*32);
+
 
   auto input_tensor = hypertea::TensorCPU<float>(random_generator.generate_random_vector(5*64), std::vector<int>{64});
-  auto hidden_tensor = hypertea::TensorCPU<float>(random_generator.generate_random_vector(2*32), std::vector<int>{32});
+  auto hidden_tensor = hypertea::TensorCPU<float>(random_generator.generate_random_vector(4*32), std::vector<int>{32});
   auto output_tensor = hypertea::TensorCPU<float>(32);
 
   hypertea::StackedRNN<float> lstm( std::vector<hypertea::RNNOp_CPU<float>* >{
-      new hypertea::UnidirectionalRNN_CPU<float> (1, 64, 32, 
-        new hypertea::LSTMCell_CPU<float>(64, 32, _w_ih0.data(), _w_hh0.data(), _b_ih0.data(), _b_hh0.data()))
+      new hypertea::BidirectionalRNN_CPU<float> (1, 64, 32, _w_ih0.data(), r_w_ih0.data(), _w_hh0.data(), r_w_hh0.data(), _b_ih0.data(), r_b_ih0.data(), _b_hh0.data(), r_b_hh0.data(), hypertea::RNN_CELL_TYPE::LSTM_CELL)
     }
   );
 

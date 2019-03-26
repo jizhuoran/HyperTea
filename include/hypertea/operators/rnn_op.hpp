@@ -12,6 +12,14 @@ namespace hypertea {
  *        The simple max is fast to compute, and the function does not saturate.
  */
 
+
+enum RNN_CELL_TYPE {
+  LSTM_CELL,
+  GRU_CELL
+};
+
+
+
 template <typename Dtype>
 class Cell_CPU {
 public:
@@ -58,6 +66,10 @@ protected:
 
 
 };
+
+
+
+
 
 template <typename Dtype>
 class GRUCell_CPU : public Cell_CPU<Dtype> {
@@ -125,7 +137,30 @@ public:
 
 };
 
+template <typename Dtype>
+Cell_CPU<Dtype>* cell_factory_(
+    const int input_dim, 
+    const int hidden_dim,
+    Dtype* w_ih,
+    Dtype* w_hh,
+    Dtype* b_ih,
+    Dtype* b_hh,
+    RNN_CELL_TYPE cell_type) {
 
+  switch (cell_type) {
+    case RNN_CELL_TYPE::GRU_CELL: {
+      return new hypertea::GRUCell_CPU<Dtype>(input_dim, hidden_dim, w_ih, w_hh, b_ih, b_hh);
+    }
+    case RNN_CELL_TYPE::LSTM_CELL: {
+      return new hypertea::LSTMCell_CPU<Dtype>(input_dim, hidden_dim, w_ih, w_hh, b_ih, b_hh);
+    }
+    default: {
+      std::cout << "Wrong RNN Cell Type!" << std::endl;
+      exit(0);
+    }
+  }
+
+}
 
 
 
@@ -137,15 +172,17 @@ public:
     int batch_size,
     int input_dim,
     int hidden_dim,
-    Cell_CPU<Dtype>* cell) 
+    Dtype* w_ih,
+    Dtype* w_hh,
+    Dtype* b_ih,
+    Dtype* b_hh,
+    RNN_CELL_TYPE cell_type) 
       : batch_size_(batch_size),
         input_dim_(input_dim), 
         hidden_dim_(hidden_dim),
-        cell_(cell) {}
+        cell_(cell_factory_(input_dim, hidden_dim, w_ih, w_hh, b_ih, b_hh, cell_type)) {}
 
-  ~RNNOp_CPU()  {
-    // delete cell_;
-  }
+  ~RNNOp_CPU()  {}
 
   
   virtual TensorCPU<Dtype> Forward(TensorCPU<Dtype> &input_tensor, TensorCPU<Dtype> &hidden_tensor) = 0;
@@ -156,7 +193,8 @@ protected:
   int batch_size_;
   int input_dim_, hidden_dim_;
 
-  Cell_CPU<Dtype>* cell_;
+  std::unique_ptr<Cell_CPU<Dtype>> cell_;
+
 
 };
 
@@ -173,8 +211,12 @@ public:
     int batch_size,
     int input_dim,
     int hidden_dim,
-    Cell_CPU<Dtype>* cell) 
-      : RNNOp_CPU<Dtype>(batch_size, input_dim, hidden_dim, cell) {}
+    Dtype* w_ih,
+    Dtype* w_hh,
+    Dtype* b_ih,
+    Dtype* b_hh,
+    RNN_CELL_TYPE cell_type) 
+      : RNNOp_CPU<Dtype>(batch_size, input_dim, hidden_dim, w_ih, w_hh, b_ih, b_hh, cell_type) {}
 
   ~UnidirectionalRNN_CPU() {}
 
@@ -192,9 +234,13 @@ public:
     int batch_size,
     int input_dim,
     int hidden_dim,
-    Cell_CPU<Dtype>* cell, 
-    Cell_CPU<Dtype>* reverse_cell) 
-      : RNNOp_CPU<Dtype>(batch_size, input_dim, hidden_dim, cell), reverse_cell_(reverse_cell) {}
+    Dtype* w_ih, Dtype* rw_ih,
+    Dtype* w_hh, Dtype* rw_hh,
+    Dtype* b_ih, Dtype* rb_ih,
+    Dtype* b_hh, Dtype* rb_hh,
+    RNN_CELL_TYPE cell_type) 
+      : RNNOp_CPU<Dtype>(batch_size, input_dim, hidden_dim, w_ih, w_hh, b_ih, b_hh, cell_type),
+        reverse_cell_(cell_factory_(input_dim, hidden_dim, rw_ih, rw_hh, rb_ih, rb_hh, cell_type)) { }
 
   ~BidirectionalRNN_CPU() {}
 
@@ -203,7 +249,7 @@ public:
 
 private:
   
-  Cell_CPU<Dtype>* reverse_cell_;
+  std::unique_ptr<Cell_CPU<Dtype>> reverse_cell_;
 
 
 };
@@ -214,13 +260,14 @@ class StackedRNN : public CPUFunctor<Dtype> {
 
 public:
   StackedRNN(
-    // int batch_size,
-    // int input_dim,
-    // int hidden_dim,
     std::vector<RNNOp_CPU<Dtype>* > rnn_layers) 
       : rnn_layers_(rnn_layers) {}
 
-  ~StackedRNN()  {}
+  ~StackedRNN()  {
+    for (int i = 0; i < rnn_layers_.size(); ++i) {
+      delete rnn_layers_[i];
+    }
+  }
 
   
   virtual TensorCPU<Dtype> Forward(TensorCPU<Dtype> input_tensor, 
@@ -229,9 +276,6 @@ public:
   virtual TensorCPU<Dtype> Forward(TensorCPU<Dtype> &input_tensor) { }
 
 protected:
-
-  int batch_size_;
-  int input_dim_, hidden_dim_;
 
   std::vector<RNNOp_CPU<Dtype>* > rnn_layers_;
 
