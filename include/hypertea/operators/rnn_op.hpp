@@ -12,90 +12,10 @@ namespace hypertea {
  *        The simple max is fast to compute, and the function does not saturate.
  */
 
-
-
-template <typename Dtype>
-class CellParams
-{
-public:
-  CellParams(
-    const std::vector<TensorCPU<Dtype> >& _w_ih, 
-    const std::vector<TensorCPU<Dtype> >& _w_hh, 
-    const std::vector<TensorCPU<Dtype> >& _b_ih, 
-    const std::vector<TensorCPU<Dtype> >& _b_hh
-  ) : w_ih(_w_ih), w_hh(_w_hh), b_ih(_b_ih), b_hh(_b_hh) {};
-  ~CellParams() {}
-
-  const std::vector<TensorCPU<Dtype> >& w_ih;
-  const std::vector<TensorCPU<Dtype> >& w_hh;
-  const std::vector<TensorCPU<Dtype> >& b_ih; /* optional */
-  const std::vector<TensorCPU<Dtype> >& b_hh; /* optional */
-
-
-  // Tensor matmul_ih(Tensor input) const {
-  //   return at::matmul(input, w_ih.t());
-  // }
-  // Tensor matmul_hh(Tensor h) const {
-  //   return at::matmul(h, w_hh.t());
-  // }
-  std::vector<TensorCPU<Dtype> > linear_ih(TensorCPU<Dtype> input) const {
-
-    std::vector<TensorCPU<Dtype> > result;
-
-    for(int i = 0; i < w_ih.size(); ++i) {
-
-      TensorCPU<Dtype> r(b_ih[i].duplicate_data(), b_ih[i].count());
-
-      std::cout << "The shape is " << w_ih[i].shape()[0] << " and " << w_ih[i].shape()[1] << std::endl;
-
-
-      hypertea_cpu_gemv<float>(CblasNoTrans, w_ih[i].shape()[0],
-        w_ih[i].shape()[1], 1, w_ih[i].immutable_data(), input.immutable_data(),
-        1, r.mutable_data());
-
-      result.push_back(r);
-    }
-
-    return result;
-
-  }
-
-
-  std::vector<TensorCPU<Dtype> > linear_hh(TensorCPU<Dtype> input) const {
-
-    std::vector<TensorCPU<Dtype> > result;
-
-    for(int i = 0; i < w_hh.size(); ++i) {
-
-      TensorCPU<Dtype> r(b_hh[i].duplicate_data(), b_hh[i].count());
-
-      hypertea_cpu_gemv<float>(CblasNoTrans, w_hh[i].shape()[0],
-        w_hh[i].shape()[1], 1, w_hh[i].immutable_data(), input.immutable_data(),
-        1, r.mutable_data());
-
-      result.push_back(r);
-    }
-
-    return result;
-
-  }
-  // Tensor linear_hh(Tensor h) const {
-  //   return at::linear(h, w_hh, b_hh);
-  // }
-
-  
-};
-
-
 template <typename Dtype>
 class Cell_CPU {
 public:
 
-  Cell_CPU() 
-    :weight_ih_(nullptr),
-    weight_hh_(nullptr),
-    bias_ih_(nullptr),
-    bias_hh_(nullptr) {}
 
   Cell_CPU(
       const int input_dim, const int hidden_dim,
@@ -110,18 +30,19 @@ public:
       bias_hh_(bias_hh) { }
 
   ~Cell_CPU() {
-
+    delete [] intermediate_i;
+    delete [] intermediate_h;
   }
   
-  // virtual TensorCPU<Dtype> Forward(TensorCPU<Dtype> &input_tensor, 
-  //                                  TensorCPU<Dtype> &hidden_tensor,
-  //                                  const CellParams<Dtype> & params) {}
-
   virtual void Forward(
     Dtype* input_data,
     Dtype* hidden_data,
     Dtype* output_data
-  ) { std::cout << "Why we come to this function" << std::endl;}
+  ) = 0;
+
+
+  virtual int hidden_offset_() = 0;
+
 
 protected:
 
@@ -132,7 +53,8 @@ protected:
   Dtype* bias_ih_;
   Dtype* bias_hh_;
 
-
+  Dtype* intermediate_i;
+  Dtype* intermediate_h;
 
 
 };
@@ -152,31 +74,53 @@ public:
           bias_ih, bias_hh
         ) {
     
-    intermediate_i = new Dtype[3 * this->hidden_dim_];
-    intermediate_h = new Dtype[3 * this->hidden_dim_];
+    this->intermediate_i = new Dtype[3 * this->hidden_dim_];
+    this->intermediate_h = new Dtype[3 * this->hidden_dim_];
 
   }
 
-  ~GRUCell_CPU() {
-    delete [] intermediate_i;
-    delete [] intermediate_h;
-  }
+  ~GRUCell_CPU() {}
   
-  // virtual TensorCPU<Dtype> Forward(TensorCPU<Dtype> &input_tensor, 
-  //                                  TensorCPU<Dtype> &hidden_tensor,
-  //                                  const CellParams<Dtype> & params);
+  virtual void Forward(
+    Dtype* input_data,
+    Dtype* hidden_data,
+    Dtype* output_data
+  );
+  
+  virtual int hidden_offset_() {return this->hidden_dim_;}
+  
 
+};
 
+template <typename Dtype>
+class LSTMCell_CPU : public Cell_CPU<Dtype> {
+public:
+  LSTMCell_CPU(
+      const int input_dim, const int hidden_dim,
+      Dtype* weight_ih,
+      Dtype* weight_hh,
+      Dtype* bias_ih,
+      Dtype* bias_hh) : 
+        Cell_CPU<Dtype>(
+          input_dim, hidden_dim, 
+          weight_ih, weight_hh,
+          bias_ih, bias_hh
+        ) {
+    
+    this->intermediate_i = new Dtype[4 * this->hidden_dim_];
+    this->intermediate_h = new Dtype[4 * this->hidden_dim_];
+
+  }
+
+  ~LSTMCell_CPU() {}
+  
   virtual void Forward(
     Dtype* input_data,
     Dtype* hidden_data,
     Dtype* output_data
   );
 
-
-private:
-  Dtype* intermediate_i;
-  Dtype* intermediate_h;
+  virtual int hidden_offset_() {return 2 * this->hidden_dim_;}
 
 
 };
@@ -184,8 +128,9 @@ private:
 
 
 
+
 template <typename Dtype>
-class RNNOp_CPU : public CPUFunctor<Dtype> {
+class RNNOp_CPU {
 
 public:
   RNNOp_CPU(
@@ -199,13 +144,14 @@ public:
         cell_(cell) {}
 
   ~RNNOp_CPU()  {
-    delete cell_;
+    // delete cell_;
   }
 
   
   virtual TensorCPU<Dtype> Forward(TensorCPU<Dtype> &input_tensor, TensorCPU<Dtype> &hidden_tensor) = 0;
+  
 
-private:
+protected:
 
   int batch_size_;
   int input_dim_, hidden_dim_;
@@ -218,45 +164,80 @@ private:
 
 
 
+
 template <typename Dtype>
 class UnidirectionalRNN_CPU : public RNNOp_CPU<Dtype> {
 
-}
+public:
+  UnidirectionalRNN_CPU(
+    int batch_size,
+    int input_dim,
+    int hidden_dim,
+    Cell_CPU<Dtype>* cell) 
+      : RNNOp_CPU<Dtype>(batch_size, input_dim, hidden_dim, cell) {}
+
+  ~UnidirectionalRNN_CPU() {}
 
 
-// template <typename Dtype>
-// class GRUOp_CPU : public RNNOp_CPU<Dtype> {
-// public:
-//   GRUOp_CPU(
-//     int batch_size,
-//     int input_dim,
-//     int hidden_dim,
-//     Dtype* const weight_ih,
-//     Dtype* const weight_hh,
-//     Dtype* const bias_ih,
-//     Dtype* const bias_hh) 
-//       : RNNOp_CPU<Dtype>(batch_size, input_dim, hidden_dim, 
-//                          new GRUCell_CPU<Dtype>(
-//                               input_dim, hidden_dim, 
-//                               weight_ih, weight_hh,
-//                               bias_ih, bias_hh)
-//                         ) { }
-//   ~GRUOp_CPU() = default;
+  virtual TensorCPU<Dtype> Forward(TensorCPU<Dtype> &input_tensor, TensorCPU<Dtype> &hidden_tensor);
+
+};
 
 
+template <typename Dtype>
+class BidirectionalRNN_CPU : public RNNOp_CPU<Dtype> {
 
-//   virtual inline const char* type() const { return "GRU"; }
+public:
+  BidirectionalRNN_CPU(
+    int batch_size,
+    int input_dim,
+    int hidden_dim,
+    Cell_CPU<Dtype>* cell, 
+    Cell_CPU<Dtype>* reverse_cell) 
+      : RNNOp_CPU<Dtype>(batch_size, input_dim, hidden_dim, cell), reverse_cell_(reverse_cell) {}
 
-//   // virtual void Forward(const std::vector<Dtype*> bottom_datas,
-//       // const std::vector<Dtype*> top_datas);
-//   virtual TensorCPU<Dtype> Forward(TensorCPU<Dtype> &input_tensor) {
-//     auto hidden_tensor = TensorCPU<Dtype>(this->hidden_dim_, Dtype(.0));
-//     Forward(input_tensor, hidden_tensor);
-//   }
+  ~BidirectionalRNN_CPU() {}
+
+
+  virtual TensorCPU<Dtype> Forward(TensorCPU<Dtype> &input_tensor, TensorCPU<Dtype> &hidden_tensor);
+
+private:
   
-//   TensorCPU<Dtype> Forward(TensorCPU<Dtype> &input_tensor, TensorCPU<Dtype> &hidden_tensor);
+  Cell_CPU<Dtype>* reverse_cell_;
 
-// };
+
+};
+
+
+template <typename Dtype>
+class StackedRNN : public CPUFunctor<Dtype> {
+
+public:
+  StackedRNN(
+    // int batch_size,
+    // int input_dim,
+    // int hidden_dim,
+    std::vector<RNNOp_CPU<Dtype>* > rnn_layers) 
+      : rnn_layers_(rnn_layers) {}
+
+  ~StackedRNN()  {}
+
+  
+  virtual TensorCPU<Dtype> Forward(TensorCPU<Dtype> input_tensor, 
+    std::vector<TensorCPU<Dtype> > hidden_tensors);
+  
+  virtual TensorCPU<Dtype> Forward(TensorCPU<Dtype> &input_tensor) { }
+
+protected:
+
+  int batch_size_;
+  int input_dim_, hidden_dim_;
+
+  std::vector<RNNOp_CPU<Dtype>* > rnn_layers_;
+
+
+};
+
 
 
 
