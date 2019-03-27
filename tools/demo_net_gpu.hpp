@@ -1,17 +1,20 @@
-
 #include "hypertea/hypertea.hpp"
+#include "bn_opencl.hpp"
+#include "conv_opencl.hpp"
 
 namespace hypertea {
 
 class new_net {
 public:
 
-    new_net() {
+     
+
+    new_net(const std::string &param_file) {
 
         int weight_size = 7285260;
         unsigned char* all_weights = (unsigned char*) malloc(weight_size);
 
-        FILE *f = fopen("pytorch_weight", "rb");
+        FILE *f = fopen(param_file.c_str(), "rb");
         size_t read_size = fread(all_weights, 1, weight_size, f);
         if (read_size != weight_size) { 
             LOG(ERROR) << "Weight File Size Mismatch" << read_size << " and " << weight_size << std::endl;
@@ -72,10 +75,9 @@ public:
         OPENCL_CHECK(clEnqueueWriteBuffer(OpenCLHandler::Get().commandQueue, deconv3_weight, CL_TRUE, 0, 31104, all_weights + 7254156, 0, NULL, NULL));
 
         free(all_weights);
-        // OpenCLHandler::Get().load_opencl_program("conv_cl", OpenCLHandler::Get().conv_program);
-        // OpenCLHandler::Get().load_opencl_program("bn_cl", OpenCLHandler::Get().bn_program);
-        OpenCLHandler::Get().build_opencl_program(conv_opencl_funcs, OpenCLHandler::Get().conv_program, "conv_cl");
-        OpenCLHandler::Get().build_opencl_program(bn_opencl_funcs, OpenCLHandler::Get().bn_program, "bn_cl");
+        OpenCLHandler::Get().build_opencl_math_code(false);
+        OpenCLHandler::Get().build_opencl_program(conv_opencl_funcs, OpenCLHandler::Get().conv_program);
+        OpenCLHandler::Get().build_opencl_program(bn_opencl_funcs, OpenCLHandler::Get().bn_program);
 
     }
 
@@ -153,20 +155,7 @@ public:
         temp += res5_bn2(res5_conv2(res5_relu1(res5_bn1(res5_conv1(temp)))));
         
 
-        float* print_data = temp.debug_cpu_data();
-        for (int i = 0; i < 10; ++i) {
-            std::cout << print_data[i] << " | "; 
-        }
-
-
-        temp = deconv1(temp);
-
-        print_data = temp.debug_cpu_data();
-        for (int i = 0; i < 10; ++i) {
-            std::cout << print_data[i] << " | "; 
-        }
-
-        temp = de_bn1(de_elu1(temp));
+        temp = de_bn1(de_elu1(deconv1(temp)));
         temp = de_bn2(de_elu2(deconv2(temp)));
         temp = de_tanh3(deconv3(temp));
 
@@ -178,6 +167,8 @@ public:
 
 
 private:
+
+     
 
     cl_mem conv1_bias = clCreateBuffer(OpenCLHandler::Get().context, CL_MEM_READ_ONLY, 128, NULL, NULL);
     cl_mem conv1_weight = clCreateBuffer(OpenCLHandler::Get().context, CL_MEM_READ_ONLY, 31104, NULL, NULL);
@@ -267,15 +258,18 @@ private:
     ReLUOp_GPU<float> res5_relu1 = ReLUOp_GPU<float> ( 0, NOT_IN_PLACE );
     ConvolutionOp_GPU<float> res5_conv2 = ConvolutionOp_GPU<float> ("res5_conv2_forward", 2097152, res5_conv2_weight, NULL, std::vector<int> {16,4,1}, std::vector<int> {2048,32,1});
     BatchNormOp_GPU<float> res5_bn2 = BatchNormOp_GPU<float> (2097152, 1, 128, 1e-05, 1, false, NULL, NULL, res5_bn2_weight, res5_bn2_bias);
-    NativeDeconvolutionOp_GPU<float> deconv1 = NativeDeconvolutionOp_GPU<float> ("deconv1_col2Im", 4194304, 1024, deconv1_weight, deconv1_bias, std::vector<int> {1,128,128,128}, std::vector<int> {1,64,256,256}, false, std::vector<int> {256,1,1}, std::vector<int> {4194304,1,1});
+    DeconvolutionOp_GPU<float> deconv1 = DeconvolutionOp_GPU<float> ("deconv1_forward", 4194304, deconv1_weight, deconv1_bias, std::vector<int> {16,4,1}, std::vector<int> {8192,16,1});
     ELUOp_GPU<float> de_elu1 = ELUOp_GPU<float> ( 1, NOT_IN_PLACE );
     BatchNormOp_GPU<float> de_bn1 = BatchNormOp_GPU<float> (4194304, 1, 64, 1e-05, 1, false, NULL, NULL, de_bn1_weight, de_bn1_bias);
-    NativeDeconvolutionOp_GPU<float> deconv2 = NativeDeconvolutionOp_GPU<float> ("deconv2_col2Im", 8388608, 512, deconv2_weight, deconv2_bias, std::vector<int> {1,64,256,256}, std::vector<int> {1,32,512,512}, false, std::vector<int> {256,1,1}, std::vector<int> {8388608,1,1});
+    DeconvolutionOp_GPU<float> deconv2 = DeconvolutionOp_GPU<float> ("deconv2_forward", 8388608, deconv2_weight, deconv2_bias, std::vector<int> {16,4,1}, std::vector<int> {32768,8,1});
     ELUOp_GPU<float> de_elu2 = ELUOp_GPU<float> ( 1, NOT_IN_PLACE );
     BatchNormOp_GPU<float> de_bn2 = BatchNormOp_GPU<float> (8388608, 1, 32, 1e-05, 1, false, NULL, NULL, de_bn2_weight, de_bn2_bias);
-    NativeDeconvolutionOp_GPU<float> deconv3 = NativeDeconvolutionOp_GPU<float> ("deconv3_col2Im", 786432, 243, deconv3_weight, deconv3_bias, std::vector<int> {1,32,512,512}, std::vector<int> {1,3,512,512}, false, std::vector<int> {256,1,1}, std::vector<int> {786432,1,1});
+    DeconvolutionOp_GPU<float> deconv3 = DeconvolutionOp_GPU<float> ("deconv3_forward", 786432, deconv3_weight, deconv3_bias, std::vector<int> {16,4,1}, std::vector<int> {32768,4,1});
     TanHOp_GPU<float> de_tanh3 = TanHOp_GPU<float> ( NOT_IN_PLACE );
 
 };
+
+ 
+
 } //namespace hypertea
         

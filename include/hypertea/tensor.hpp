@@ -96,16 +96,16 @@ public:
 
 
 	Dtype* debug_cpu_data() const {
-		float* cpu_data = new float[this->count_];
+		Dtype* cpu_data = new Dtype[this->count_];
 		OPENCL_CHECK(clEnqueueReadBuffer(OpenCLHandler::Get().commandQueue, (cl_mem)data_.get(), CL_TRUE, 0, sizeof(Dtype) * this->count_, cpu_data, 0, NULL, NULL));
 		return cpu_data;
 	}
 
 
 	TensorGPU& operator+=(const TensorGPU & other);
-	TensorGPU& operator+=(const Dtype other);
+	TensorGPU& operator+=(const float other);
 
-	TensorGPU& operator*=(const Dtype other);
+	TensorGPU& operator*=(const float other);
 
 
 private:

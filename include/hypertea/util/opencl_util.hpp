@@ -34,8 +34,10 @@ public:
 
 	void load_opencl_program(std::string save_binary_file, cl_program &program);
 
-
   	std::string opencl_math_code(bool is_half);
+
+
+  	void build_opencl_math_code(bool is_half);
 
 
 

@@ -139,6 +139,7 @@ class BatchNormOp_GPU : public GPUFunctor<Dtype> {
     bool use_global_stats,
     cl_mem mean, cl_mem variance,
     cl_mem weight, cl_mem bias,
+    float sum_shift_num = 1.0, float top_shift_num = 1.0,
     bool inplace = false)
       : GPUFunctor<Dtype>(), top_count_(top_count), num_(num),
         channels_(channels),
@@ -146,6 +147,7 @@ class BatchNormOp_GPU : public GPUFunctor<Dtype> {
         use_global_stats_(use_global_stats),
         mean_(mean), variance_(variance),
         weight_(weight), bias_(bias),
+        sum_shift_num_(sum_shift_num), top_shift_num_(top_shift_num),
         inplace_(inplace) {
 
           temp_ = clCreateBuffer(OpenCLHandler::Get().context, CL_MEM_READ_WRITE, sizeof(Dtype) * top_count, NULL, NULL);
@@ -153,12 +155,12 @@ class BatchNormOp_GPU : public GPUFunctor<Dtype> {
           spatial_dim_ = top_count/(num*channels);
 
           spatial_sum_multiplier_ = clCreateBuffer(OpenCLHandler::Get().context, CL_MEM_READ_WRITE, sizeof(Dtype) * spatial_dim_, NULL, NULL);
-          hypertea_gpu_set<float>(spatial_dim_, float(1.), spatial_sum_multiplier_);
+          hypertea_gpu_set<Dtype>(spatial_dim_, float(1.), spatial_sum_multiplier_);
 
           num_by_chans_ = clCreateBuffer(OpenCLHandler::Get().context, CL_MEM_READ_WRITE, sizeof(Dtype) * num * channels, NULL, NULL);
 
           batch_sum_multiplier_ = clCreateBuffer(OpenCLHandler::Get().context, CL_MEM_READ_WRITE, sizeof(Dtype) * num, NULL, NULL);
-          hypertea_gpu_set<float>(num, float(1.), batch_sum_multiplier_);
+          hypertea_gpu_set<Dtype>(num, float(1.), batch_sum_multiplier_);
 
           if(!use_global_stats) {
             mean_ = clCreateBuffer(OpenCLHandler::Get().context, CL_MEM_READ_WRITE, sizeof(Dtype) * channels, NULL, NULL);
@@ -196,7 +198,9 @@ class BatchNormOp_GPU : public GPUFunctor<Dtype> {
   cl_mem num_by_chans_;
   cl_mem spatial_sum_multiplier_;
 
+  float sum_shift_num_, top_shift_num_;
 
+  
   bool inplace_;
 };
 

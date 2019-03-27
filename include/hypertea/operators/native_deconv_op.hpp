@@ -52,9 +52,9 @@ class NativeDeconvolutionOp_GPU : public GPUFunctor<Dtype>{
         col_offset_ = kernel_dim_ * conv_out_spatial_dim_;
 
         bias_multiplier_ = clCreateBuffer(OpenCLHandler::Get().context, CL_MEM_READ_WRITE, out_spatial_dim_ * sizeof(Dtype), NULL, NULL);
-        hypertea_gpu_set<float>(out_spatial_dim_, Dtype(1), bias_multiplier_);
+        hypertea_gpu_set<Dtype>(out_spatial_dim_, Dtype(1), bias_multiplier_);
         col_buffer_ = clCreateBuffer(OpenCLHandler::Get().context, CL_MEM_READ_WRITE, col_offset_ * sizeof(Dtype), NULL, NULL);
-        hypertea_gpu_set<float>(col_offset_, Dtype(1), col_buffer_);
+        hypertea_gpu_set<Dtype>(col_offset_, Dtype(1), col_buffer_);
 
 
       }

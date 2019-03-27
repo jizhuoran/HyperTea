@@ -173,24 +173,27 @@ TensorGPU<Dtype>& TensorGPU<Dtype>::operator+=(const TensorGPU<Dtype> & other) {
     return *this;
 }
 template TensorGPU<float>& TensorGPU<float>::operator+=(const TensorGPU<float> & other);
+template TensorGPU<half>& TensorGPU<half>::operator+=(const TensorGPU<half> & other);
 
 
 template <typename Dtype>
-TensorGPU<Dtype>& TensorGPU<Dtype>::operator+=(const Dtype other) {
+TensorGPU<Dtype>& TensorGPU<Dtype>::operator+=(const float other) {
   hypertea_gpu_add_scalar<Dtype>(this->count(), other, this->mutable_data());
     return *this;
 }
 template TensorGPU<float>& TensorGPU<float>::operator+=(const float other);
+template TensorGPU<half>& TensorGPU<half>::operator+=(const float other);
 
 
 
 
 template <typename Dtype>
-TensorGPU<Dtype>& TensorGPU<Dtype>::operator*=(const Dtype other) {
+TensorGPU<Dtype>& TensorGPU<Dtype>::operator*=(const float other) {
   hypertea_gpu_scal<Dtype>(this->count(), other, this->mutable_data());
     return *this;
 }
 template TensorGPU<float>& TensorGPU<float>::operator*=(const float other);
+template TensorGPU<half>& TensorGPU<half>::operator*=(const float other);
 
 
 	
@@ -204,6 +207,7 @@ TensorGPU<Dtype> operator+(const TensorGPU<Dtype>& lhs, const TensorGPU<Dtype>& 
   return result;
 }
 template TensorGPU<float> operator+(const TensorGPU<float>& a, const TensorGPU<float>& rhs);
+template TensorGPU<half> operator+(const TensorGPU<half>& a, const TensorGPU<half>& rhs);
 
 
 template <typename Dtype>
@@ -215,6 +219,7 @@ TensorGPU<Dtype> operator+(const TensorGPU<Dtype>& lhs, const float rhs) {
   return result;
 }
 template TensorGPU<float> operator+(const TensorGPU<float>& a, const float rhs);
+template TensorGPU<half> operator+(const TensorGPU<half>& a, const float rhs);
 
 
 
@@ -229,6 +234,7 @@ TensorGPU<Dtype> operator-(const TensorGPU<Dtype>& lhs, const TensorGPU<Dtype>& 
   return result;
 }
 template TensorGPU<float> operator-(const TensorGPU<float>& a, const TensorGPU<float>& rhs);
+template TensorGPU<half> operator-(const TensorGPU<half>& a, const TensorGPU<half>& rhs);
 
 
 template <typename Dtype>
@@ -240,6 +246,7 @@ TensorGPU<Dtype> operator-(const TensorGPU<Dtype>& lhs, const float rhs) {
   return result;
 }
 template TensorGPU<float> operator-(const TensorGPU<float>& a, const float rhs);
+template TensorGPU<half> operator-(const TensorGPU<half>& a, const float rhs);
 
 
 
@@ -252,4 +259,5 @@ TensorGPU<Dtype> operator*(const TensorGPU<Dtype>& lhs, float rhs) {
   return result;
 }
 template TensorGPU<float> operator*(const TensorGPU<float>& a, const float rhs);
+template TensorGPU<half> operator*(const TensorGPU<half>& a, const float rhs);
 } //namespace hypertea

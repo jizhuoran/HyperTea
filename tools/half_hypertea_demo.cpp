@@ -4,7 +4,7 @@
 #include <iostream>
 #include <chrono>
 
-#include "../tools/demo_net_gpu.hpp"
+#include "../tools/artstyle_half.hpp"
 
 
 
@@ -106,13 +106,6 @@ int main(int argc, char** argv) {
 
 
 
-//     std::vector<float> temp_debug(10, 0);
-// OPENCL_CHECK(clEnqueueReadBuffer(OpenCLHandler::Get().commandQueue, conv1_weight, CL_TRUE, 0, 40, temp_debug.data(), 0, NULL, NULL));
-// for (auto const& x: temp_debug) {
-//   std::cout << x << " ";
-// }
-
-
 
     PPMImage *image;
     image = readPPM("./examples/style_transfer/HKU.ppm");
@@ -120,39 +113,36 @@ int main(int argc, char** argv) {
     std::vector<float> converter(512*512*3*1, 0);
     std::vector<float> converter1(512*512*3*1, 0);
 
+    std::vector<half> input_image(512*512*3*1, 0);
+    std::vector<half> output_image(512*512*3*1, 0);
+
     for (int y = 0; y < 512; y++) {
       for (int x = 0; x < 512; x++) {
         converter[y * 512 + x] = image->data[y * 512 + x].red;
         converter[y * 512 + x + 512 * 512] = image->data[y * 512 + x].green;
         converter[y * 512 + x + 2 * 512 * 512] = image->data[y * 512 + x].blue;
 
-
-        // converter[512*512*3 + y * 512 + x] = image->data[y * 512 + x].red;
-        // converter[512*512*3 + y * 512 + x + 512 * 512] = image->data[y * 512 + x].green;
-        // converter[512*512*3 + y * 512 + x + 2 * 512 * 512] = image->data[y * 512 + x].blue;
-
-
       }
     }
 
-    
-    
+    float2half(input_image.size(), converter.data(), input_image.data());
 
 
-
-    hypertea::new_net tmp_net("pytorch_weight");
+    hypertea::new_net tmp_net("pytorch_weight_half");
 
 
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 
     for (int i = 0; i < 50; ++i) {
-    	tmp_net.inference(converter, converter1);
+    	tmp_net.inference(input_image, output_image);
     }
   
     std::chrono::steady_clock::time_point end= std::chrono::steady_clock::now();
 
     std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() <<std::endl;
     
+
+    half2float(output_image.size(), output_image.data(), converter1.data());
 
 
     FILE *f = fopen("./examples/style_transfer/hypertea.ppm", "wb");

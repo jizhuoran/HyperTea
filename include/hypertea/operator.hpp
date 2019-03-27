@@ -91,11 +91,11 @@ public:
   virtual TensorGPU<Dtype> Forward(TensorGPU<Dtype> input_tensor) {}
   
   TensorGPU<Dtype> operator()(TensorGPU<Dtype> input) {
-    GPUTimer timer;
-    timer.Start();
+    // GPUTimer timer;
+    // timer.Start();
     auto output_tensor = this->Forward(input);
-    timer.Stop();
-    LOG(INFO) << "The time used for operator " << this->type() << " is " << timer.MilliSeconds() << "ms." << std::endl;
+    // timer.Stop();
+    // LOG(INFO) << "The time used for operator " << this->type() << " is " << timer.MilliSeconds() << "ms." << std::endl;
 
     return output_tensor;
   }

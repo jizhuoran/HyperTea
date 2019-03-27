@@ -1,12 +1,14 @@
 
 std::string conv_opencl_funcs = R"(
 
-#define Dtype float
-#define Dtype1 float
-#define Dtype2 float2
-#define Dtype4 float4
-#define Dtype8 float8
-#define Dtype16 float16
+#pragma OPENCL EXTENSION cl_khr_fp16 : enable
+
+#define Dtype half
+#define Dtype1 half
+#define Dtype2 half2
+#define Dtype4 half4
+#define Dtype8 half8
+#define Dtype16 half16
 #define VEC_1_0(X) X
 #define VEC_2_0(X) X.x
 #define VEC_2_1(X) X.y

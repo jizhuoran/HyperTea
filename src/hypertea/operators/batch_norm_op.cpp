@@ -119,8 +119,8 @@ TensorGPU<Dtype> BatchNormOp_GPU<Dtype>::Forward(TensorGPU<Dtype> input_tensor){
   cl_mem output_data = output_tensor.mutable_data();
 
 
-  float sum_shift_num = 1.;//64.0;
-  float top_shift_num = 1.;//32.0;
+  // float sum_shift_num_ = 1.;//64.0;
+  // float top_shift_num_ = 1.;//32.0;
 
   if (input_data != output_data) {
     hypertea_cl_copy<Dtype>(top_count_, input_data, output_data);
@@ -136,7 +136,7 @@ TensorGPU<Dtype> BatchNormOp_GPU<Dtype>::Forward(TensorGPU<Dtype> input_tensor){
     // compute mean
 
     hypertea_gpu_bsum<Dtype>(channels_ * num_, spatial_dim_, input_data, 
-                          1/sum_shift_num, (sum_shift_num*sum_shift_num)/(num_ * spatial_dim_), 
+                          1/sum_shift_num_, (sum_shift_num_*sum_shift_num_)/(num_ * spatial_dim_), 
                           num_by_chans_, 1);
     
     hypertea_gpu_gemv<Dtype>(CblasTrans, num_, channels_, float(1.),
@@ -160,14 +160,14 @@ TensorGPU<Dtype> BatchNormOp_GPU<Dtype>::Forward(TensorGPU<Dtype> input_tensor){
   if (!use_global_stats_) {
 
 
-    hypertea_gpu_scal<Dtype>(top_count_, 1/top_shift_num, output_data);
+    hypertea_gpu_scal<Dtype>(top_count_, 1/top_shift_num_, output_data);
 
     // compute variance using var(X) = E((X-EX)^2)
     hypertea_gpu_mul<Dtype>(top_count_, output_data, output_data,
         temp_);  // (X-EX)^2
 
     hypertea_gpu_bsum<Dtype>(channels_ * num_, spatial_dim_, temp_, 
-                          1/sum_shift_num, (sum_shift_num*sum_shift_num) / (num_ * spatial_dim_), 
+                          1/sum_shift_num_, (sum_shift_num_*sum_shift_num_) / (num_ * spatial_dim_), 
                           num_by_chans_, 1);
 
     hypertea_gpu_gemv<Dtype>(CblasTrans, num_, channels_, float(1.0),
@@ -181,8 +181,8 @@ TensorGPU<Dtype> BatchNormOp_GPU<Dtype>::Forward(TensorGPU<Dtype> input_tensor){
   hypertea_gpu_add_scalar<Dtype>(channels_, eps_, variance_);
   hypertea_gpu_sqrt<Dtype>(channels_, variance_, variance_);
 
-  hypertea_gpu_scal<Dtype>(top_count_, top_shift_num, output_data);
-  hypertea_gpu_scal<Dtype>(channels_, top_shift_num, variance_);
+  hypertea_gpu_scal<Dtype>(top_count_, top_shift_num_, output_data);
+  hypertea_gpu_scal<Dtype>(channels_, top_shift_num_, variance_);
 
   // replicate variance to input size
   hypertea_gpu_gemm<Dtype>(CblasNoTrans, CblasNoTrans, num_, channels_, 1, float(1),
