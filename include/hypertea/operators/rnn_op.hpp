@@ -169,7 +169,6 @@ class RNNOp_CPU {
 
 public:
   RNNOp_CPU(
-    int batch_size,
     int input_dim,
     int hidden_dim,
     Dtype* w_ih,
@@ -177,8 +176,7 @@ public:
     Dtype* b_ih,
     Dtype* b_hh,
     RNN_CELL_TYPE cell_type) 
-      : batch_size_(batch_size),
-        input_dim_(input_dim), 
+      : input_dim_(input_dim), 
         hidden_dim_(hidden_dim),
         cell_(cell_factory_(input_dim, hidden_dim, w_ih, w_hh, b_ih, b_hh, cell_type)) {}
 
@@ -190,7 +188,7 @@ public:
 
 protected:
 
-  int batch_size_;
+  int batch_size_ = 1;
   int input_dim_, hidden_dim_;
 
   std::unique_ptr<Cell_CPU<Dtype>> cell_;
@@ -208,7 +206,6 @@ class UnidirectionalRNN_CPU : public RNNOp_CPU<Dtype> {
 
 public:
   UnidirectionalRNN_CPU(
-    int batch_size,
     int input_dim,
     int hidden_dim,
     Dtype* w_ih,
@@ -216,7 +213,7 @@ public:
     Dtype* b_ih,
     Dtype* b_hh,
     RNN_CELL_TYPE cell_type) 
-      : RNNOp_CPU<Dtype>(batch_size, input_dim, hidden_dim, w_ih, w_hh, b_ih, b_hh, cell_type) {}
+      : RNNOp_CPU<Dtype>(input_dim, hidden_dim, w_ih, w_hh, b_ih, b_hh, cell_type) {}
 
   ~UnidirectionalRNN_CPU() {}
 
@@ -231,7 +228,6 @@ class BidirectionalRNN_CPU : public RNNOp_CPU<Dtype> {
 
 public:
   BidirectionalRNN_CPU(
-    int batch_size,
     int input_dim,
     int hidden_dim,
     Dtype* w_ih, Dtype* rw_ih,
@@ -239,7 +235,7 @@ public:
     Dtype* b_ih, Dtype* rb_ih,
     Dtype* b_hh, Dtype* rb_hh,
     RNN_CELL_TYPE cell_type) 
-      : RNNOp_CPU<Dtype>(batch_size, input_dim, hidden_dim, w_ih, w_hh, b_ih, b_hh, cell_type),
+      : RNNOp_CPU<Dtype>(input_dim, hidden_dim, w_ih, w_hh, b_ih, b_hh, cell_type),
         reverse_cell_(cell_factory_(input_dim, hidden_dim, rw_ih, rw_hh, rb_ih, rb_hh, cell_type)) { }
 
   ~BidirectionalRNN_CPU() {}
@@ -275,7 +271,7 @@ public:
   
   virtual TensorCPU<Dtype> Forward(TensorCPU<Dtype> &input_tensor) { }
 
-protected:
+private:
 
   std::vector<RNNOp_CPU<Dtype>* > rnn_layers_;
 

@@ -15,25 +15,25 @@
 ########################
 
 //Path to a library.
-Atlas_BLAS_LIBRARY:FILEPATH=/usr/lib/libatlas.so
+Atlas_BLAS_LIBRARY:FILEPATH=Atlas_BLAS_LIBRARY-NOTFOUND
 
 //Path to a file.
-Atlas_CBLAS_INCLUDE_DIR:PATH=/usr/include
+Atlas_CBLAS_INCLUDE_DIR:PATH=/usr/include/x86_64-linux-gnu
 
 //Path to a library.
-Atlas_CBLAS_LIBRARY:FILEPATH=/usr/lib/libcblas.so
+Atlas_CBLAS_LIBRARY:FILEPATH=Atlas_CBLAS_LIBRARY-NOTFOUND
 
 //Path to a file.
-Atlas_CLAPACK_INCLUDE_DIR:PATH=/usr/include/atlas
+Atlas_CLAPACK_INCLUDE_DIR:PATH=Atlas_CLAPACK_INCLUDE_DIR-NOTFOUND
 
 //Path to a library.
-Atlas_LAPACK_LIBRARY:FILEPATH=/usr/lib/liblapack.so
+Atlas_LAPACK_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/liblapack.so
 
 //Path to a file.
-CLBlast_INCLUDE_DIR:PATH=/usr/include
+CLBlast_INCLUDE_DIR:PATH=/usr/local/include
 
 //Path to a library.
-CLBlast_LIB:FILEPATH=/usr/lib/x86_64-linux-gnu/libclblast.so
+CLBlast_LIB:FILEPATH=/usr/local/lib/libclblast.so
 
 //Path to a program.
 CMAKE_AR:FILEPATH=/usr/bin/ar
@@ -50,6 +50,14 @@ CMAKE_CONFIGURATION_TYPES:STRING=Debug;Release
 
 //CXX compiler
 CMAKE_CXX_COMPILER:FILEPATH=/usr/bin/c++
+
+//A wrapper around 'ar' adding the appropriate '--plugin' option
+// for the GCC compiler
+CMAKE_CXX_COMPILER_AR:FILEPATH=/usr/bin/gcc-ar-7
+
+//A wrapper around 'ranlib' adding the appropriate '--plugin' option
+// for the GCC compiler
+CMAKE_CXX_COMPILER_RANLIB:FILEPATH=/usr/bin/gcc-ranlib-7
 
 //Flags used by the compiler during all build types.
 CMAKE_CXX_FLAGS:STRING=
@@ -69,6 +77,14 @@ CMAKE_CXX_FLAGS_RELWITHDEBINFO:STRING=-O2 -g -DNDEBUG
 
 //C compiler
 CMAKE_C_COMPILER:FILEPATH=/usr/bin/cc
+
+//A wrapper around 'ar' adding the appropriate '--plugin' option
+// for the GCC compiler
+CMAKE_C_COMPILER_AR:FILEPATH=/usr/bin/gcc-ar-7
+
+//A wrapper around 'ranlib' adding the appropriate '--plugin' option
+// for the GCC compiler
+CMAKE_C_COMPILER_RANLIB:FILEPATH=/usr/bin/gcc-ranlib-7
 
 //Flags used by the compiler during all build types.
 CMAKE_C_FLAGS:STRING=
@@ -205,13 +221,13 @@ GFLAGS_ROOT_DIR:PATH=
 OPENCL_INCLUDE_DIRS:PATH=/usr/include
 
 //Path to a library.
-OPENCL_LIBRARIES:FILEPATH=/usr/lib/libOpenCL.so
+OPENCL_LIBRARIES:FILEPATH=/usr/lib/x86_64-linux-gnu/libOpenCL.so
 
 //Path to a file.
-OpenBLAS_INCLUDE_DIR:PATH=/usr/include
+OpenBLAS_INCLUDE_DIR:PATH=/usr/include/x86_64-linux-gnu
 
 //Path to a library.
-OpenBLAS_LIB:FILEPATH=OpenBLAS_LIB-NOTFOUND
+OpenBLAS_LIB:FILEPATH=/usr/lib/x86_64-linux-gnu/libopenblas.so
 
 //Value Computed by CMake
 Project_BINARY_DIR:STATIC=/home/zrji/HyperTea/build
@@ -226,26 +242,16 @@ USE_OPENCL:BOOL=ON
 USE_PROJECT_FOLDERS:BOOL=OFF
 
 //Path to a file.
-_OPENCL_CPP_INCLUDE_DIRS:PATH=/usr/include
+_OPENCL_CPP_INCLUDE_DIRS:PATH=/usr/local/cuda/include
 
 //Dependencies for the target
-hypertea_LIB_DEPENDS:STATIC=general;/usr/lib/libcblas.so;general;/usr/lib/libOpenCL.so;general;/usr/lib/x86_64-linux-gnu/libclblast.so;
+hypertea_LIB_DEPENDS:STATIC=general;/usr/lib/x86_64-linux-gnu/libopenblas.so;general;/usr/lib/x86_64-linux-gnu/libOpenCL.so;general;/usr/local/lib/libclblast.so;
 
 
 ########################
 # INTERNAL cache entries
 ########################
 
-//ADVANCED property for variable: Atlas_BLAS_LIBRARY
-Atlas_BLAS_LIBRARY-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: Atlas_CBLAS_INCLUDE_DIR
-Atlas_CBLAS_INCLUDE_DIR-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: Atlas_CBLAS_LIBRARY
-Atlas_CBLAS_LIBRARY-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: Atlas_CLAPACK_INCLUDE_DIR
-Atlas_CLAPACK_INCLUDE_DIR-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: Atlas_LAPACK_LIBRARY
-Atlas_LAPACK_LIBRARY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CLBlast_INCLUDE_DIR
 CLBlast_INCLUDE_DIR-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CLBlast_LIB
@@ -259,9 +265,9 @@ CMAKE_CACHEFILE_DIR:INTERNAL=/home/zrji/HyperTea/build
 //Major version of cmake used to create the current loaded cache
 CMAKE_CACHE_MAJOR_VERSION:INTERNAL=3
 //Minor version of cmake used to create the current loaded cache
-CMAKE_CACHE_MINOR_VERSION:INTERNAL=5
+CMAKE_CACHE_MINOR_VERSION:INTERNAL=10
 //Patch version of cmake used to create the current loaded cache
-CMAKE_CACHE_PATCH_VERSION:INTERNAL=1
+CMAKE_CACHE_PATCH_VERSION:INTERNAL=2
 //ADVANCED property for variable: CMAKE_COLOR_MAKEFILE
 CMAKE_COLOR_MAKEFILE-ADVANCED:INTERNAL=1
 //Path to CMake executable.
@@ -274,6 +280,10 @@ CMAKE_CPACK_COMMAND:INTERNAL=/usr/bin/cpack
 CMAKE_CTEST_COMMAND:INTERNAL=/usr/bin/ctest
 //ADVANCED property for variable: CMAKE_CXX_COMPILER
 CMAKE_CXX_COMPILER-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CMAKE_CXX_COMPILER_AR
+CMAKE_CXX_COMPILER_AR-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CMAKE_CXX_COMPILER_RANLIB
+CMAKE_CXX_COMPILER_RANLIB-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_CXX_FLAGS
 CMAKE_CXX_FLAGS-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_CXX_FLAGS_DEBUG
@@ -286,6 +296,10 @@ CMAKE_CXX_FLAGS_RELEASE-ADVANCED:INTERNAL=1
 CMAKE_CXX_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_C_COMPILER
 CMAKE_C_COMPILER-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CMAKE_C_COMPILER_AR
+CMAKE_C_COMPILER_AR-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CMAKE_C_COMPILER_RANLIB
+CMAKE_C_COMPILER_RANLIB-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_C_FLAGS
 CMAKE_C_FLAGS-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_C_FLAGS_DEBUG
@@ -345,10 +359,12 @@ CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=3
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP
 CMAKE_OBJDUMP-ADVANCED:INTERNAL=1
+//Platform information initialized
+CMAKE_PLATFORM_INFO_INITIALIZED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_RANLIB
 CMAKE_RANLIB-ADVANCED:INTERNAL=1
 //Path to CMake installation.
-CMAKE_ROOT:INTERNAL=/usr/share/cmake-3.5
+CMAKE_ROOT:INTERNAL=/usr/share/cmake-3.10
 //ADVANCED property for variable: CMAKE_SHARED_LINKER_FLAGS
 CMAKE_SHARED_LINKER_FLAGS-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_SHARED_LINKER_FLAGS_DEBUG
@@ -379,12 +395,10 @@ CMAKE_STRIP-ADVANCED:INTERNAL=1
 CMAKE_UNAME:INTERNAL=/bin/uname
 //ADVANCED property for variable: CMAKE_VERBOSE_MAKEFILE
 CMAKE_VERBOSE_MAKEFILE-ADVANCED:INTERNAL=1
-//Details about finding Atlas
-FIND_PACKAGE_MESSAGE_DETAILS_Atlas:INTERNAL=[/usr/include][/usr/include/atlas][/usr/lib/libcblas.so][/usr/lib/libatlas.so][/usr/lib/liblapack.so][v()]
 //Details about finding GFlags
 FIND_PACKAGE_MESSAGE_DETAILS_GFlags:INTERNAL=[/usr/include][/usr/lib/x86_64-linux-gnu/libgflags.so][v()]
 //Details about finding OpenCL
-FIND_PACKAGE_MESSAGE_DETAILS_OpenCL:INTERNAL=[/usr/lib/libOpenCL.so][/usr/include][v()]
+FIND_PACKAGE_MESSAGE_DETAILS_OpenCL:INTERNAL=[/usr/lib/x86_64-linux-gnu/libOpenCL.so][/usr/include][v()]
 //ADVANCED property for variable: GFLAGS_INCLUDE_DIR
 GFLAGS_INCLUDE_DIR-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: GFLAGS_LIBRARY

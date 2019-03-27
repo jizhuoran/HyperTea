@@ -18,6 +18,9 @@ set(CMAKE_TARGET_DEFINITIONS_CXX
 set(CMAKE_CXX_TARGET_INCLUDE_PATH
   "../include"
   "../src"
+  "/usr/include/x86_64-linux-gnu"
+  "/usr/local/cuda/include"
+  "/usr/local/include"
   )
 
 # Targets to which this target links.
