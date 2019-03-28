@@ -212,15 +212,13 @@ public:
       : GPUFunctor<Dtype>(), kernel_name_(kernel_name), top_count_(top_count),
         weight_(weight), bias_(bias) {
 
-          local_size_ = new size_t[3];
-          local_size_[0] = local[0];
-          local_size_[1] = local[1];
-          local_size_[2] = local[2];
+          local_size_.push_back(local[0]);
+          local_size_.push_back(local[1]);
+          local_size_.push_back(local[2]);
 
-          global_size_ = new size_t[3];
-          global_size_[0] = global[0];
-          global_size_[1] = global[1];
-          global_size_[2] = global[2];
+          global_size_.push_back(global[0]);
+          global_size_.push_back(global[1]);
+          global_size_.push_back(global[2]);
 
         }
 
@@ -233,8 +231,8 @@ protected:
 
 
   std::string kernel_name_;
-  size_t* local_size_;
-  size_t* global_size_;
+  std::vector<size_t> local_size_;
+  std::vector<size_t> global_size_;
 
 };
 

@@ -4,6 +4,7 @@
 #ifdef USE_OPENCL
 
 #include <iostream>
+#include <vector>
 #include <string.h>
 #include <sstream>
 #include <CL/cl.h>
@@ -17,6 +18,18 @@ namespace hypertea {
 
 void cl_mem_destory(void* ptr);
 
+void opencl_launch_wrapper(
+  const cl_program& program,
+  const std::string& kernel_name,
+  std::vector<std::pair<size_t, const void *> > const& arg_list,
+  std::vector<size_t> const& global_size,
+  std::vector<size_t> const& local_size,
+  cl_uint num_events_in_wait_list = 0,
+  const cl_event *event_wait_list = nullptr,
+  cl_event *event = nullptr
+);
+
+size_t reference_count(cl_mem mem_obj);
 
 
 class OpenCLHandler

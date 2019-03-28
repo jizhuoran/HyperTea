@@ -50,25 +50,48 @@ TensorGPU<Dtype> ConvolutionOp_GPU<Dtype>::Forward(TensorGPU<Dtype> input_tensor
   cl_mem output_data = output_tensor.mutable_data();
 
 
-  cl_int ret = -1;
 
-  cl_kernel kernel = clCreateKernel(OpenCLHandler::Get().conv_program, this->kernel_name_.c_str(), &ret);
-  OPENCL_CHECK(ret);
-
-  OPENCL_CHECK(clSetKernelArg(kernel, 0, sizeof(cl_mem), (void *)&input_data));  
-  OPENCL_CHECK(clSetKernelArg(kernel, 1, sizeof(cl_mem), (void *)&this->weight_));  
-  OPENCL_CHECK(clSetKernelArg(kernel, 2, sizeof(cl_mem), (void *)&output_data));
+  std::vector<std::pair<size_t, const void *> > arg_list {
+    std::make_pair(sizeof(cl_mem), (void *)&input_data),
+    std::make_pair(sizeof(cl_mem), (void *)&this->weight_),
+    std::make_pair(sizeof(cl_mem), (void *)&output_data)
+  };
 
   if (this->bias_) {
-    OPENCL_CHECK(clSetKernelArg(kernel, 3, sizeof(cl_mem), (void *)&this->bias_));
+    arg_list.push_back(std::make_pair(sizeof(cl_mem), (void *)&this->bias_));
   }
 
-  OPENCL_CHECK(clEnqueueNDRangeKernel(OpenCLHandler::Get().commandQueue, kernel, 3, NULL, this->global_size_, this->local_size_, 0, NULL, NULL));  
+
+  opencl_launch_wrapper(
+    OpenCLHandler::Get().conv_program,
+    this->kernel_name_,
+    arg_list,
+    this->global_size_,
+    this->local_size_
+  );
+  
+  return output_tensor;
+
+
+
+  // cl_int ret = -1;
+
+  // cl_kernel kernel = clCreateKernel(OpenCLHandler::Get().conv_program, this->kernel_name_.c_str(), &ret);
+  // OPENCL_CHECK(ret);
+
+  // OPENCL_CHECK(clSetKernelArg(kernel, 0, sizeof(cl_mem), (void *)&input_data));  
+  // OPENCL_CHECK(clSetKernelArg(kernel, 1, sizeof(cl_mem), (void *)&this->weight_));  
+  // OPENCL_CHECK(clSetKernelArg(kernel, 2, sizeof(cl_mem), (void *)&output_data));
+
+  // if (this->bias_) {
+  //   OPENCL_CHECK(clSetKernelArg(kernel, 3, sizeof(cl_mem), (void *)&this->bias_));
+  // }
+
+  // OPENCL_CHECK(clEnqueueNDRangeKernel(OpenCLHandler::Get().commandQueue, kernel, 3, NULL, this->global_size_, this->local_size_, 0, NULL, NULL));  
 
 
   // std::cout << "come to here" << std::endl;
 
-  return output_tensor;
 }
 #endif //USE_OPENCL
 

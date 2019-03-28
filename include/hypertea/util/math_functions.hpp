@@ -236,6 +236,14 @@ void hypertea_gpu_mul(const int N, const cl_mem a, const cl_mem b, cl_mem y);
 template <typename Dtype>
 void hypertea_gpu_div(const int N, const cl_mem a, const cl_mem b, cl_mem y);
 
+
+template <typename Dtype>
+void hypertea_gpu_sigmoid(const int N, const cl_mem x, cl_mem y);
+
+template <typename Dtype>
+void hypertea_gpu_tanh(const int N, const cl_mem x, cl_mem y);
+
+
 template <typename Dtype>
 void hypertea_gpu_abs(const int n, const cl_mem a, cl_mem y);
 

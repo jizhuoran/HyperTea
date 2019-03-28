@@ -13,6 +13,67 @@ void cl_mem_destory(void* ptr) {
 
 }
 
+
+
+void opencl_launch_wrapper(
+  const cl_program& program,
+  const std::string& kernel_name,
+  std::vector<std::pair<size_t, const void *> > const& arg_list,
+  std::vector<size_t> const& global_size,
+  std::vector<size_t> const& local_size,
+  cl_uint num_events_in_wait_list,
+  const cl_event *event_wait_list,
+  cl_event *event
+) {
+
+  cl_int ret;
+
+  cl_kernel kernel = clCreateKernel(program, kernel_name.c_str(), &ret);
+  OPENCL_CHECK(ret);
+
+
+  for (int i = 0; i < arg_list.size(); ++i) {
+    OPENCL_CHECK(clSetKernelArg(kernel, i, arg_list[i].first, arg_list[i].second));
+  }
+
+  
+  OPENCL_CHECK(
+    clEnqueueNDRangeKernel(
+      OpenCLHandler::Get().commandQueue, 
+      kernel, 
+      global_size.size(), 
+      nullptr,
+      global_size.data(), 
+      local_size.data(), 
+      num_events_in_wait_list, 
+      event_wait_list, 
+      event
+    )
+  );  
+  
+}
+
+
+
+size_t reference_count(cl_mem mem_obj) {
+
+  cl_uint refer_count;
+
+  OPENCL_CHECK(
+    clGetMemObjectInfo (
+      mem_obj,
+      CL_MEM_REFERENCE_COUNT,
+      sizeof(cl_uint),
+      &refer_count,
+      nullptr
+    )
+  );
+
+  return refer_count;
+}
+
+
+
 static OpenCLHandler *thread_instance_ = NULL;
 
 OpenCLHandler& OpenCLHandler::Get() {

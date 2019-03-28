@@ -1,4 +1,4 @@
-#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
 
 #IncludeRegexScan: ^.*$
 
@@ -243,6 +243,8 @@ math.h
 ../include/hypertea/util/opencl_util.hpp
 iostream
 -
+vector
+-
 string.h
 -
 sstream
@@ -252,19 +254,19 @@ CL/cl.h
 hypertea/util/device_alternate.hpp
 ../include/hypertea/util/hypertea/util/device_alternate.hpp
 
-/home/zrji/HyperTea/tools/bn_opencl.hpp
+/home/zrji/hypertea/tools/bn_opencl.hpp
 
-/home/zrji/HyperTea/tools/conv_opencl.hpp
+/home/zrji/hypertea/tools/conv_opencl.hpp
 
-/home/zrji/HyperTea/tools/demo_net_gpu.hpp
+/home/zrji/hypertea/tools/demo_net_gpu.hpp
 hypertea/hypertea.hpp
-/home/zrji/HyperTea/tools/hypertea/hypertea.hpp
+/home/zrji/hypertea/tools/hypertea/hypertea.hpp
 bn_opencl.hpp
-/home/zrji/HyperTea/tools/bn_opencl.hpp
+/home/zrji/hypertea/tools/bn_opencl.hpp
 conv_opencl.hpp
-/home/zrji/HyperTea/tools/conv_opencl.hpp
+/home/zrji/hypertea/tools/conv_opencl.hpp
 
-/home/zrji/HyperTea/tools/hypertea_demo.cpp
+/home/zrji/hypertea/tools/hypertea_demo.cpp
 stdio.h
 -
 stdlib.h
@@ -276,5 +278,35 @@ iostream
 chrono
 -
 ../tools/demo_net_gpu.hpp
-/home/zrji/HyperTea/tools/demo_net_gpu.hpp
+/home/zrji/hypertea/tools/demo_net_gpu.hpp
+
+/usr/local/cuda/include/CL/cl.h
+OpenCL/cl_platform.h
+-
+CL/cl_platform.h
+-
+
+/usr/local/cuda/include/CL/cl_platform.h
+AvailabilityMacros.h
+-
+stdint.h
+-
+stddef.h
+-
+altivec.h
+-
+intrin.h
+-
+xmmintrin.h
+-
+intrin.h
+-
+emmintrin.h
+-
+mmintrin.h
+-
+intrin.h
+-
+immintrin.h
+-
 

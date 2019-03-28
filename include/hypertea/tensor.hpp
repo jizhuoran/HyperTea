@@ -95,6 +95,27 @@ public:
 	}
 
 
+	const size_t reference_count() const {
+
+		cl_uint refer_count;
+
+		OPENCL_CHECK(
+			clGetMemObjectInfo (
+				data_.get(),
+			 	CL_MEM_REFERENCE_COUNT,
+			 	sizeof(cl_uint),
+			 	&refer_count,
+			 	nullptr
+ 			)
+ 		);
+
+ 		return refer_count;
+	}
+
+
+
+
+
 	Dtype* debug_cpu_data() const {
 		Dtype* cpu_data = new Dtype[this->count_];
 		OPENCL_CHECK(clEnqueueReadBuffer(OpenCLHandler::Get().commandQueue, (cl_mem)data_.get(), CL_TRUE, 0, sizeof(Dtype) * this->count_, cpu_data, 0, NULL, NULL));

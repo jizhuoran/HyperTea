@@ -13,32 +13,7 @@
 namespace hypertea {
 
 
-void opencl_launch_wrapper(
-  cl_program program,
-  const std::string& kernel_name,
-  std::vector<std::pair<int, const void *> > const& arg_list,
-  std::vector<size_t> const& global_size,
-  std::vector<size_t> const& local_size
-) {
 
-  // cl_int ret;
-
-  // cl_kernel kernel = clCreateKernel(OpenCLHandler::Get().math_program, "add_kernel", &ret);
-  // OPENCL_CHECK(ret);
-
-  // // Set arguments for kernel
-  // OPENCL_CHECK(clSetKernelArg(kernel, 0, sizeof(cl_mem), (void *)&a));  
-  // OPENCL_CHECK(clSetKernelArg(kernel, 1, sizeof(cl_mem), (void *)&b));  
-  // OPENCL_CHECK(clSetKernelArg(kernel, 2, sizeof(cl_mem), (void *)&y));  
-  // OPENCL_CHECK(clSetKernelArg(kernel, 3, sizeof(cl_int), (void *)&N));  
-
-  // size_t global_size = HYPERTEA_GET_BLOCKS(N);
-  
-  // OPENCL_CHECK(clEnqueueNDRangeKernel(OpenCLHandler::Get().commandQueue, kernel, 1, NULL, &global_size, &HYPERTEA_OPENCL_NUM_THREADS, 0, NULL, NULL));  
-  
-
-
-}
 
 
 template <typename Dtype>
@@ -325,20 +300,20 @@ void hypertea_gpu_scal(
   
   Dtype alpha_(to_dtype_<Dtype>(alpha));
 
-  cl_int ret;
+  opencl_launch_wrapper(
+    OpenCLHandler::Get().math_program,
+    "scal_kernel",
+    std::vector<std::pair<size_t, const void *> > {
+      std::make_pair(sizeof(cl_mem), (void *)&X),
+      std::make_pair(dtype_size_<Dtype>(), (void *)&alpha_),
+      std::make_pair(sizeof(cl_int), (void *)&N)
+    },
+    std::vector<size_t> {HYPERTEA_GET_BLOCKS(N)},
+    std::vector<size_t> {HYPERTEA_OPENCL_NUM_THREADS}
+  );
 
-  cl_kernel kernel = clCreateKernel(OpenCLHandler::Get().math_program, "scal_kernel", &ret);
-  OPENCL_CHECK(ret);
 
-  // Set arguments for kernel
-  OPENCL_CHECK(clSetKernelArg(kernel, 0, sizeof(cl_mem), (void *)&X));  
-  OPENCL_CHECK(clSetKernelArg(kernel, 1, dtype_size_<Dtype>(), (void *)&alpha_));
-  OPENCL_CHECK(clSetKernelArg(kernel, 2, sizeof(cl_int), (void *)&N));  
 
-  size_t global_size = HYPERTEA_GET_BLOCKS(N);
-
-  OPENCL_CHECK(clEnqueueNDRangeKernel(OpenCLHandler::Get().commandQueue, kernel, 1, NULL, &global_size, &HYPERTEA_OPENCL_NUM_THREADS, 0, NULL, NULL));  
- 
 }
 
 template void hypertea_gpu_scal<float>(const int N, const float alpha, cl_mem X);
@@ -533,6 +508,64 @@ template void hypertea_gpu_div<half>(
 
 
 
+template <typename Dtype>
+void hypertea_gpu_sigmoid(
+  const int N, 
+  const cl_mem x, 
+  cl_mem y) {
+
+  opencl_launch_wrapper(
+    OpenCLHandler::Get().math_program,
+    "SigmoidForward",
+    std::vector<std::pair<size_t, const void *> > {
+      std::make_pair(sizeof(cl_mem), (void *)&x),
+      std::make_pair(sizeof(cl_mem), (void *)&y),
+      std::make_pair(sizeof(cl_int), (void *)&N)
+    },
+    std::vector<size_t> {HYPERTEA_GET_BLOCKS(N)},
+    std::vector<size_t> {HYPERTEA_OPENCL_NUM_THREADS}
+  );
+}
+
+template void hypertea_gpu_sigmoid<float>(
+  const int N, 
+  const cl_mem x, 
+  cl_mem y
+);
+
+template void hypertea_gpu_sigmoid<half>(
+  const int N, 
+  const cl_mem x, 
+  cl_mem y
+);
+
+
+
+template <typename Dtype>
+void hypertea_gpu_tanh(const int N, const cl_mem x, cl_mem y) {
+  opencl_launch_wrapper(
+    OpenCLHandler::Get().math_program,
+    "TanHForward",
+    std::vector<std::pair<size_t, const void *> > {
+      std::make_pair(sizeof(cl_mem), (void *)&x),
+      std::make_pair(sizeof(cl_mem), (void *)&y),
+      std::make_pair(sizeof(cl_int), (void *)&N)
+    },
+    std::vector<size_t> {HYPERTEA_GET_BLOCKS(N)},
+    std::vector<size_t> {HYPERTEA_OPENCL_NUM_THREADS}
+  );
+}
+template void hypertea_gpu_tanh<float>(
+  const int N, 
+  const cl_mem x, 
+  cl_mem y
+);
+
+template void hypertea_gpu_tanh<half>(
+  const int N, 
+  const cl_mem x, 
+  cl_mem y
+);
 
 
 template <typename Dtype>
@@ -655,24 +688,21 @@ void hypertea_gpu_powx(
   const float b, 
   cl_mem y) {
   
-  cl_int ret;
-
-  cl_kernel kernel = clCreateKernel(OpenCLHandler::Get().math_program, "powx_kernel", &ret);
-  OPENCL_CHECK(ret);
-
   Dtype b_(to_dtype_<Dtype>(b));
 
+  opencl_launch_wrapper(
+    OpenCLHandler::Get().math_program,
+    "powx_kernel",
+    std::vector<std::pair<size_t, const void *> > {
+      std::make_pair(sizeof(cl_mem), (void *)&a),
+      std::make_pair(sizeof(cl_mem), (void *)&y),
+      std::make_pair(dtype_size_<Dtype>(), (void *)&b_),
+      std::make_pair(sizeof(cl_int), (void *)&n)
+    },
+    std::vector<size_t> {HYPERTEA_GET_BLOCKS(n)},
+    std::vector<size_t> {HYPERTEA_OPENCL_NUM_THREADS}
+  );
 
-  // Set arguments for kernel
-  OPENCL_CHECK(clSetKernelArg(kernel, 0, sizeof(cl_mem), (void *)&a));  
-  OPENCL_CHECK(clSetKernelArg(kernel, 1, sizeof(cl_mem), (void *)&y));  
-  OPENCL_CHECK(clSetKernelArg(kernel, 2, dtype_size_<Dtype>(), (void *)&b_));  
-  OPENCL_CHECK(clSetKernelArg(kernel, 3, sizeof(cl_int), (void *)&n));  
-
-  size_t global_size = HYPERTEA_GET_BLOCKS(n);
-  
-  OPENCL_CHECK(clEnqueueNDRangeKernel(OpenCLHandler::Get().commandQueue, kernel, 1, NULL, &global_size, &HYPERTEA_OPENCL_NUM_THREADS, 0, NULL, NULL));  
-  
 }
 
 template void hypertea_gpu_powx<float>(
@@ -695,21 +725,18 @@ void hypertea_gpu_sqrt(
   const int n, 
   const cl_mem a, 
   cl_mem y) {
-  
-  cl_int ret;
 
-  cl_kernel kernel = clCreateKernel(OpenCLHandler::Get().math_program, "sqrt_kernel", &ret);
-  OPENCL_CHECK(ret);
-
-  // Set arguments for kernel
-  OPENCL_CHECK(clSetKernelArg(kernel, 0, sizeof(cl_mem), (void *)&a));  
-  OPENCL_CHECK(clSetKernelArg(kernel, 1, sizeof(cl_mem), (void *)&y));  
-  OPENCL_CHECK(clSetKernelArg(kernel, 2, sizeof(cl_int), (void *)&n));  
-
-  size_t global_size = HYPERTEA_GET_BLOCKS(n);
-  
-  OPENCL_CHECK(clEnqueueNDRangeKernel(OpenCLHandler::Get().commandQueue, kernel, 1, NULL, &global_size, &HYPERTEA_OPENCL_NUM_THREADS, 0, NULL, NULL));  
-
+  opencl_launch_wrapper(
+    OpenCLHandler::Get().math_program,
+    "sqrt_kernel",
+    std::vector<std::pair<size_t, const void *> > {
+      std::make_pair(sizeof(cl_mem), (void *)&a),
+      std::make_pair(sizeof(cl_mem), (void *)&y),
+      std::make_pair(sizeof(cl_int), (void *)&n)
+    },
+    std::vector<size_t> {HYPERTEA_GET_BLOCKS(n)},
+    std::vector<size_t> {HYPERTEA_OPENCL_NUM_THREADS}
+  );
   
 }
 
