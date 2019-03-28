@@ -15,9 +15,12 @@
 namespace hypertea {
 
 template<typename T> T to_dtype_(const float x);
-
 template<> inline float to_dtype_<float>(const float x) {return x;}
 template<> inline half to_dtype_<half> (const float x) {return float2half_impl(x);}
+
+template<typename T> size_t dtype_size_();
+template<> inline size_t dtype_size_<float>() {return sizeof(cl_float);}
+template<> inline size_t dtype_size_<half> () {return sizeof(cl_half);}
 
 // Hypertea gemm provides a simpler interface to the gemm functions, with the
 // limitation that the data has to be contiguous in memory.
