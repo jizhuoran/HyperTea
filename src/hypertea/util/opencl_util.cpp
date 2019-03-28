@@ -74,6 +74,27 @@ size_t reference_count(cl_mem mem_obj) {
 
 
 
+
+size_t cl_mem_count(cl_mem mem_obj) {
+
+  size_t mem_count;
+
+  OPENCL_CHECK(
+    clGetMemObjectInfo (
+      mem_obj,
+      CL_MEM_SIZE,
+      sizeof(size_t),
+      &mem_count,
+      nullptr
+    )
+  );
+
+  return mem_count;
+}
+
+
+
+
 static OpenCLHandler *thread_instance_ = NULL;
 
 OpenCLHandler& OpenCLHandler::Get() {

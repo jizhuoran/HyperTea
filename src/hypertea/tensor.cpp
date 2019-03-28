@@ -12,7 +12,6 @@ TensorCPU<Dtype>::TensorCPU(int count, Dtype value) {
     hypertea_set(count, value, data_.get());
 
     this->count_ = count;
-    this->shape_ = std::vector<int> {count};
 }
 template TensorCPU<float>::TensorCPU(int count, float value);
 
@@ -78,9 +77,9 @@ template TensorCPU<float>& TensorCPU<float>::operator*=(const float other);
 template <typename Dtype>
 TensorCPU<Dtype> operator+(const TensorCPU<Dtype>& lhs, const TensorCPU<Dtype>& rhs) {
     
-    assert(lhs.shape() == rhs.shape());
+    assert(lhs.count() == rhs.count());
 
-    TensorCPU<Dtype> result(lhs.shape());
+    TensorCPU<Dtype> result(lhs.count());
     hypertea_add<Dtype>(lhs.count(), lhs.immutable_data(), rhs.immutable_data(), result.mutable_data());
 
 	return result;
@@ -91,7 +90,7 @@ template TensorCPU<float> operator+(const TensorCPU<float>& lhs, const TensorCPU
 template <typename Dtype>
 TensorCPU<Dtype> operator+(const TensorCPU<Dtype>& lhs, const float rhs) {
     
-    TensorCPU<Dtype> result(lhs.shape());
+    TensorCPU<Dtype> result(lhs.count());
     hypertea_copy(lhs.count(), lhs.immutable_data(), result.mutable_data());
     hypertea_add_scalar<Dtype>(lhs.count(), rhs, result.mutable_data());
   return result;
@@ -104,9 +103,9 @@ template TensorCPU<float> operator+(const TensorCPU<float>& lhs, const float rhs
 template <typename Dtype>
 TensorCPU<Dtype> operator-(const TensorCPU<Dtype>& lhs, const TensorCPU<Dtype>& rhs) {
     
-    assert(lhs.shape() == rhs.shape());
+    assert(lhs.count() == rhs.count());
 
-    TensorCPU<Dtype> result(lhs.shape());
+    TensorCPU<Dtype> result(lhs.count());
     hypertea_sub<Dtype>(lhs.count(), lhs.immutable_data(), rhs.immutable_data(), result.mutable_data());
 
 	return result;
@@ -117,7 +116,7 @@ template TensorCPU<float> operator-(const TensorCPU<float>& lhs, const TensorCPU
 template <typename Dtype>
 TensorCPU<Dtype> operator-(const TensorCPU<Dtype>& lhs, const float rhs) {
     
-    TensorCPU<Dtype> result(lhs.shape());
+    TensorCPU<Dtype> result(lhs.count());
     hypertea_copy(lhs.count(), lhs.immutable_data(), result.mutable_data());
     hypertea_add_scalar<Dtype>(lhs.count(), -rhs, result.mutable_data());
   return result;
@@ -130,7 +129,7 @@ template TensorCPU<float> operator-(const TensorCPU<float>& lhs, const float rhs
 template <typename Dtype>
 TensorCPU<Dtype> operator*(const TensorCPU<Dtype>& lhs, float rhs) {
     
-    TensorCPU<Dtype> result(lhs.shape());
+    TensorCPU<Dtype> result(lhs.count());
     hypertea_cpu_scale<Dtype>(lhs.count(), rhs, lhs.immutable_data(), result.mutable_data());
   return result;
 }
@@ -140,9 +139,9 @@ template TensorCPU<float> operator*(const TensorCPU<float>& a, const float rhs);
 template <typename Dtype>
 TensorCPU<Dtype> operator*(const TensorCPU<Dtype>& lhs, const TensorCPU<Dtype>& rhs) {
     
-  assert(lhs.shape() == rhs.shape());
+  assert(lhs.count() == rhs.count());
 
-  TensorCPU<Dtype> result(lhs.shape());
+  TensorCPU<Dtype> result(lhs.count());
   hypertea_mul(lhs.count(), lhs.immutable_data(), rhs.immutable_data(), result.mutable_data());
 
   return result;

@@ -30,7 +30,7 @@ void opencl_launch_wrapper(
 );
 
 size_t reference_count(cl_mem mem_obj);
-
+size_t cl_mem_count(cl_mem mem_obj);
 
 class OpenCLHandler
 {

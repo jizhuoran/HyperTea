@@ -138,7 +138,7 @@ public:
 };
 
 template <typename Dtype>
-Cell_CPU<Dtype>* cell_factory_(
+Cell_CPU<Dtype>* cell_factory_cpu_(
     const int input_dim, 
     const int hidden_dim,
     Dtype* w_ih,
@@ -180,7 +180,7 @@ public:
     RNN_CELL_TYPE cell_type) 
       : input_dim_(input_dim), 
         hidden_dim_(hidden_dim),
-        cell_(cell_factory_(input_dim, hidden_dim, w_ih, w_hh, b_ih, b_hh, cell_type)) {}
+        cell_(cell_factory_cpu_<Dtype>(input_dim, hidden_dim, w_ih, w_hh, b_ih, b_hh, cell_type)) {}
 
   ~RNNOp_CPU()  {}
 
@@ -238,7 +238,7 @@ public:
     Dtype* b_hh, Dtype* rb_hh,
     RNN_CELL_TYPE cell_type) 
       : RNNOp_CPU<Dtype>(input_dim, hidden_dim, w_ih, w_hh, b_ih, b_hh, cell_type),
-        reverse_cell_(cell_factory_(input_dim, hidden_dim, rw_ih, rw_hh, rb_ih, rb_hh, cell_type)) { }
+        reverse_cell_(cell_factory_cpu_<Dtype>(input_dim, hidden_dim, rw_ih, rw_hh, rb_ih, rb_hh, cell_type)) { }
 
   ~BidirectionalRNN_CPU() {}
 
@@ -254,14 +254,14 @@ private:
 
 
 template <typename Dtype>
-class StackedRNN : public CPUFunctor<Dtype> {
+class StackedRNN_CPU : public CPUFunctor<Dtype> {
 
 public:
-  StackedRNN(
+  StackedRNN_CPU(
     std::vector<RNNOp_CPU<Dtype>* > rnn_layers) 
       : rnn_layers_(rnn_layers) {}
 
-  ~StackedRNN()  {
+  ~StackedRNN_CPU()  {
     for (int i = 0; i < rnn_layers_.size(); ++i) {
       delete rnn_layers_[i];
     }
@@ -408,7 +408,7 @@ public:
 };
 
 template <typename Dtype>
-Cell_GPU<Dtype>* cell_factory_(
+Cell_GPU<Dtype>* cell_factory_gpu_(
     const int input_dim, 
     const int hidden_dim,
     cl_mem w_ih,
@@ -439,14 +439,14 @@ public:
   RNNOp_GPU(
     int input_dim,
     int hidden_dim,
-    Dtype* w_ih,
-    Dtype* w_hh,
-    Dtype* b_ih,
-    Dtype* b_hh,
+    cl_mem w_ih,
+    cl_mem w_hh,
+    cl_mem b_ih,
+    cl_mem b_hh,
     RNN_CELL_TYPE cell_type) 
       : input_dim_(input_dim), 
         hidden_dim_(hidden_dim),
-        cell_(cell_factory_(input_dim, hidden_dim, w_ih, w_hh, b_ih, b_hh, cell_type)) {}
+        cell_(cell_factory_gpu_<Dtype>(input_dim, hidden_dim, w_ih, w_hh, b_ih, b_hh, cell_type)) {}
 
   ~RNNOp_GPU()  {}
 
@@ -476,10 +476,10 @@ public:
   UnidirectionalRNN_GPU(
     int input_dim,
     int hidden_dim,
-    Dtype* w_ih,
-    Dtype* w_hh,
-    Dtype* b_ih,
-    Dtype* b_hh,
+    cl_mem w_ih,
+    cl_mem w_hh,
+    cl_mem b_ih,
+    cl_mem b_hh,
     RNN_CELL_TYPE cell_type) 
       : RNNOp_GPU<Dtype>(input_dim, hidden_dim, w_ih, w_hh, b_ih, b_hh, cell_type) {}
 
@@ -498,13 +498,13 @@ public:
   BidirectionalRNN_GPU(
     int input_dim,
     int hidden_dim,
-    Dtype* w_ih, Dtype* rw_ih,
-    Dtype* w_hh, Dtype* rw_hh,
-    Dtype* b_ih, Dtype* rb_ih,
-    Dtype* b_hh, Dtype* rb_hh,
+    cl_mem w_ih, cl_mem rw_ih,
+    cl_mem w_hh, cl_mem rw_hh,
+    cl_mem b_ih, cl_mem rb_ih,
+    cl_mem b_hh, cl_mem rb_hh,
     RNN_CELL_TYPE cell_type) 
       : RNNOp_GPU<Dtype>(input_dim, hidden_dim, w_ih, w_hh, b_ih, b_hh, cell_type),
-        reverse_cell_(cell_factory_(input_dim, hidden_dim, rw_ih, rw_hh, rb_ih, rb_hh, cell_type)) { }
+        reverse_cell_(cell_factory_gpu_<Dtype>(input_dim, hidden_dim, rw_ih, rw_hh, rb_ih, rb_hh, cell_type)) { }
 
   ~BidirectionalRNN_GPU() {}
 
@@ -520,14 +520,14 @@ private:
 
 
 template <typename Dtype>
-class StackedRNN : public CPUFunctor<Dtype> {
+class StackedRNN_GPU : public GPUFunctor<Dtype> {
 
 public:
-  StackedRNN(
+  StackedRNN_GPU(
     std::vector<RNNOp_GPU<Dtype>* > rnn_layers) 
       : rnn_layers_(rnn_layers) {}
 
-  ~StackedRNN()  {
+  ~StackedRNN_GPU()  {
     for (int i = 0; i < rnn_layers_.size(); ++i) {
       delete rnn_layers_[i];
     }
