@@ -216,23 +216,41 @@ void GRUCell_GPU<Dtype>::Forward(
     hypertea_gpu_sigmoid<Dtype>(2 * this->hidden_dim_, this->intermediate_i, this->intermediate_i);
 
 
-    std::cout << reference_count(this->intermediate_i);
+
+    cl_int ret;
+
+    cl_buffer_region reset_gate_region{0, this->hidden_dim_ * dtype_size_<Dtype>()};
+    auto reset_gate = clCreateSubBuffer(this->intermediate_i, CL_MEM_READ_WRITE,CL_BUFFER_CREATE_TYPE_REGION, &reset_gate_region, &ret); OPENCL_CHECK(ret);
+
+    // std::cout << "The reference count of inter_i1 is " << reference_count(this->intermediate_i);
+
+    cl_buffer_region input_gate_region{this->hidden_dim_* 1 * dtype_size_<Dtype>(), this->hidden_dim_ * dtype_size_<Dtype>()};
+    auto input_gate = clCreateSubBuffer(this->intermediate_i, CL_MEM_READ_WRITE,CL_BUFFER_CREATE_TYPE_REGION, &input_gate_region, &ret); OPENCL_CHECK(ret);
+
+    // std::cout << "The reference count of inter_i2 is " << reference_count(this->intermediate_i);
+
+
+    cl_buffer_region new_gate_region{this->hidden_dim_* 2 * dtype_size_<Dtype>(), this->hidden_dim_ * dtype_size_<Dtype>()};
+    auto new_gate_h = clCreateSubBuffer(this->intermediate_h, CL_MEM_READ_WRITE,CL_BUFFER_CREATE_TYPE_REGION, &new_gate_region, &ret); OPENCL_CHECK(ret);
+    auto new_gate_i = clCreateSubBuffer(this->intermediate_i, CL_MEM_READ_WRITE,CL_BUFFER_CREATE_TYPE_REGION, &new_gate_region, &ret); OPENCL_CHECK(ret);
+
+    // std::cout << "The reference count of inter_i3 is " << reference_count(this->intermediate_i);
 
     // cl_mem reset_gate = this->intermediate_i;
     // cl_mem input_gate = this->intermediate_i + this->hidden_dim_;
     // cl_mem new_gate   = this->intermediate_h + 2 * this->hidden_dim_;
 
 
-    // hypertea_mul<Dtype>(this->hidden_dim_, reset_gate, new_gate, new_gate);
-    // hypertea_add<Dtype>(this->hidden_dim_, this->intermediate_i + 2*this->hidden_dim_, new_gate, new_gate);
-    // hypertea_tanh<Dtype>(this->hidden_dim_, new_gate, new_gate);
+    hypertea_gpu_mul<Dtype>(this->hidden_dim_, reset_gate, new_gate_h, new_gate_h);
+    hypertea_gpu_add<Dtype>(this->hidden_dim_, new_gate_i, new_gate_h, new_gate_h);
+    hypertea_gpu_tanh<Dtype>(this->hidden_dim_, new_gate_h, new_gate_h);
 
 
-    // hypertea_sub<Dtype>(this->hidden_dim_, hidden_data, new_gate, output_data);
-    // hypertea_mul<Dtype>(this->hidden_dim_, input_gate, output_data, output_data);
-    // hypertea_add<Dtype>(this->hidden_dim_, new_gate, output_data, output_data);
+    hypertea_gpu_sub<Dtype>(this->hidden_dim_, hidden_data, new_gate_h, output_data);
+    hypertea_gpu_mul<Dtype>(this->hidden_dim_, input_gate, output_data, output_data);
+    hypertea_gpu_add<Dtype>(this->hidden_dim_, new_gate_h, output_data, output_data);
 
-    // hypertea_copy<Dtype>(this->hidden_dim_, output_data, hidden_data);
+    hypertea_cl_copy<Dtype>(this->hidden_dim_, output_data, hidden_data);
 
 }
 

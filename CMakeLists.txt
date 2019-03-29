@@ -93,6 +93,7 @@ hypertea_set_hypertea_link()
 add_subdirectory(src/hypertea)
 
 if(NOT ANDROID)
+    add_subdirectory(test)
     add_subdirectory(tools)
 endif()
 

@@ -1,8 +1,8 @@
-# Install script for directory: /home/zrji/HyperTea/tools
+# Install script for directory: /home/zrji/hypertea/tools
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/home/zrji/HyperTea/build/install")
+  set(CMAKE_INSTALL_PREFIX "/home/zrji/hypertea/build/install")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -12,7 +12,7 @@ if(NOT DEFINED CMAKE_INSTALL_CONFIG_NAME)
     string(REGEX REPLACE "^[^A-Za-z0-9_]+" ""
            CMAKE_INSTALL_CONFIG_NAME "${BUILD_TYPE}")
   else()
-    set(CMAKE_INSTALL_CONFIG_NAME "Debug")
+    set(CMAKE_INSTALL_CONFIG_NAME "Release")
   endif()
   message(STATUS "Install configuration: \"${CMAKE_INSTALL_CONFIG_NAME}\"")
 endif()
@@ -38,61 +38,61 @@ if(NOT DEFINED CMAKE_CROSSCOMPILING)
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/half_hypertea_demo.bin-d" AND
-     NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/half_hypertea_demo.bin-d")
+  if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/half_hypertea_demo.bin" AND
+     NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/half_hypertea_demo.bin")
     file(RPATH_CHECK
-         FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/half_hypertea_demo.bin-d"
-         RPATH "/home/zrji/HyperTea/build/install/lib:/usr/local/lib")
+         FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/half_hypertea_demo.bin"
+         RPATH "/home/zrji/hypertea/build/install/lib:/usr/local/lib")
   endif()
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "/home/zrji/HyperTea/build/tools/half_hypertea_demo.bin-d")
-  if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/half_hypertea_demo.bin-d" AND
-     NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/half_hypertea_demo.bin-d")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "/home/zrji/hypertea/build/tools/half_hypertea_demo.bin")
+  if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/half_hypertea_demo.bin" AND
+     NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/half_hypertea_demo.bin")
     file(RPATH_CHANGE
-         FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/half_hypertea_demo.bin-d"
+         FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/half_hypertea_demo.bin"
          OLD_RPATH "/usr/local/lib::::::::::::::::::::::::::::::::::::::"
-         NEW_RPATH "/home/zrji/HyperTea/build/install/lib:/usr/local/lib")
+         NEW_RPATH "/home/zrji/hypertea/build/install/lib:/usr/local/lib")
     if(CMAKE_INSTALL_DO_STRIP)
-      execute_process(COMMAND "/usr/bin/strip" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/half_hypertea_demo.bin-d")
+      execute_process(COMMAND "/usr/bin/strip" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/half_hypertea_demo.bin")
     endif()
   endif()
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/hypertea_demo.bin-d" AND
-     NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/hypertea_demo.bin-d")
+  if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/hypertea_demo.bin" AND
+     NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/hypertea_demo.bin")
     file(RPATH_CHECK
-         FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/hypertea_demo.bin-d"
-         RPATH "/home/zrji/HyperTea/build/install/lib:/usr/local/lib")
+         FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/hypertea_demo.bin"
+         RPATH "/home/zrji/hypertea/build/install/lib:/usr/local/lib")
   endif()
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "/home/zrji/HyperTea/build/tools/hypertea_demo.bin-d")
-  if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/hypertea_demo.bin-d" AND
-     NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/hypertea_demo.bin-d")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "/home/zrji/hypertea/build/tools/hypertea_demo.bin")
+  if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/hypertea_demo.bin" AND
+     NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/hypertea_demo.bin")
     file(RPATH_CHANGE
-         FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/hypertea_demo.bin-d"
+         FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/hypertea_demo.bin"
          OLD_RPATH "/usr/local/lib::::::::::::::::::::::::::::::::::::::"
-         NEW_RPATH "/home/zrji/HyperTea/build/install/lib:/usr/local/lib")
+         NEW_RPATH "/home/zrji/hypertea/build/install/lib:/usr/local/lib")
     if(CMAKE_INSTALL_DO_STRIP)
-      execute_process(COMMAND "/usr/bin/strip" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/hypertea_demo.bin-d")
+      execute_process(COMMAND "/usr/bin/strip" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/hypertea_demo.bin")
     endif()
   endif()
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/test_rnn-d" AND
-     NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/test_rnn-d")
+  if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/test_rnn" AND
+     NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/test_rnn")
     file(RPATH_CHECK
-         FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/test_rnn-d"
-         RPATH "/home/zrji/HyperTea/build/install/lib:/usr/local/lib")
+         FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/test_rnn"
+         RPATH "/home/zrji/hypertea/build/install/lib:/usr/local/lib")
   endif()
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "/home/zrji/HyperTea/build/tools/test_rnn-d")
-  if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/test_rnn-d" AND
-     NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/test_rnn-d")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "/home/zrji/hypertea/build/tools/test_rnn")
+  if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/test_rnn" AND
+     NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/test_rnn")
     file(RPATH_CHANGE
-         FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/test_rnn-d"
+         FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/test_rnn"
          OLD_RPATH "/usr/local/lib::::::::::::::::::::::::::::::::::::::"
-         NEW_RPATH "/home/zrji/HyperTea/build/install/lib:/usr/local/lib")
+         NEW_RPATH "/home/zrji/hypertea/build/install/lib:/usr/local/lib")
     if(CMAKE_INSTALL_DO_STRIP)
-      execute_process(COMMAND "/usr/bin/strip" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/test_rnn-d")
+      execute_process(COMMAND "/usr/bin/strip" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/test_rnn")
     endif()
   endif()
 endif()
