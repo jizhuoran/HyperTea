@@ -462,6 +462,13 @@ protected:
   std::unique_ptr<Cell_GPU<Dtype>> cell_;
 
 
+  unsigned int input_offset() {
+    return batch_size_ * input_dim_;
+  }
+
+  virtual unsigned int output_offset() = 0;
+
+
 };
 
 
@@ -488,6 +495,14 @@ public:
 
   virtual TensorGPU<Dtype> Forward(TensorGPU<Dtype> &input_tensor, TensorGPU<Dtype> &hidden_tensor);
 
+
+private:
+  virtual unsigned int output_offset() {
+    return this->batch_size_ * this->hidden_dim_;
+  }
+
+
+
 };
 
 
@@ -513,6 +528,10 @@ public:
 
 private:
   
+  virtual unsigned int output_offset() {
+    return 2 * this->batch_size_ * this->hidden_dim_;
+  }
+
   std::unique_ptr<Cell_GPU<Dtype>> reverse_cell_;
 
 

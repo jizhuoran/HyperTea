@@ -114,10 +114,24 @@ public:
 	}
 
 
+	cl_mem sub_view(unsigned int offset, unsigned int size, cl_mem_flags flags = CL_MEM_READ_WRITE) {
+		cl_int ret;
+		cl_buffer_region region{offset * sizeof(Dtype), size * sizeof(Dtype)};
+        auto temp = clCreateSubBuffer((cl_mem)data_.get(), flags, CL_BUFFER_CREATE_TYPE_REGION, &region, &ret); 
+        OPENCL_CHECK(ret);
+        return temp;
+	}
 
 
 
-	Dtype* debug_cpu_data() const {
+	const Dtype* debug_cpu_data() const {
+		Dtype* cpu_data = new Dtype[this->count_];
+		OPENCL_CHECK(clEnqueueReadBuffer(OpenCLHandler::Get().commandQueue, (cl_mem)data_.get(), CL_TRUE, 0, sizeof(Dtype) * this->count_, cpu_data, 0, NULL, NULL));
+		return cpu_data;
+	}
+
+
+	const Dtype* cpu_data_gtest() const {
 		Dtype* cpu_data = new Dtype[this->count_];
 		OPENCL_CHECK(clEnqueueReadBuffer(OpenCLHandler::Get().commandQueue, (cl_mem)data_.get(), CL_TRUE, 0, sizeof(Dtype) * this->count_, cpu_data, 0, NULL, NULL));
 		return cpu_data;
@@ -183,11 +197,6 @@ public:
 		this->count_ = count;
 	}
 
-	// TensorCPU(const TensorCPU& other) {
-	// 	data_ = other.duplicate_data();
-	// 	this->count_ = other.count();
-	// }
-
 	~TensorCPU() {}
 
 
@@ -196,7 +205,9 @@ public:
 
 	std::shared_ptr<Dtype> duplicate_data() const;
 
-
+	const Dtype* cpu_data_gtest() const {
+		return data_.get();
+	}
 
 
 	TensorCPU add(TensorCPU & other, Dtype alpha=1);

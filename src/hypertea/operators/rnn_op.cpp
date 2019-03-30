@@ -340,9 +340,9 @@ TensorGPU<Dtype> UnidirectionalRNN_GPU<Dtype>::Forward(
     TensorGPU<Dtype> output_tensor(this->batch_size_ * input_length * this->hidden_dim_);
 
 
-    auto input_data = input_tensor.mutable_data();
+    // auto input_data = input_tensor.mutable_data();
     auto hidden_data = hidden_tensor.mutable_data();
-    auto output_data = output_tensor.mutable_data();
+    // auto output_data = output_tensor.mutable_data();
 
     cl_int ret;
 
@@ -350,10 +350,14 @@ TensorGPU<Dtype> UnidirectionalRNN_GPU<Dtype>::Forward(
         
         // std::cout << "This is the " << i << " th input" << std::endl;
 
-        cl_buffer_region input_region{this->batch_size_ * this->input_dim_ * i * dtype_size_<Dtype>(), this->input_dim_ * dtype_size_<Dtype>()};
-        cl_buffer_region output_region{this->batch_size_ * this->hidden_dim_ * i * dtype_size_<Dtype>(), this->hidden_dim_ * dtype_size_<Dtype>()};
-        auto input_sub_data = clCreateSubBuffer(input_data, CL_MEM_READ_WRITE, CL_BUFFER_CREATE_TYPE_REGION, &input_region, &ret); OPENCL_CHECK(ret);
-        auto output_sub_data = clCreateSubBuffer(output_data, CL_MEM_READ_WRITE, CL_BUFFER_CREATE_TYPE_REGION, &output_region, &ret); OPENCL_CHECK(ret);
+        // cl_buffer_region input_region{this->batch_size_ * this->input_dim_ * i * dtype_size_<Dtype>(), this->input_dim_ * dtype_size_<Dtype>()};
+        // cl_buffer_region output_region{this->batch_size_ * this->hidden_dim_ * i * dtype_size_<Dtype>(), this->hidden_dim_ * dtype_size_<Dtype>()};
+        // auto input_sub_data = clCreateSubBuffer(input_data, CL_MEM_READ_WRITE, CL_BUFFER_CREATE_TYPE_REGION, &input_region, &ret); OPENCL_CHECK(ret);
+        // auto output_sub_data = clCreateSubBuffer(output_data, CL_MEM_READ_WRITE, CL_BUFFER_CREATE_TYPE_REGION, &output_region, &ret); OPENCL_CHECK(ret);
+
+        auto input_sub_data = input_tensor.sub_view(this->input_offset() * i, this->input_offset());
+        auto output_sub_data = output_tensor.sub_view(output_offset() * i, output_offset());
+
 
         this->cell_->Forward(
             input_sub_data, 
@@ -365,6 +369,7 @@ TensorGPU<Dtype> UnidirectionalRNN_GPU<Dtype>::Forward(
     return output_tensor;
 
 }
+
 
 template <typename Dtype>
 TensorGPU<Dtype> BidirectionalRNN_GPU<Dtype>::Forward(
@@ -384,10 +389,8 @@ TensorGPU<Dtype> BidirectionalRNN_GPU<Dtype>::Forward(
 
     for (int i = 0; i < input_length; ++i) {
 
-        cl_buffer_region input_region{this->batch_size_ * this->input_dim_ * i * dtype_size_<Dtype>(), this->input_dim_ * dtype_size_<Dtype>()};
-        cl_buffer_region output_region{2 * this->batch_size_ * this->hidden_dim_ * i * dtype_size_<Dtype>(), 2 * this->hidden_dim_ * dtype_size_<Dtype>()};
-        auto input_sub_data = clCreateSubBuffer(input_data, CL_MEM_READ_WRITE, CL_BUFFER_CREATE_TYPE_REGION, &input_region, &ret); OPENCL_CHECK(ret);
-        auto output_sub_data = clCreateSubBuffer(output_data, CL_MEM_READ_WRITE, CL_BUFFER_CREATE_TYPE_REGION, &output_region, &ret); OPENCL_CHECK(ret);
+        auto input_sub_data = input_tensor.sub_view(this->input_offset() * i, this->input_offset());
+        auto output_sub_data = output_tensor.sub_view(output_offset() * i, output_offset());
 
         this->cell_->Forward(
             input_sub_data, 

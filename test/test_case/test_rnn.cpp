@@ -8,14 +8,7 @@
 
 #include "hypertea/operators/rnn_op.hpp"
 #include "test_result/rnn_result.hpp"
-
-// #include "caffe/blob.hpp"
-// #include "caffe/common.hpp"
-// #include "caffe/filler.hpp"
-// #include "caffe/layers/bias_layer.hpp"
-
 #include "test_hypertea_util.hpp"
-// #include "caffe/test/test_gradient_check_util.hpp"
 
 namespace hypertea {
 
@@ -25,9 +18,7 @@ class RNNTestCPU : public ::testing::Test {
  public:
   typedef typename TypeParam::Dtype Dtype;
  protected:
-  RNNTestCPU() {
-    // hypertea::OpenCLHandler::Get().build_opencl_math_code(false);
-  }
+  RNNTestCPU() {}
   virtual ~RNNTestCPU() {}
 };
 
@@ -53,10 +44,10 @@ TYPED_TEST(RNNTestCPU, test_uni_single_gru_CPU) {
   
   fake_random_number random_generator;
 
-  auto _w_ih0 = random_generator.generate_random_vector(3*32*64);
-  auto _w_hh0 = random_generator.generate_random_vector(3*32*32);
-  auto _b_ih0 = random_generator.generate_random_vector(3*32);
-  auto _b_hh0 = random_generator.generate_random_vector(3*32);
+  auto _w_ih0 = hypertea::TensorCPU<Dtype>(random_generator.generate_random_vector(3*32*64));
+  auto _w_hh0 = hypertea::TensorCPU<Dtype>(random_generator.generate_random_vector(3*32*32));
+  auto _b_ih0 = hypertea::TensorCPU<Dtype>(random_generator.generate_random_vector(3*32));
+  auto _b_hh0 = hypertea::TensorCPU<Dtype>(random_generator.generate_random_vector(3*32));
 
 
   auto input_tensor = hypertea::TensorCPU<Dtype>(random_generator.generate_random_vector(5*64));
@@ -66,8 +57,8 @@ TYPED_TEST(RNNTestCPU, test_uni_single_gru_CPU) {
   hypertea::StackedRNN_CPU<Dtype> gru( std::vector<hypertea::RNNOp_CPU<Dtype>* >{
       new hypertea::UnidirectionalRNN_CPU<Dtype> (
         64, 32, 
-        _w_ih0.data(), _w_hh0.data(), 
-        _b_ih0.data(), _b_hh0.data(), 
+        _w_ih0.mutable_data(), _w_hh0.mutable_data(), 
+        _b_ih0.mutable_data(), _b_hh0.mutable_data(), 
         hypertea::RNN_CELL_TYPE::GRU_CELL
       )
     }
@@ -78,12 +69,53 @@ TYPED_TEST(RNNTestCPU, test_uni_single_gru_CPU) {
     std::vector<hypertea::TensorCPU<Dtype> > {hidden_tensor}
   );
 
-  const Dtype* output_data = output_tensor.immutable_data();
+  const Dtype* output_data = output_tensor.cpu_data_gtest();
 
   for (int i = 0; i < test_result::uni_single_gru_result.size(); ++i) {
     EXPECT_NEAR(output_data[i], test_result::uni_single_gru_result[i], 1e-3);
   }
 }
+
+
+TYPED_TEST(RNNTestGPU, test_uni_single_gru_GPU1) {
+    
+  typedef typename TypeParam::Dtype Dtype;
+
+  fake_random_number random_generator;
+
+  auto _w_ih0 = hypertea::TensorGPU<Dtype>(random_generator.generate_random_vector(3*32*64));
+  auto _w_hh0 = hypertea::TensorGPU<Dtype>(random_generator.generate_random_vector(3*32*32));
+  auto _b_ih0 = hypertea::TensorGPU<Dtype>(random_generator.generate_random_vector(3*32));
+  auto _b_hh0 = hypertea::TensorGPU<Dtype>(random_generator.generate_random_vector(3*32));
+
+
+  auto input_tensor = hypertea::TensorGPU<float>(random_generator.generate_random_vector(5*64));
+  auto hidden_tensor = hypertea::TensorGPU<float>(random_generator.generate_random_vector(32));
+  auto output_tensor = hypertea::TensorGPU<float>(32);
+
+  hypertea::StackedRNN_GPU<float> gru( std::vector<hypertea::RNNOp_GPU<float>* >{
+      new hypertea::UnidirectionalRNN_GPU<float> (
+        64, 32, 
+        _w_ih0.mutable_data(), _w_hh0.mutable_data(), 
+        _b_ih0.mutable_data(), _b_hh0.mutable_data(), 
+        hypertea::RNN_CELL_TYPE::GRU_CELL
+      )
+    }
+  );
+
+
+  output_tensor = gru.Forward(
+    input_tensor,
+    std::vector<hypertea::TensorGPU<float> > {hidden_tensor}
+  );
+
+  const float* output_data = output_tensor.cpu_data_gtest();
+  for (int i = 0; i < test_result::uni_single_gru_result.size(); ++i) {
+    EXPECT_NEAR(output_data[i], test_result::uni_single_gru_result[i], 1e-3);
+  }
+
+}
+
 
 
 TYPED_TEST(RNNTestCPU, test_bi_single_gru_CPU) {
@@ -567,7 +599,7 @@ TYPED_TEST(RNNTestGPU, test_uni_single_gru_GPU) {
     std::vector<hypertea::TensorGPU<float> > {hidden_tensor}
   );
 
-  const float* output_data = output_tensor.debug_cpu_data();
+  const float* output_data = output_tensor.cpu_data_gtest();
   for (int i = 0; i < test_result::uni_single_gru_result.size(); ++i) {
     EXPECT_NEAR(output_data[i], test_result::uni_single_gru_result[i], 1e-3);
   }
@@ -624,7 +656,7 @@ TYPED_TEST(RNNTestGPU, test_bi_single_gru_GPU) {
   );
 
 
-  const float* output_data = output_tensor.debug_cpu_data();
+  const float* output_data = output_tensor.cpu_data_gtest();
   for (int i = 0; i < test_result::bi_single_gru_result.size(); ++i) {
     EXPECT_NEAR(output_data[i], test_result::bi_single_gru_result[i], 1e-3);
   }
@@ -701,7 +733,7 @@ TYPED_TEST(RNNTestGPU, test_uni_multi3_gru_GPU) {
     std::vector<hypertea::TensorGPU<float> > {hidden_tensor0, hidden_tensor1, hidden_tensor2}
   );
 
-  const float* output_data = output_tensor.debug_cpu_data();
+  const float* output_data = output_tensor.cpu_data_gtest();
   for (int i = 0; i < test_result::uni_multi3_gru_result.size(); ++i) {
     EXPECT_NEAR(output_data[i], test_result::uni_multi3_gru_result[i], 1e-3);
   }
@@ -811,7 +843,7 @@ TYPED_TEST(RNNTestGPU, test_bi_multi3_gru_GPU) {
 
 
 
-  const float* output_data = output_tensor.debug_cpu_data();
+  const float* output_data = output_tensor.cpu_data_gtest();
 
   for (int i = 0; i < test_result::bi_multi3_gru_result.size(); ++i) {
     EXPECT_NEAR(output_data[i], test_result::bi_multi3_gru_result[i], 1e-3);
@@ -858,7 +890,7 @@ TYPED_TEST(RNNTestGPU, test_uni_single_lstm_GPU) {
     std::vector<hypertea::TensorGPU<float> > {hidden_tensor}
   );
 
-  const float* output_data = output_tensor.debug_cpu_data();
+  const float* output_data = output_tensor.cpu_data_gtest();
   for (int i = 0; i < test_result::uni_single_lstm_result.size(); ++i) {
     EXPECT_NEAR(output_data[i], test_result::uni_single_lstm_result[i], 1e-3);
   }
@@ -915,7 +947,7 @@ TYPED_TEST(RNNTestGPU, test_bi_single_lstm_GPU) {
   );
 
 
-  const float* output_data = output_tensor.debug_cpu_data();
+  const float* output_data = output_tensor.cpu_data_gtest();
   for (int i = 0; i < test_result::bi_single_lstm_result.size(); ++i) {
     EXPECT_NEAR(output_data[i], test_result::bi_single_lstm_result[i], 1e-3);
   }
@@ -992,7 +1024,7 @@ TYPED_TEST(RNNTestGPU, test_uni_multi3_lstm_GPU) {
     std::vector<hypertea::TensorGPU<float> > {hidden_tensor0, hidden_tensor1, hidden_tensor2}
   );
 
-  const float* output_data = output_tensor.debug_cpu_data();
+  const float* output_data = output_tensor.cpu_data_gtest();
   for (int i = 0; i < test_result::uni_multi3_lstm_result.size(); ++i) {
     EXPECT_NEAR(output_data[i], test_result::uni_multi3_lstm_result[i], 1e-3);
   }
@@ -1102,7 +1134,7 @@ TYPED_TEST(RNNTestGPU, test_bi_multi3_lstm_GPU) {
 
 
 
-  const float* output_data = output_tensor.debug_cpu_data();
+  const float* output_data = output_tensor.cpu_data_gtest();
 
   for (int i = 0; i < test_result::bi_multi3_lstm_result.size(); ++i) {
     EXPECT_NEAR(output_data[i], test_result::bi_multi3_lstm_result[i], 1e-3);
