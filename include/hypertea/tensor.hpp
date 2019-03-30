@@ -138,6 +138,31 @@ public:
         return TensorGPU<Dtype>(temp, size, true);
 	}
 
+	std::vector<TensorGPU<Dtype> > chunked_tensors(int chunck_num, cl_mem_flags flags = CL_MEM_READ_WRITE) {
+		
+		int chunck_count = this->count_ / chunck_num;
+		int chunck_size = chunck_count * sizeof(Dtype);
+
+
+		cl_int ret;
+		cl_buffer_region region{0, chunck_size};
+
+		std::vector<TensorGPU<Dtype> > tensors;
+		for (int i = 0; i < chunck_num; ++i) {
+			tensors.push_back(
+				TensorGPU<Dtype>(
+					clCreateSubBuffer((cl_mem)data_.get(), flags, CL_BUFFER_CREATE_TYPE_REGION, &region, &ret),
+					chunck_count,
+					true
+				)
+			);
+        	OPENCL_CHECK(ret);
+        	region.origin += chunck_size;
+
+		}
+
+        return tensors;
+	}
 
 
 	const Dtype* debug_cpu_data() const {

@@ -328,34 +328,28 @@ void LSTMCell_GPU<Dtype>::Forward(
     TensorGPU<Dtype> & output
 ) {
 
-    auto h = hidden.sub_tensor_view(0, this->hidden_dim_);
-    auto c = hidden.sub_tensor_view(this->hidden_dim_, this->hidden_dim_);
-
     this->intermediate_i.copy_data(this->__bias_ih_);
     this->intermediate_h.copy_data(this->__bias_hh_);
 
     hypertea_gpu_gemv<Dtype>(CblasNoTrans, 4 * this->hidden_dim_,
         this->input_dim_, 1, this->__weight_ih_, input, 1, this->intermediate_i);
-
     hypertea_gpu_gemv<Dtype>(CblasNoTrans, 4 * this->hidden_dim_,
         this->hidden_dim_, 1, this->__weight_hh_, hidden, 1, this->intermediate_h);
 
 
     this->intermediate_i += this->intermediate_h;
 
-    
-    auto ingate = this->intermediate_i.sub_tensor_view(0, this->hidden_dim_).sigmoid();
-    auto forgetgate = this->intermediate_i.sub_tensor_view(this->hidden_dim_, this->hidden_dim_).sigmoid();
-    auto cellgate = this->intermediate_i.sub_tensor_view(this->hidden_dim_ * 2, this->hidden_dim_).tanh();
-    auto outgate = this->intermediate_i.sub_tensor_view(this->hidden_dim_ * 3, this->hidden_dim_).sigmoid();
+    auto gates = this->intermediate_i.chunked_tensors(4);
+    TensorGPU<Dtype>& ingate = gates[0].sigmoid();
+    TensorGPU<Dtype>& forgetgate = gates[1].sigmoid();
+    TensorGPU<Dtype>& cellgate = gates[2].tanh();
+    TensorGPU<Dtype>& outgate = gates[3].sigmoid();
 
-    c *= forgetgate;
-    c += (ingate *= cellgate);
+    auto hiddens = hidden.chunked_tensors(2);
+    TensorGPU<Dtype>& cy = (hiddens[1] *= forgetgate) += (ingate *= cellgate); //cy = cx * forgetgate + (ingate * cellgate)
+    TensorGPU<Dtype>& hy = inplace_gpu_tanh(hiddens[0].copy_data(cy)) *= outgate; //hy = cy.tanh() * outgate
 
-    h.copy_data(c);
-    h.tanh() *= outgate;
-
-    output.copy_data(h);
+    output.copy_data(hy);
 
 }
 
@@ -370,38 +364,19 @@ void GRUCell_GPU<Dtype>::Forward(
     this->intermediate_i.copy_data(this->__bias_ih_);
     this->intermediate_h.copy_data(this->__bias_hh_);
 
-
     hypertea_gpu_gemv<Dtype>(CblasNoTrans, 3 * this->hidden_dim_,
         this->input_dim_, 1, this->__weight_ih_, input, 1, this->intermediate_i);
     hypertea_gpu_gemv<Dtype>(CblasNoTrans, 3 * this->hidden_dim_,
         this->hidden_dim_, 1, this->__weight_hh_, hidden, 1, this->intermediate_h);
 
+    auto igates = this->intermediate_i.chunked_tensors(3);
+    auto hgates = this->intermediate_h.chunked_tensors(3);
 
-    auto reset_gate_h = this->intermediate_h.sub_tensor_view(0, this->hidden_dim_);
-    auto reset_gate_i = this->intermediate_i.sub_tensor_view(0, this->hidden_dim_);
-    
-    auto input_gate_h = this->intermediate_h.sub_tensor_view(this->hidden_dim_ , this->hidden_dim_);
-    auto input_gate_i = this->intermediate_i.sub_tensor_view(this->hidden_dim_ , this->hidden_dim_);
+    inplace_gpu_sigmoid(hgates[0] += igates[0]); //reset_gate
+    inplace_gpu_sigmoid(hgates[1] += igates[1]); //input_gate
+    inplace_gpu_tanh((hgates[2] *= hgates[0]) += igates[2]); //new_gate
 
-    auto new_gate_h = this->intermediate_h.sub_tensor_view(this->hidden_dim_ * 2, this->hidden_dim_);
-    auto new_gate_i = this->intermediate_i.sub_tensor_view(this->hidden_dim_ * 2, this->hidden_dim_);
-
-
-    reset_gate_h += reset_gate_i;
-    reset_gate_h.sigmoid();
-
-    input_gate_h += input_gate_i;
-    input_gate_h.sigmoid();
-
-
-    new_gate_h *= reset_gate_h;
-    new_gate_h += new_gate_i;
-    new_gate_h.tanh();
-
-
-    hidden -= new_gate_h;
-    hidden *= input_gate_h;
-    hidden += new_gate_h;
+    ((hidden -= hgates[2]) *= hgates[1]) += hgates[2]; //hy = (hx - new_gate) * input_gate + new_gate
 
     output.copy_data(hidden);
 
@@ -452,21 +427,32 @@ TensorGPU<Dtype> BidirectionalRNN_GPU<Dtype>::Forward(
 
     cl_int ret;
 
+    auto forward_hidden_tensor = hidden_tensor.sub_tensor_view(0, this->cell_->hidden_offset_());
+    auto hidden_tensors = hidden_tensor.chunked_tensors(2);
+
     for (int i = 0; i < input_length; ++i) {
+
+        auto input_sub_tensor = input_tensor.sub_tensor_view(this->input_offset() * i, this->input_offset());
+        auto output_sub_tensor = output_tensor.sub_tensor_view(output_offset() * i, output_offset());
 
         auto input_sub_data = input_tensor.sub_view(this->input_offset() * i, this->input_offset());
         auto output_sub_data = output_tensor.sub_view(output_offset() * i, output_offset());
 
         this->cell_->Forward(
-            input_sub_data, 
-            hidden_data, 
-            output_sub_data
+            input_sub_tensor, 
+            hidden_tensors[0], 
+            output_sub_tensor
         );
 
     }
 
+
+    std::cout << "Forward Finsihed" << std::endl;
+
+
     cl_buffer_region hidden_region{this->cell_->hidden_offset_() * dtype_size_<Dtype>(), this->cell_->hidden_offset_() * dtype_size_<Dtype>()};
-    auto hidden_sub_data = clCreateSubBuffer(hidden_data, CL_MEM_READ_WRITE, CL_BUFFER_CREATE_TYPE_REGION, &hidden_region, &ret); OPENCL_CHECK(ret);
+    // auto reverse_hidden_tensor = hidden_tensor.sub_tensor_view(this->cell_->hidden_offset_(), this->cell_->hidden_offset_());
+    auto reverse_hidden_tensor = clCreateSubBuffer(hidden_data, CL_MEM_READ_WRITE, CL_BUFFER_CREATE_TYPE_REGION, &hidden_region, &ret); OPENCL_CHECK(ret);
 
     for (int i = 0; i < input_length; ++i) {
 
@@ -475,10 +461,12 @@ TensorGPU<Dtype> BidirectionalRNN_GPU<Dtype>::Forward(
         auto input_sub_data = clCreateSubBuffer(input_data, CL_MEM_READ_WRITE, CL_BUFFER_CREATE_TYPE_REGION, &input_region, &ret); OPENCL_CHECK(ret);
         auto output_sub_data = clCreateSubBuffer(output_data, CL_MEM_READ_WRITE, CL_BUFFER_CREATE_TYPE_REGION, &output_region, &ret); OPENCL_CHECK(ret);
 
+        // auto input_sub_tensor = input_tensor.sub_tensor_view(this->input_offset() * (input_length - 1 - i), this->input_offset());
+        // auto output_sub_tensor = output_tensor.sub_tensor_view(output_offset() * (input_length - 1 - i) + this->batch_size_ * this->hidden_dim_, output_offset());
 
         this->reverse_cell_->Forward(
             input_sub_data, 
-            hidden_sub_data, 
+            reverse_hidden_tensor, 
             output_sub_data
         );
 
