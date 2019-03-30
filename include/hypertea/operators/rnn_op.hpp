@@ -311,6 +311,11 @@ public:
     cl_mem output_data
   ) = 0;
 
+  virtual void Forward(
+    TensorGPU<Dtype>& input,
+    TensorGPU<Dtype>& hidden,
+    TensorGPU<Dtype>& output
+  ) = 0;
 
   virtual int hidden_offset_() = 0;
 
@@ -324,9 +329,13 @@ protected:
   cl_mem bias_ih_;
   cl_mem bias_hh_;
 
-  cl_mem intermediate_i;
-  cl_mem intermediate_h;
+  TensorGPU<Dtype> __weight_ih_;
+  TensorGPU<Dtype> __weight_hh_;
+  TensorGPU<Dtype> __bias_ih_;
+  TensorGPU<Dtype> __bias_hh_;
 
+  TensorGPU<Dtype> intermediate_i;
+  TensorGPU<Dtype> intermediate_h;
 
 };
 
@@ -349,15 +358,20 @@ public:
           bias_ih, bias_hh
         ) {
     
-    this->intermediate_i = clCreateBuffer(OpenCLHandler::Get().context, CL_MEM_READ_WRITE, 3 * this->hidden_dim_ * sizeof(Dtype), NULL, NULL);
-    this->intermediate_h = clCreateBuffer(OpenCLHandler::Get().context, CL_MEM_READ_WRITE, 3 * this->hidden_dim_ * sizeof(Dtype), NULL, NULL);
+    this->__weight_ih_ = TensorGPU<Dtype>(weight_ih, 3 * this->hidden_dim_ * this->input_dim_, true);
+    this->__weight_hh_ = TensorGPU<Dtype>(weight_hh, 3 * this->hidden_dim_ * this->hidden_dim_, true);
 
+    this->__bias_ih_ = TensorGPU<Dtype>(bias_ih, 3 * this->hidden_dim_, true);
+    this->__bias_hh_ = TensorGPU<Dtype>(bias_hh, 3 * this->hidden_dim_, true);
+
+    this->intermediate_i = TensorGPU<Dtype>(3 * this->hidden_dim_);//clCreateBuffer(OpenCLHandler::Get().context, CL_MEM_READ_WRITE, 3 * this->hidden_dim_ * sizeof(Dtype), NULL, NULL);
+    this->intermediate_h = TensorGPU<Dtype>(3 * this->hidden_dim_);//clCreateBuffer(OpenCLHandler::Get().context, CL_MEM_READ_WRITE, 3 * this->hidden_dim_ * sizeof(Dtype), NULL, NULL);
 
   }
 
   virtual ~GRUCell_GPU() {
-    clReleaseMemObject(this->intermediate_i);
-    clReleaseMemObject(this->intermediate_h);
+    // clReleaseMemObject(this->intermediate_i);
+    // clReleaseMemObject(this->intermediate_h);
   }
   
   virtual void Forward(
@@ -365,6 +379,14 @@ public:
     cl_mem hidden_data,
     cl_mem output_data
   );
+
+  virtual void Forward(
+    TensorGPU<Dtype>& input,
+    TensorGPU<Dtype>& hidden,
+    TensorGPU<Dtype>& output
+  );
+
+
   
   virtual int hidden_offset_() {return this->hidden_dim_;}
   
@@ -385,21 +407,33 @@ public:
           weight_ih, weight_hh,
           bias_ih, bias_hh
         ) {
+
+    this->__weight_ih_ = TensorGPU<Dtype>(weight_ih, 4 * this->hidden_dim_ * this->input_dim_, true);
+    this->__weight_hh_ = TensorGPU<Dtype>(weight_hh, 4 * this->hidden_dim_ * this->hidden_dim_, true);
+
+    this->__bias_ih_ = TensorGPU<Dtype>(bias_ih, 4 * this->hidden_dim_, true);
+    this->__bias_hh_ = TensorGPU<Dtype>(bias_hh, 4 * this->hidden_dim_, true);
     
-    this->intermediate_i = clCreateBuffer(OpenCLHandler::Get().context, CL_MEM_READ_WRITE, 4 * this->hidden_dim_ * sizeof(Dtype), NULL, NULL);
-    this->intermediate_h = clCreateBuffer(OpenCLHandler::Get().context, CL_MEM_READ_WRITE, 4 * this->hidden_dim_ * sizeof(Dtype), NULL, NULL);
+    this->intermediate_i = TensorGPU<Dtype>(4 * this->hidden_dim_);//clCreateBuffer(OpenCLHandler::Get().context, CL_MEM_READ_WRITE, 4 * this->hidden_dim_ * sizeof(Dtype), NULL, NULL);
+    this->intermediate_h = TensorGPU<Dtype>(4 * this->hidden_dim_);//clCreateBuffer(OpenCLHandler::Get().context, CL_MEM_READ_WRITE, 4 * this->hidden_dim_ * sizeof(Dtype), NULL, NULL);
 
   }
 
   virtual ~LSTMCell_GPU() {
-    clReleaseMemObject(this->intermediate_i);
-    clReleaseMemObject(this->intermediate_h);
+    // clReleaseMemObject(this->intermediate_i);
+    // clReleaseMemObject(this->intermediate_h);
   }
   
   virtual void Forward(
     cl_mem input_data,
     cl_mem hidden_data,
     cl_mem output_data
+  );
+
+  virtual void Forward(
+    TensorGPU<Dtype>& input,
+    TensorGPU<Dtype>& hidden,
+    TensorGPU<Dtype>& output
   );
 
   virtual int hidden_offset_() {return 2 * this->hidden_dim_;}

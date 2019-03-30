@@ -203,42 +203,41 @@ void GRUCell_GPU<Dtype>::Forward(
     cl_mem output_data
 ) {
 
-    hypertea_cl_copy<Dtype>(3 * this->hidden_dim_, this->bias_ih_, this->intermediate_i);
-    hypertea_cl_copy<Dtype>(3 * this->hidden_dim_, this->bias_hh_, this->intermediate_h);
+    cl_mem inter_i_data = this->intermediate_i.mutable_data();
+    cl_mem inter_h_data = this->intermediate_h.mutable_data();
+
+    hypertea_cl_copy<Dtype>(3 * this->hidden_dim_, this->bias_ih_, inter_i_data);
+    hypertea_cl_copy<Dtype>(3 * this->hidden_dim_, this->bias_hh_, inter_h_data);
 
     hypertea_gpu_gemv<Dtype>(CblasNoTrans, 3 * this->hidden_dim_,
-        this->input_dim_, 1, this->weight_ih_, input_data, 1, this->intermediate_i);
+        this->input_dim_, 1, this->weight_ih_, input_data, 1, inter_i_data);
     hypertea_gpu_gemv<Dtype>(CblasNoTrans, 3 * this->hidden_dim_,
-        this->hidden_dim_, 1, this->weight_hh_, hidden_data, 1, this->intermediate_h);
+        this->hidden_dim_, 1, this->weight_hh_, hidden_data, 1, inter_h_data);
 
 
-    hypertea_gpu_add<Dtype>(2 * this->hidden_dim_, this->intermediate_i, this->intermediate_h, this->intermediate_i);
-    hypertea_gpu_sigmoid<Dtype>(2 * this->hidden_dim_, this->intermediate_i, this->intermediate_i);
+    hypertea_gpu_add<Dtype>(2 * this->hidden_dim_, inter_i_data, inter_h_data, inter_i_data);
+    hypertea_gpu_sigmoid<Dtype>(2 * this->hidden_dim_, inter_i_data, inter_i_data);
 
 
 
     cl_int ret;
 
-    cl_buffer_region reset_gate_region{0, this->hidden_dim_ * dtype_size_<Dtype>()};
-    auto reset_gate = clCreateSubBuffer(this->intermediate_i, CL_MEM_READ_WRITE,CL_BUFFER_CREATE_TYPE_REGION, &reset_gate_region, &ret); OPENCL_CHECK(ret);
+    // cl_buffer_region reset_gate_region{0, this->hidden_dim_ * dtype_size_<Dtype>()};
+    auto reset_gate = this->intermediate_i.sub_view(0, this->hidden_dim_);
+    auto input_gate = this->intermediate_i.sub_view(this->hidden_dim_ , this->hidden_dim_);
 
-    // std::cout << "The reference count of inter_i1 is " << reference_count(this->intermediate_i);
-
-    cl_buffer_region input_gate_region{this->hidden_dim_* 1 * dtype_size_<Dtype>(), this->hidden_dim_ * dtype_size_<Dtype>()};
-    auto input_gate = clCreateSubBuffer(this->intermediate_i, CL_MEM_READ_WRITE,CL_BUFFER_CREATE_TYPE_REGION, &input_gate_region, &ret); OPENCL_CHECK(ret);
-
-    // std::cout << "The reference count of inter_i2 is " << reference_count(this->intermediate_i);
+    // clCreateSubBuffer(inter_i_data, CL_MEM_READ_WRITE,CL_BUFFER_CREATE_TYPE_REGION, &reset_gate_region, &ret); OPENCL_CHECK(ret);
 
 
-    cl_buffer_region new_gate_region{this->hidden_dim_* 2 * dtype_size_<Dtype>(), this->hidden_dim_ * dtype_size_<Dtype>()};
-    auto new_gate_h = clCreateSubBuffer(this->intermediate_h, CL_MEM_READ_WRITE,CL_BUFFER_CREATE_TYPE_REGION, &new_gate_region, &ret); OPENCL_CHECK(ret);
-    auto new_gate_i = clCreateSubBuffer(this->intermediate_i, CL_MEM_READ_WRITE,CL_BUFFER_CREATE_TYPE_REGION, &new_gate_region, &ret); OPENCL_CHECK(ret);
+    // cl_buffer_region input_gate_region{this->hidden_dim_* 1 * dtype_size_<Dtype>(), this->hidden_dim_ * dtype_size_<Dtype>()};
+    // auto input_gate = clCreateSubBuffer(inter_i_data, CL_MEM_READ_WRITE,CL_BUFFER_CREATE_TYPE_REGION, &input_gate_region, &ret); OPENCL_CHECK(ret);
 
-    // std::cout << "The reference count of inter_i3 is " << reference_count(this->intermediate_i);
 
-    // cl_mem reset_gate = this->intermediate_i;
-    // cl_mem input_gate = this->intermediate_i + this->hidden_dim_;
-    // cl_mem new_gate   = this->intermediate_h + 2 * this->hidden_dim_;
+    // cl_buffer_region new_gate_region{this->hidden_dim_* 2 * dtype_size_<Dtype>(), this->hidden_dim_ * dtype_size_<Dtype>()};
+    // auto new_gate_h = clCreateSubBuffer(inter_h_data, CL_MEM_READ_WRITE,CL_BUFFER_CREATE_TYPE_REGION, &new_gate_region, &ret); OPENCL_CHECK(ret);
+    auto new_gate_h = this->intermediate_h.sub_view(this->hidden_dim_ * 2, this->hidden_dim_);//clCreateSubBuffer(inter_i_data, CL_MEM_READ_WRITE,CL_BUFFER_CREATE_TYPE_REGION, &new_gate_region, &ret); OPENCL_CHECK(ret);
+    auto new_gate_i = this->intermediate_i.sub_view(this->hidden_dim_ * 2, this->hidden_dim_);//clCreateSubBuffer(inter_i_data, CL_MEM_READ_WRITE,CL_BUFFER_CREATE_TYPE_REGION, &new_gate_region, &ret); OPENCL_CHECK(ret);
+
 
 
     hypertea_gpu_mul<Dtype>(this->hidden_dim_, reset_gate, new_gate_h, new_gate_h);
@@ -270,57 +269,48 @@ void LSTMCell_GPU<Dtype>::Forward(
     auto hx = clCreateSubBuffer(hidden_data, CL_MEM_READ_WRITE,CL_BUFFER_CREATE_TYPE_REGION, &hx_region, &ret); OPENCL_CHECK(ret);
     auto cx = clCreateSubBuffer(hidden_data, CL_MEM_READ_WRITE,CL_BUFFER_CREATE_TYPE_REGION, &cx_region, &ret); OPENCL_CHECK(ret);
 
-    hypertea_cl_copy<Dtype>(4 * this->hidden_dim_, this->bias_ih_, this->intermediate_i);
-    hypertea_cl_copy<Dtype>(4 * this->hidden_dim_, this->bias_hh_, this->intermediate_h);
+    cl_mem inter_i_data = this->intermediate_i.mutable_data();
+    cl_mem inter_h_data = this->intermediate_h.mutable_data();
+
+    hypertea_cl_copy<Dtype>(4 * this->hidden_dim_, this->bias_ih_, inter_i_data);
+    hypertea_cl_copy<Dtype>(4 * this->hidden_dim_, this->bias_hh_, inter_h_data);
 
 
-
-
-
-    // std::cout << "We are going to do ih " << 4 * this->hidden_dim_ << " and "<< this->input_dim_ << std::endl;
-    // std::cout << "We are going to do ih " << cl_mem_count(this->weight_ih_) << " and "<< cl_mem_count(input_data) << std::endl;
     hypertea_gpu_gemv<Dtype>(CblasNoTrans, 4 * this->hidden_dim_,
-        this->input_dim_, 1, this->weight_ih_, input_data, 1, this->intermediate_i);
+        this->input_dim_, 1, this->weight_ih_, input_data, 1, inter_i_data);
 
-    // std::cout << "We are going to do hh " << 4 * this->hidden_dim_ << " and "<< this->hidden_dim_ << std::endl;
-    // std::cout << "We are going to do hh " << cl_mem_count(this->weight_hh_) << " and "<< cl_mem_count(hidden_data) << std::endl;
     hypertea_gpu_gemv<Dtype>(CblasNoTrans, 4 * this->hidden_dim_,
-        this->hidden_dim_, 1, this->weight_hh_, hidden_data, 1, this->intermediate_h);
+        this->hidden_dim_, 1, this->weight_hh_, hidden_data, 1, inter_h_data);
 
-    // Dtype* cpu_data = new Dtype[4 * this->hidden_dim_];
-    // OPENCL_CHECK(clEnqueueReadBuffer(OpenCLHandler::Get().commandQueue, (cl_mem)this->intermediate_i, CL_TRUE, 0, sizeof(Dtype) * 4 * this->hidden_dim_, cpu_data, 0, NULL, NULL));
-    // for (int i = 0; i < 10; ++i) {
-    //     std::cout << cpu_data[i] << " ";
-    // }
-    // std::cout << " " << std::endl;
 
-    // OPENCL_CHECK(clEnqueueReadBuffer(OpenCLHandler::Get().commandQueue, (cl_mem)this->intermediate_h, CL_TRUE, 0, sizeof(Dtype) * 4 * this->hidden_dim_, cpu_data, 0, NULL, NULL));
-    // for (int i = 0; i < 10; ++i) {
-    //     std::cout << cpu_data[i] << " ";
-    // }
-    // std::cout << " " << std::endl;
+    this->intermediate_i += this->intermediate_h;
 
-    hypertea_gpu_add<Dtype>(4 * this->hidden_dim_, this->intermediate_i, this->intermediate_h, this->intermediate_i);
+    // hypertea_gpu_add<Dtype>(4 * this->hidden_dim_, inter_i_data, inter_h_data, inter_i_data);
     
-    cl_buffer_region ingate_region{0, this->hidden_dim_ * dtype_size_<Dtype>()};
-    auto ingate = clCreateSubBuffer(this->intermediate_i, CL_MEM_READ_WRITE,CL_BUFFER_CREATE_TYPE_REGION, &ingate_region, &ret); OPENCL_CHECK(ret);
-    hypertea_gpu_sigmoid<Dtype>(this->hidden_dim_, ingate, ingate);
+    auto ingate_tensor = this->intermediate_i.sub_tensor_view(0, this->hidden_dim_).sigmoid();
+    auto ingate = ingate_tensor.mutable_data();
+    // hypertea_gpu_sigmoid<Dtype>(this->hidden_dim_, ingate, ingate);
+
+    auto forgetgate_tensor = this->intermediate_i.sub_tensor_view(this->hidden_dim_, this->hidden_dim_).sigmoid();
+    auto forgetgate = forgetgate_tensor.mutable_data();
     
-    cl_buffer_region forgetgate_region{this->hidden_dim_ * dtype_size_<Dtype>(), this->hidden_dim_ * dtype_size_<Dtype>()};
-    auto forgetgate = clCreateSubBuffer(this->intermediate_i, CL_MEM_READ_WRITE,CL_BUFFER_CREATE_TYPE_REGION, &forgetgate_region, &ret); OPENCL_CHECK(ret);
-    hypertea_gpu_sigmoid<Dtype>(this->hidden_dim_, forgetgate, forgetgate);
+    // hypertea_gpu_sigmoid<Dtype>(this->hidden_dim_, forgetgate, forgetgate);
 
-    cl_buffer_region cellgate_region{this->hidden_dim_*2 * dtype_size_<Dtype>(), this->hidden_dim_ * dtype_size_<Dtype>()};
-    auto cellgate = clCreateSubBuffer(this->intermediate_i, CL_MEM_READ_WRITE,CL_BUFFER_CREATE_TYPE_REGION, &cellgate_region, &ret); OPENCL_CHECK(ret);
-    hypertea_gpu_tanh<Dtype>(this->hidden_dim_, cellgate, cellgate);
-
-    cl_buffer_region outgate_region{this->hidden_dim_*3 * dtype_size_<Dtype>(), this->hidden_dim_ * dtype_size_<Dtype>()};
-    auto outgate = clCreateSubBuffer(this->intermediate_i, CL_MEM_READ_WRITE,CL_BUFFER_CREATE_TYPE_REGION, &outgate_region, &ret); OPENCL_CHECK(ret);
-    hypertea_gpu_sigmoid<Dtype>(this->hidden_dim_, outgate, outgate);
+    auto cellgate_tensor = this->intermediate_i.sub_tensor_view(this->hidden_dim_ * 2, this->hidden_dim_).tanh();
+    auto cellgate = cellgate_tensor.mutable_data();
     
+    // hypertea_gpu_tanh<Dtype>(this->hidden_dim_, cellgate, cellgate);
 
+    auto outgate_tensor = this->intermediate_i.sub_tensor_view(this->hidden_dim_ * 3, this->hidden_dim_).sigmoid();
+    auto outgate = outgate_tensor.mutable_data();
+    
+    // hypertea_gpu_sigmoid<Dtype>(this->hidden_dim_, outgate, outgate);
+    
     hypertea_gpu_mul<Dtype>(this->hidden_dim_, forgetgate, cx, cx);
-    hypertea_gpu_mul<Dtype>(this->hidden_dim_, cellgate, ingate, ingate);
+
+    ingate_tensor *= cellgate_tensor;
+
+    // hypertea_gpu_mul<Dtype>(this->hidden_dim_, cellgate, ingate, ingate);
     hypertea_gpu_add<Dtype>(this->hidden_dim_, ingate, cx, cx);
 
     hypertea_gpu_tanh<Dtype>(this->hidden_dim_, cx, output_data);
@@ -332,6 +322,92 @@ void LSTMCell_GPU<Dtype>::Forward(
 
 
 template <typename Dtype>
+void LSTMCell_GPU<Dtype>::Forward(
+    TensorGPU<Dtype> & input,
+    TensorGPU<Dtype> & hidden,
+    TensorGPU<Dtype> & output
+) {
+
+    auto h = hidden.sub_tensor_view(0, this->hidden_dim_);
+    auto c = hidden.sub_tensor_view(this->hidden_dim_, this->hidden_dim_);
+
+    this->intermediate_i.copy_data(this->__bias_ih_);
+    this->intermediate_h.copy_data(this->__bias_hh_);
+
+    hypertea_gpu_gemv<Dtype>(CblasNoTrans, 4 * this->hidden_dim_,
+        this->input_dim_, 1, this->__weight_ih_, input, 1, this->intermediate_i);
+
+    hypertea_gpu_gemv<Dtype>(CblasNoTrans, 4 * this->hidden_dim_,
+        this->hidden_dim_, 1, this->__weight_hh_, hidden, 1, this->intermediate_h);
+
+
+    this->intermediate_i += this->intermediate_h;
+
+    
+    auto ingate = this->intermediate_i.sub_tensor_view(0, this->hidden_dim_).sigmoid();
+    auto forgetgate = this->intermediate_i.sub_tensor_view(this->hidden_dim_, this->hidden_dim_).sigmoid();
+    auto cellgate = this->intermediate_i.sub_tensor_view(this->hidden_dim_ * 2, this->hidden_dim_).tanh();
+    auto outgate = this->intermediate_i.sub_tensor_view(this->hidden_dim_ * 3, this->hidden_dim_).sigmoid();
+
+    c *= forgetgate;
+    c += (ingate *= cellgate);
+
+    h.copy_data(c);
+    h.tanh() *= outgate;
+
+    output.copy_data(h);
+
+}
+
+template <typename Dtype>
+void GRUCell_GPU<Dtype>::Forward(
+    TensorGPU<Dtype> & input,
+    TensorGPU<Dtype> & hidden,
+    TensorGPU<Dtype> & output
+) {
+
+
+    this->intermediate_i.copy_data(this->__bias_ih_);
+    this->intermediate_h.copy_data(this->__bias_hh_);
+
+
+    hypertea_gpu_gemv<Dtype>(CblasNoTrans, 3 * this->hidden_dim_,
+        this->input_dim_, 1, this->__weight_ih_, input, 1, this->intermediate_i);
+    hypertea_gpu_gemv<Dtype>(CblasNoTrans, 3 * this->hidden_dim_,
+        this->hidden_dim_, 1, this->__weight_hh_, hidden, 1, this->intermediate_h);
+
+
+    auto reset_gate_h = this->intermediate_h.sub_tensor_view(0, this->hidden_dim_);
+    auto reset_gate_i = this->intermediate_i.sub_tensor_view(0, this->hidden_dim_);
+    
+    auto input_gate_h = this->intermediate_h.sub_tensor_view(this->hidden_dim_ , this->hidden_dim_);
+    auto input_gate_i = this->intermediate_i.sub_tensor_view(this->hidden_dim_ , this->hidden_dim_);
+
+    auto new_gate_h = this->intermediate_h.sub_tensor_view(this->hidden_dim_ * 2, this->hidden_dim_);
+    auto new_gate_i = this->intermediate_i.sub_tensor_view(this->hidden_dim_ * 2, this->hidden_dim_);
+
+
+    reset_gate_h += reset_gate_i;
+    reset_gate_h.sigmoid();
+
+    input_gate_h += input_gate_i;
+    input_gate_h.sigmoid();
+
+
+    new_gate_h *= reset_gate_h;
+    new_gate_h += new_gate_i;
+    new_gate_h.tanh();
+
+
+    hidden -= new_gate_h;
+    hidden *= input_gate_h;
+    hidden += new_gate_h;
+
+    output.copy_data(hidden);
+
+}
+
+template <typename Dtype>
 TensorGPU<Dtype> UnidirectionalRNN_GPU<Dtype>::Forward(
     TensorGPU<Dtype> &input_tensor, 
     TensorGPU<Dtype> &hidden_tensor) {
@@ -339,30 +415,19 @@ TensorGPU<Dtype> UnidirectionalRNN_GPU<Dtype>::Forward(
     int input_length = input_tensor.count() / (this->batch_size_ * this->input_dim_);
     TensorGPU<Dtype> output_tensor(this->batch_size_ * input_length * this->hidden_dim_);
 
-
-    // auto input_data = input_tensor.mutable_data();
     auto hidden_data = hidden_tensor.mutable_data();
-    // auto output_data = output_tensor.mutable_data();
 
     cl_int ret;
 
     for (int i = 0; i < input_length; ++i) {
         
-        // std::cout << "This is the " << i << " th input" << std::endl;
-
-        // cl_buffer_region input_region{this->batch_size_ * this->input_dim_ * i * dtype_size_<Dtype>(), this->input_dim_ * dtype_size_<Dtype>()};
-        // cl_buffer_region output_region{this->batch_size_ * this->hidden_dim_ * i * dtype_size_<Dtype>(), this->hidden_dim_ * dtype_size_<Dtype>()};
-        // auto input_sub_data = clCreateSubBuffer(input_data, CL_MEM_READ_WRITE, CL_BUFFER_CREATE_TYPE_REGION, &input_region, &ret); OPENCL_CHECK(ret);
-        // auto output_sub_data = clCreateSubBuffer(output_data, CL_MEM_READ_WRITE, CL_BUFFER_CREATE_TYPE_REGION, &output_region, &ret); OPENCL_CHECK(ret);
-
-        auto input_sub_data = input_tensor.sub_view(this->input_offset() * i, this->input_offset());
-        auto output_sub_data = output_tensor.sub_view(output_offset() * i, output_offset());
-
+        auto input_sub_tensor = input_tensor.sub_tensor_view(this->input_offset() * i, this->input_offset());
+        auto output_sub_tensor = output_tensor.sub_tensor_view(output_offset() * i, output_offset());
 
         this->cell_->Forward(
-            input_sub_data, 
-            hidden_data, 
-            output_sub_data
+            input_sub_tensor, 
+            hidden_tensor, 
+            output_sub_tensor
         );
     }
 

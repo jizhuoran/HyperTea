@@ -78,6 +78,50 @@ template void hypertea_gpu_gemm<half>(
 
 
 template <typename Dtype>
+TensorGPU<Dtype>& hypertea_gpu_gemv(
+  const CBLAS_TRANSPOSE TransA, 
+  const int M, const int N,
+  const float alpha, 
+  const TensorGPU<Dtype>& A, 
+  const TensorGPU<Dtype>& x, 
+  const float beta,
+  TensorGPU<Dtype>& y) {
+
+  hypertea_gpu_gemv<Dtype>(
+    TransA, 
+    M, N, 
+    alpha, 
+    A.immutable_data(),
+    x.immutable_data(),
+    beta,
+    y.mutable_data()
+  );
+
+  return y;
+
+}
+
+template TensorGPU<float>& hypertea_gpu_gemv<float>(
+  const CBLAS_TRANSPOSE TransA, 
+  const int M, const int N,
+  const float alpha, 
+  const TensorGPU<float>& A, 
+  const TensorGPU<float>& x, 
+  const float beta,
+  TensorGPU<float>& y);
+
+template TensorGPU<half>& hypertea_gpu_gemv<half>(
+  const CBLAS_TRANSPOSE TransA, 
+  const int M, const int N,
+  const float alpha, 
+  const TensorGPU<half>& A, 
+  const TensorGPU<half>& x, 
+  const float beta,
+  TensorGPU<half>& y);
+
+
+
+template <typename Dtype>
 void hypertea_gpu_gemv(
   const CBLAS_TRANSPOSE TransA, 
   const int M, const int N,
@@ -356,21 +400,20 @@ void hypertea_gpu_add(
   const cl_mem b, 
   cl_mem y) {
     
-  cl_int ret;
 
-  cl_kernel kernel = clCreateKernel(OpenCLHandler::Get().math_program, "add_kernel", &ret);
-  OPENCL_CHECK(ret);
+  opencl_launch_wrapper(
+    OpenCLHandler::Get().math_program,
+    "add_kernel",
+    std::vector<std::pair<size_t, const void *> > {
+      std::make_pair(sizeof(cl_mem), (void *)&a),
+      std::make_pair(sizeof(cl_mem), (void *)&b),
+      std::make_pair(sizeof(cl_mem), (void *)&y),
+      std::make_pair(sizeof(cl_int), (void *)&N)
+    },
+    std::vector<size_t> {HYPERTEA_GET_BLOCKS(N)},
+    std::vector<size_t> {HYPERTEA_OPENCL_NUM_THREADS}
+  );
 
-  // Set arguments for kernel
-  OPENCL_CHECK(clSetKernelArg(kernel, 0, sizeof(cl_mem), (void *)&a));  
-  OPENCL_CHECK(clSetKernelArg(kernel, 1, sizeof(cl_mem), (void *)&b));  
-  OPENCL_CHECK(clSetKernelArg(kernel, 2, sizeof(cl_mem), (void *)&y));  
-  OPENCL_CHECK(clSetKernelArg(kernel, 3, sizeof(cl_int), (void *)&N));  
-
-  size_t global_size = HYPERTEA_GET_BLOCKS(N);
-  
-  OPENCL_CHECK(clEnqueueNDRangeKernel(OpenCLHandler::Get().commandQueue, kernel, 1, NULL, &global_size, &HYPERTEA_OPENCL_NUM_THREADS, 0, NULL, NULL));  
-  
 }
 
 template void hypertea_gpu_add<float>(
@@ -389,6 +432,47 @@ template void hypertea_gpu_add<half>(
 
 
 template <typename Dtype>
+cl_mem _hypertea_gpu_add(
+  const int N, 
+  const cl_mem a, 
+  const cl_mem b, 
+  cl_mem y) {
+    
+
+  opencl_launch_wrapper(
+    OpenCLHandler::Get().math_program,
+    "add_kernel",
+    std::vector<std::pair<size_t, const void *> > {
+      std::make_pair(sizeof(cl_mem), (void *)&a),
+      std::make_pair(sizeof(cl_mem), (void *)&b),
+      std::make_pair(sizeof(cl_mem), (void *)&y),
+      std::make_pair(sizeof(cl_int), (void *)&N)
+    },
+    std::vector<size_t> {HYPERTEA_GET_BLOCKS(N)},
+    std::vector<size_t> {HYPERTEA_OPENCL_NUM_THREADS}
+  );
+
+  return y;
+
+}
+
+template cl_mem _hypertea_gpu_add<float>(
+  const int N, 
+  const cl_mem a, 
+  const cl_mem b, 
+  cl_mem y
+);
+
+template cl_mem _hypertea_gpu_add<half>(
+  const int N, 
+  const cl_mem a, 
+  const cl_mem b, 
+  cl_mem y
+);
+
+
+
+template <typename Dtype>
 void hypertea_gpu_sub(
   const int N, 
   const cl_mem a, 
@@ -398,7 +482,7 @@ void hypertea_gpu_sub(
   cl_int ret;
 
   cl_kernel kernel = clCreateKernel(OpenCLHandler::Get().math_program, "sub_kernel", &ret);
-  OPENCL_CHECK(ret);
+  OPENCL_CHECK(ret); 
 
   // Set arguments for kernel
   OPENCL_CHECK(clSetKernelArg(kernel, 0, sizeof(cl_mem), (void *)&a));  

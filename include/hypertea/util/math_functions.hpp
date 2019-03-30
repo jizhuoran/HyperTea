@@ -191,6 +191,12 @@ void hypertea_gpu_gemv(const CBLAS_TRANSPOSE TransA, const int M, const int N,
     cl_mem y);
 
 template <typename Dtype>
+TensorGPU<Dtype>& hypertea_gpu_gemv(const CBLAS_TRANSPOSE TransA, const int M, const int N,
+    const float alpha, const TensorGPU<Dtype>& A, const TensorGPU<Dtype>& x, const float beta,
+    TensorGPU<Dtype>& y);
+
+
+template <typename Dtype>
 void hypertea_gpu_bsum(const int m, const int n, const cl_mem X, const float alpha, const float beta,
                             cl_mem y, const int x_inc);
 
@@ -236,13 +242,11 @@ void hypertea_gpu_mul(const int N, const cl_mem a, const cl_mem b, cl_mem y);
 template <typename Dtype>
 void hypertea_gpu_div(const int N, const cl_mem a, const cl_mem b, cl_mem y);
 
-
 template <typename Dtype>
 void hypertea_gpu_sigmoid(const int N, const cl_mem x, cl_mem y);
 
 template <typename Dtype>
 void hypertea_gpu_tanh(const int N, const cl_mem x, cl_mem y);
-
 
 template <typename Dtype>
 void hypertea_gpu_abs(const int n, const cl_mem a, cl_mem y);
@@ -258,6 +262,45 @@ void hypertea_gpu_powx(const int n, const cl_mem a, const float b, cl_mem y);
 
 template <typename Dtype>
 void hypertea_gpu_sqrt(const int n, const cl_mem a, cl_mem y);
+
+
+
+
+// template <typename Dtype>
+// cl_mem _hypertea_gpu_scal(const int N, const float alpha, cl_mem X);
+
+template <typename Dtype>
+cl_mem _hypertea_gpu_add(const int N, const cl_mem a, const cl_mem b, cl_mem y);
+
+// template <typename Dtype>
+// cl_mem _hypertea_gpu_sub(const int N, const cl_mem a, const cl_mem b, cl_mem y);
+
+// template <typename Dtype>
+// cl_mem _hypertea_gpu_mul(const int N, const cl_mem a, const cl_mem b, cl_mem y);
+
+// template <typename Dtype>
+// cl_mem _hypertea_gpu_div(const int N, const cl_mem a, const cl_mem b, cl_mem y);
+
+// template <typename Dtype>
+// cl_mem _hypertea_gpu_sigmoid(const int N, const cl_mem x, cl_mem y);
+
+// template <typename Dtype>
+// cl_mem _hypertea_gpu_tanh(const int N, const cl_mem x, cl_mem y);
+
+// template <typename Dtype>
+// cl_mem _hypertea_gpu_abs(const int n, const cl_mem a, cl_mem y);
+
+// template <typename Dtype>
+// cl_mem _hypertea_gpu_exp(const int n, const cl_mem a, cl_mem y);
+
+// template <typename Dtype>
+// cl_mem _hypertea_gpu_log(const int n, const cl_mem a, cl_mem y);
+
+// template <typename Dtype>
+// cl_mem _hypertea_gpu_powx(const int n, const cl_mem a, const float b, cl_mem y);
+
+// template <typename Dtype>
+// cl_mem _hypertea_gpu_sqrt(const int n, const cl_mem a, cl_mem y);
 
 // hypertea_gpu_rng_uniform with two arguments generates integers in the range
 // [0, UINT_MAX].

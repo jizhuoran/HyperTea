@@ -63,6 +63,8 @@ class TensorGPU : public Tensor<Dtype>
 {
 public:
 
+	TensorGPU() {}
+
 	TensorGPU(int count) {
 		data_.reset((void*)clCreateBuffer(OpenCLHandler::Get().context, CL_MEM_READ_WRITE, count * sizeof(Dtype), NULL, NULL), [=](void *ptr){clReleaseMemObject((cl_mem) ptr);});
 		this->count_ = count;
@@ -73,8 +75,13 @@ public:
 		this->count_ = data.size();
 	}
 
-	TensorGPU(cl_mem data_ptr, int count) {
-		data_.reset((void*)data_ptr, [=](void *ptr){clReleaseMemObject((cl_mem) ptr);});
+	TensorGPU(cl_mem data_ptr, int count, bool shared = false) {
+		if (shared) {
+			data_.reset((void*)data_ptr, [](void *ptr){});
+		} else {
+			data_.reset((void*)data_ptr, [=](void *ptr){clReleaseMemObject((cl_mem) ptr);});
+		}
+		
 		this->count_ = count;
 	}
 
@@ -123,6 +130,15 @@ public:
 	}
 
 
+	TensorGPU<Dtype> sub_tensor_view(unsigned int offset, unsigned int size, cl_mem_flags flags = CL_MEM_READ_WRITE) {
+		cl_int ret;
+		cl_buffer_region region{offset * sizeof(Dtype), size * sizeof(Dtype)};
+        auto temp = clCreateSubBuffer((cl_mem)data_.get(), flags, CL_BUFFER_CREATE_TYPE_REGION, &region, &ret); 
+        OPENCL_CHECK(ret);
+        return TensorGPU<Dtype>(temp, size, true);
+	}
+
+
 
 	const Dtype* debug_cpu_data() const {
 		Dtype* cpu_data = new Dtype[this->count_];
@@ -140,15 +156,26 @@ public:
 
 	TensorGPU& operator+=(const TensorGPU & other);
 	TensorGPU& operator+=(const float other);
-
+	TensorGPU& operator-=(const TensorGPU & other);
+	TensorGPU& operator-=(const float other);
+	TensorGPU& operator*=(const TensorGPU & other);
 	TensorGPU& operator*=(const float other);
+
+
+
+	TensorGPU& copy_data(const TensorGPU & other);
+
+	TensorGPU& sigmoid();
+	TensorGPU& tanh();
+
+
 
 
 private:
 
 	std::shared_ptr<void> data_;
 
-	TensorGPU();
+	// TensorGPU();
 
 	// virtual Tensor add(Tensor & other, Dtype alpha=1) {}
 
@@ -159,6 +186,7 @@ private:
 
 
 };
+
 
 
 template <typename Dtype>
