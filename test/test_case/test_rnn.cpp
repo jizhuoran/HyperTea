@@ -6,9 +6,11 @@
 
 #include "hypertea/common.hpp"
 
-#include "hypertea/operators/rnn_op.hpp"
-#include "test_result/rnn_result.hpp"
 #include "test_hypertea_util.hpp"
+#include "hypertea/operators/rnn_op.hpp"
+
+#include "test_result/rnn_result.hpp"
+#include "test_result/conv_result.hpp"
 
 namespace hypertea {
 
