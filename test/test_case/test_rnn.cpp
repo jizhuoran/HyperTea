@@ -10,7 +10,6 @@
 #include "hypertea/operators/rnn_op.hpp"
 
 #include "test_result/rnn_result.hpp"
-#include "test_result/conv_result.hpp"
 
 namespace hypertea {
 
@@ -77,47 +76,6 @@ TYPED_TEST(RNNTestCPU, test_uni_single_gru_CPU) {
     EXPECT_NEAR(output_data[i], test_result::uni_single_gru_result[i], 1e-3);
   }
 }
-
-
-TYPED_TEST(RNNTestGPU, test_uni_single_gru_GPU1) {
-    
-  typedef typename TypeParam::Dtype Dtype;
-
-  fake_random_number random_generator;
-
-  auto _w_ih0 = hypertea::TensorGPU<Dtype>(random_generator.generate_random_vector(3*32*64));
-  auto _w_hh0 = hypertea::TensorGPU<Dtype>(random_generator.generate_random_vector(3*32*32));
-  auto _b_ih0 = hypertea::TensorGPU<Dtype>(random_generator.generate_random_vector(3*32));
-  auto _b_hh0 = hypertea::TensorGPU<Dtype>(random_generator.generate_random_vector(3*32));
-
-
-  auto input_tensor = hypertea::TensorGPU<float>(random_generator.generate_random_vector(5*64));
-  auto hidden_tensor = hypertea::TensorGPU<float>(random_generator.generate_random_vector(32));
-  auto output_tensor = hypertea::TensorGPU<float>(32);
-
-  hypertea::StackedRNN_GPU<float> gru( std::vector<hypertea::RNNOp_GPU<float>* >{
-      new hypertea::UnidirectionalRNN_GPU<float> (
-        64, 32, 
-        _w_ih0.mutable_data(), _w_hh0.mutable_data(), 
-        _b_ih0.mutable_data(), _b_hh0.mutable_data(), 
-        hypertea::RNN_CELL_TYPE::GRU_CELL
-      )
-    }
-  );
-
-
-  output_tensor = gru.Forward(
-    input_tensor,
-    std::vector<hypertea::TensorGPU<float> > {hidden_tensor}
-  );
-
-  const float* output_data = output_tensor.cpu_data_gtest();
-  for (int i = 0; i < test_result::uni_single_gru_result.size(); ++i) {
-    EXPECT_NEAR(output_data[i], test_result::uni_single_gru_result[i], 1e-3);
-  }
-
-}
-
 
 
 TYPED_TEST(RNNTestCPU, test_bi_single_gru_CPU) {

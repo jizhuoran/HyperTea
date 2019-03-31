@@ -75,27 +75,27 @@ explicit BaseConvolutionOp_CPU(const Dtype* weight, const Dtype* bias,
           output_offset_ = conv_out_spatial_dim_ * conv_out_channels_ / group_;
 
  
-          std::cout << bottom_dim_ << ", "
-          << 1 << ", "
-          << top_dim_ << ", "
+          // std::cout << bottom_dim_ << ", "
+          // << 1 << ", "
+          // << top_dim_ << ", "
 
-          << num_ << ", "
-          << input_shape[1] << ", "
-          << group_ << ", "
-          << weight_offset_ << ", "
-          << num_output_ << ", "
-          << out_spatial_dim_ << ", "
-          << false << ", "
-          << false << ", "
+          // << num_ << ", "
+          // << input_shape[1] << ", "
+          // << group_ << ", "
+          // << weight_offset_ << ", "
+          // << num_output_ << ", "
+          // << out_spatial_dim_ << ", "
+          // << false << ", "
+          // << false << ", "
 
-          << conv_out_channels_ << ", "
-          << conv_in_channels_ << ", "
-          << conv_out_spatial_dim_ << ", "
-          << kernel_dim_ << ", "
-          << col_offset_ << ", "
-          << output_offset_ << ", "
+          // << conv_out_channels_ << ", "
+          // << conv_in_channels_ << ", "
+          // << conv_out_spatial_dim_ << ", "
+          // << kernel_dim_ << ", "
+          // << col_offset_ << ", "
+          // << output_offset_ << ", "
 
-          << num_spatial_axes_ << std::endl;
+          // << num_spatial_axes_ << std::endl;
 
 
 
