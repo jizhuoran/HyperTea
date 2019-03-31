@@ -140,8 +140,8 @@ public:
 
 	std::vector<TensorGPU<Dtype> > chunked_tensors(int chunck_num, cl_mem_flags flags = CL_MEM_READ_WRITE) {
 		
-		int chunck_count = this->count_ / chunck_num;
-		int chunck_size = chunck_count * sizeof(Dtype);
+		size_t chunck_count = this->count_ / chunck_num;
+		size_t chunck_size = chunck_count * sizeof(Dtype);
 
 
 		cl_int ret;

@@ -305,11 +305,11 @@ public:
 
   virtual ~Cell_GPU() {}
   
-  virtual void Forward(
-    cl_mem input_data,
-    cl_mem hidden_data,
-    cl_mem output_data
-  ) = 0;
+  // virtual void Forward(
+  //   cl_mem input_data,
+  //   cl_mem hidden_data,
+  //   cl_mem output_data
+  // ) = 0;
 
   virtual void Forward(
     TensorGPU<Dtype>& input,
@@ -374,11 +374,11 @@ public:
     // clReleaseMemObject(this->intermediate_h);
   }
   
-  virtual void Forward(
-    cl_mem input_data,
-    cl_mem hidden_data,
-    cl_mem output_data
-  );
+  // virtual void Forward(
+  //   cl_mem input_data,
+  //   cl_mem hidden_data,
+  //   cl_mem output_data
+  // );
 
   virtual void Forward(
     TensorGPU<Dtype>& input,
@@ -424,11 +424,11 @@ public:
     // clReleaseMemObject(this->intermediate_h);
   }
   
-  virtual void Forward(
-    cl_mem input_data,
-    cl_mem hidden_data,
-    cl_mem output_data
-  );
+  // virtual void Forward(
+  //   cl_mem input_data,
+  //   cl_mem hidden_data,
+  //   cl_mem output_data
+  // );
 
   virtual void Forward(
     TensorGPU<Dtype>& input,
@@ -500,7 +500,13 @@ protected:
     return batch_size_ * input_dim_;
   }
 
+  unsigned int output_size() {
+    return batch_size_ * hidden_dim_;
+  }
+
+
   virtual unsigned int output_offset() = 0;
+  
 
 
 };
@@ -534,7 +540,6 @@ private:
   virtual unsigned int output_offset() {
     return this->batch_size_ * this->hidden_dim_;
   }
-
 
 
 };

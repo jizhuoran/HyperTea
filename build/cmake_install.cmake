@@ -1,8 +1,8 @@
-# Install script for directory: /home/zrji/HyperTea
+# Install script for directory: /home/zrji/hypertea
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/home/zrji/HyperTea/build/install")
+  set(CMAKE_INSTALL_PREFIX "/home/zrji/hypertea/build/install")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -39,9 +39,9 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/home/zrji/HyperTea/build/src/hypertea/cmake_install.cmake")
-  include("/home/zrji/HyperTea/build/test/cmake_install.cmake")
-  include("/home/zrji/HyperTea/build/tools/cmake_install.cmake")
+  include("/home/zrji/hypertea/build/src/hypertea/cmake_install.cmake")
+  include("/home/zrji/hypertea/build/test/cmake_install.cmake")
+  include("/home/zrji/hypertea/build/tools/cmake_install.cmake")
 
 endif()
 
@@ -53,5 +53,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/zrji/HyperTea/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/zrji/hypertea/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
