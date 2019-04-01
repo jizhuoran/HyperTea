@@ -19,10 +19,10 @@ TensorCPU<float> BatchNormOp_CPU<float>::Forward(TensorCPU<float> &input_tensor)
 
   if (use_global_stats_) {
     // use the stored mean/variance estimates.
-    hypertea_cpu_scale(channels_, scale_factor_,
-        mean_, mean_);
-    hypertea_cpu_scale(channels_, scale_factor_,
-        variance_, variance_);
+    // hypertea_cpu_scale(channels_, scale_factor_,
+    //     mean_, mean_);
+    // hypertea_cpu_scale(channels_, scale_factor_,
+    //     variance_, variance_);
   } else {
     // compute mean
     hypertea_cpu_gemv<float>(CblasNoTrans, channels_ * num_, spatial_dim_,
@@ -34,6 +34,8 @@ TensorCPU<float> BatchNormOp_CPU<float>::Forward(TensorCPU<float> &input_tensor)
         mean_);
   }
 
+  // std::cout << "pass this line!!" << std::endl;
+
   // subtract mean
   hypertea_cpu_gemm<float>(CblasNoTrans, CblasNoTrans, num_, channels_, 1, 1,
       batch_sum_multiplier_, mean_, 0.,
@@ -41,6 +43,10 @@ TensorCPU<float> BatchNormOp_CPU<float>::Forward(TensorCPU<float> &input_tensor)
   hypertea_cpu_gemm<float>(CblasNoTrans, CblasNoTrans, channels_ * num_,
       spatial_dim_, 1, -1, num_by_chans_,
       spatial_sum_multiplier_, 1., output_data);
+
+  // std::cout << "pass this line1!!" << std::endl;
+
+
 
   if (!use_global_stats_) {
     // compute variance using var(X) = E((X-EX)^2)
@@ -69,6 +75,7 @@ TensorCPU<float> BatchNormOp_CPU<float>::Forward(TensorCPU<float> &input_tensor)
       spatial_sum_multiplier_, 0., temp_);
   hypertea_div(top_count_, output_data, temp_, output_data);
 
+  // std::cout << "pass this line2!!" << std::endl;
 
 
   if(weight_ != NULL) {
@@ -77,7 +84,7 @@ TensorCPU<float> BatchNormOp_CPU<float>::Forward(TensorCPU<float> &input_tensor)
 
     float* output_data_ptr_keeper = output_data;
 
-    int inner_dim = top_count_ / channels_;
+    int inner_dim = top_count_ / (channels_ * num_);
 
     for (int n = 0; n < num_; ++n) {
       for (int d = 0; d < channels_; ++d) {
@@ -88,11 +95,18 @@ TensorCPU<float> BatchNormOp_CPU<float>::Forward(TensorCPU<float> &input_tensor)
       } 
     }
 
+    // std::cout << "pass this line3!!" << std::endl;
+
     if (bias_ != NULL) {
 
       output_data = output_data_ptr_keeper;
 
+      // std::cout << "pass this line4!!" << std::endl;
+
       for (int n = 0; n < num_; ++n) {
+
+        // std::cout << "pass this line4." << n << "!!" <<std::endl;
+
 
         hypertea_cpu_gemm(CblasNoTrans, CblasNoTrans, channels_,
             inner_dim, 1, float(1), bias_,
@@ -100,6 +114,120 @@ TensorCPU<float> BatchNormOp_CPU<float>::Forward(TensorCPU<float> &input_tensor)
         output_data += (channels_ * inner_dim); 
       }
     }
+
+    // std::cout << "pass this line5!!" << std::endl;
+
+
+    output_data = output_data_ptr_keeper;
+  }
+
+
+  return inplace_? input_tensor:TensorCPU<float>(output_data, input_tensor.size());  
+
+}
+
+
+
+template <>
+TensorCPU<float> BatchNormOp_CPU<float>::TForward(TensorCPU<float> &input_tensor) {
+
+  const float* input_data = input_tensor.immutable_data();
+  float* output_data = inplace_? input_tensor.mutable_data() : new float[input_tensor.count()];
+
+  if (!inplace_) {
+    hypertea_copy(top_count_, input_data, output_data);
+  }
+
+  if (!use_global_stats_) {
+    // compute mean
+    hypertea_cpu_gemv<float>(CblasNoTrans, channels_ * num_, spatial_dim_,
+        1. / (num_ * spatial_dim_), input_data,
+        spatial_sum_multiplier_, 0.,
+        num_by_chans_);
+    hypertea_cpu_gemv<float>(CblasTrans, num_, channels_, 1.,
+        num_by_chans_, batch_sum_multiplier_, 0.,
+        mean_);
+  }
+
+
+  // subtract mean
+  hypertea_cpu_gemm<float>(CblasNoTrans, CblasNoTrans, num_, channels_, 1, 1,
+      batch_sum_multiplier_, mean_, 0.,
+      num_by_chans_);
+  hypertea_cpu_gemm<float>(CblasNoTrans, CblasNoTrans, channels_ * num_,
+      spatial_dim_, 1, -1, num_by_chans_,
+      spatial_sum_multiplier_, 1., output_data);
+
+
+  if (!use_global_stats_) {
+    // compute variance using var(X) = E((X-EX)^2)
+    hypertea_sqr<float>(top_count_, output_data,
+                     temp_);  // (X-EX)^2
+    hypertea_cpu_gemv<float>(CblasNoTrans, channels_ * num_, spatial_dim_,
+        1. / (num_ * spatial_dim_), temp_,
+        spatial_sum_multiplier_, 0.,
+        num_by_chans_);
+    hypertea_cpu_gemv<float>(CblasTrans, num_, channels_, 1.,
+        num_by_chans_, batch_sum_multiplier_, 0.,
+        variance_);  // E((X_EX)^2)
+
+  }
+
+  // normalize variance
+  hypertea_add_scalar(channels_, eps_, variance_);
+  hypertea_sqrt(channels_, variance_, variance_);
+
+  // replicate variance to input size
+  hypertea_cpu_gemm<float>(CblasNoTrans, CblasNoTrans, num_, channels_, 1, 1,
+      batch_sum_multiplier_, variance_, 0.,
+      num_by_chans_);
+  hypertea_cpu_gemm<float>(CblasNoTrans, CblasNoTrans, channels_ * num_,
+      spatial_dim_, 1, 1., num_by_chans_,
+      spatial_sum_multiplier_, 0., temp_);
+  hypertea_div(top_count_, output_data, temp_, output_data);
+
+  // std::cout << "pass this line2!!" << std::endl;
+
+
+  if(weight_ != NULL) {
+
+    input_data = inplace_? input_data : output_data;
+
+    float* output_data_ptr_keeper = output_data;
+
+    int inner_dim = top_count_ / (channels_ * num_);
+
+    for (int n = 0; n < num_; ++n) {
+      for (int d = 0; d < channels_; ++d) {
+        const float factor = weight_[d];
+        hypertea_cpu_scale(inner_dim, factor, input_data, output_data);
+        input_data += inner_dim;
+        output_data += inner_dim;
+      } 
+    }
+
+    // std::cout << "pass this line3!!" << std::endl;
+
+    if (bias_ != NULL) {
+
+      output_data = output_data_ptr_keeper;
+
+      // std::cout << "pass this line4!!" << std::endl;
+
+      for (int n = 0; n < num_; ++n) {
+
+        // std::cout << "pass this line4." << n << "!!" <<std::endl;
+
+
+        hypertea_cpu_gemm(CblasNoTrans, CblasNoTrans, channels_,
+            inner_dim, 1, float(1), bias_,
+            bias_multiplier_, float(1), output_data);
+        output_data += (channels_ * inner_dim); 
+      }
+    }
+
+    // std::cout << "pass this line5!!" << std::endl;
+
 
     output_data = output_data_ptr_keeper;
   }
@@ -119,20 +247,11 @@ TensorGPU<Dtype> BatchNormOp_GPU<Dtype>::Forward(TensorGPU<Dtype> input_tensor){
   cl_mem output_data = output_tensor.mutable_data();
 
 
-  // float sum_shift_num_ = 1.;//64.0;
-  // float top_shift_num_ = 1.;//32.0;
-
-  if (input_data != output_data) {
-    hypertea_cl_copy<Dtype>(top_count_, input_data, output_data);
+  if (!inplace_) {
+    hypertea_cl_copy<Dtype>(input_tensor.count(), input_data, output_data);
   }
 
-  if (use_global_stats_) {
-    // use the stored mean/variance estimates.
-    hypertea_gpu_scale<Dtype>(channels_, scale_factor_,
-        mean_, mean_);
-    hypertea_gpu_scale<Dtype>(channels_, scale_factor_,
-        variance_, variance_);
-  } else {
+  if (!use_global_stats_) {
     // compute mean
 
     hypertea_gpu_bsum<Dtype>(channels_ * num_, spatial_dim_, input_data, 
@@ -140,10 +259,9 @@ TensorGPU<Dtype> BatchNormOp_GPU<Dtype>::Forward(TensorGPU<Dtype> input_tensor){
                           num_by_chans_, 1);
     
     hypertea_gpu_gemv<Dtype>(CblasTrans, num_, channels_, float(1.),
-        num_by_chans_, batch_sum_multiplier_, float(0.),
-        mean_);
-  }
+        num_by_chans_, batch_sum_multiplier_, float(0.), mean_);
 
+  }
 
 
   // subtract mean
@@ -159,14 +277,12 @@ TensorGPU<Dtype> BatchNormOp_GPU<Dtype>::Forward(TensorGPU<Dtype> input_tensor){
 
   if (!use_global_stats_) {
 
-
-    hypertea_gpu_scal<Dtype>(top_count_, 1/top_shift_num_, output_data);
-
     // compute variance using var(X) = E((X-EX)^2)
-    hypertea_gpu_mul<Dtype>(top_count_, output_data, output_data,
-        temp_);  // (X-EX)^2
 
-    hypertea_gpu_bsum<Dtype>(channels_ * num_, spatial_dim_, temp_, 
+    output_tensor *= static_cast<float>(1/top_shift_num_);
+    ttemp_ = output_tensor * output_tensor;
+
+    hypertea_gpu_bsum<Dtype>(channels_ * num_, spatial_dim_, ttemp_.mutable_data(), 
                           1/sum_shift_num_, (sum_shift_num_*sum_shift_num_) / (num_ * spatial_dim_), 
                           num_by_chans_, 1);
 
@@ -181,7 +297,8 @@ TensorGPU<Dtype> BatchNormOp_GPU<Dtype>::Forward(TensorGPU<Dtype> input_tensor){
   hypertea_gpu_add_scalar<Dtype>(channels_, eps_, variance_);
   hypertea_gpu_sqrt<Dtype>(channels_, variance_, variance_);
 
-  hypertea_gpu_scal<Dtype>(top_count_, top_shift_num_, output_data);
+  output_tensor *= top_shift_num_;
+  // hypertea_gpu_scal<Dtype>(top_count_, top_shift_num_, output_data);
   hypertea_gpu_scal<Dtype>(channels_, top_shift_num_, variance_);
 
   // replicate variance to input size
@@ -190,13 +307,14 @@ TensorGPU<Dtype> BatchNormOp_GPU<Dtype>::Forward(TensorGPU<Dtype> input_tensor){
       num_by_chans_);
   hypertea_gpu_gemm<Dtype>(CblasNoTrans, CblasNoTrans, channels_ * num_,
       spatial_dim_, 1, float(1.), num_by_chans_,
-      spatial_sum_multiplier_, float(0.), temp_);
+      spatial_sum_multiplier_, float(0.), ttemp_.mutable_data());
 
-  hypertea_gpu_div<Dtype>(top_count_, output_data, temp_, output_data);
+  output_tensor /= ttemp_;
+
 
   if (weight_ != NULL) {
 
-    int inner_dim = top_count_ / channels_;
+    int inner_dim = top_count_ / (channels_ * num_);
 
 
     if (bias_ != NULL) {

@@ -241,6 +241,15 @@ template TensorGPU<float>& TensorGPU<float>::operator*=(const float other);
 template TensorGPU<half>& TensorGPU<half>::operator*=(const float other);
 
 
+template <typename Dtype>
+TensorGPU<Dtype>& TensorGPU<Dtype>::operator/=(const TensorGPU<Dtype> & other) {
+  hypertea_gpu_div<Dtype>(this->count(), this->immutable_data(), other.immutable_data(), this->mutable_data());
+  return *this;
+}
+template TensorGPU<float>& TensorGPU<float>::operator/=(const TensorGPU<float> & other);
+template TensorGPU<half>& TensorGPU<half>::operator/=(const TensorGPU<half> & other);
+
+
 	
 template <typename Dtype>
 TensorGPU<Dtype> operator+(const TensorGPU<Dtype>& lhs, const TensorGPU<Dtype>& rhs) {
@@ -295,6 +304,19 @@ template TensorGPU<half> operator-(const TensorGPU<half>& a, const float rhs);
 
 
 
+template <typename Dtype>
+TensorGPU<Dtype> operator*(const TensorGPU<Dtype>& lhs, const TensorGPU<Dtype>& rhs) {
+    
+    TensorGPU<Dtype> result(lhs.count());
+
+    hypertea_gpu_mul<Dtype>(lhs.count(), lhs.immutable_data(), rhs.immutable_data(), result.mutable_data());
+
+  return result;
+}
+template TensorGPU<float> operator*(const TensorGPU<float>& a, const TensorGPU<float>& rhs);
+template TensorGPU<half> operator*(const TensorGPU<half>& a, const TensorGPU<half>& rhs);
+
+
 
 template <typename Dtype>
 TensorGPU<Dtype> operator*(const TensorGPU<Dtype>& lhs, float rhs) {
@@ -305,4 +327,17 @@ TensorGPU<Dtype> operator*(const TensorGPU<Dtype>& lhs, float rhs) {
 }
 template TensorGPU<float> operator*(const TensorGPU<float>& a, const float rhs);
 template TensorGPU<half> operator*(const TensorGPU<half>& a, const float rhs);
+
+
+template <typename Dtype>
+TensorGPU<Dtype> operator/(const TensorGPU<Dtype>& lhs, const TensorGPU<Dtype>& rhs) {
+    
+    TensorGPU<Dtype> result(lhs.count());
+
+    hypertea_gpu_div<Dtype>(lhs.count(), lhs.immutable_data(), rhs.immutable_data(), result.mutable_data());
+
+  return result;
+}
+template TensorGPU<float> operator/(const TensorGPU<float>& a, const TensorGPU<float>& rhs);
+template TensorGPU<half> operator/(const TensorGPU<half>& a, const TensorGPU<half>& rhs);
 } //namespace hypertea

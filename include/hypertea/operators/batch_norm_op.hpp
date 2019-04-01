@@ -70,8 +70,8 @@ class BatchNormOp_CPU : public CPUFunctor<Dtype> {
           }
 
           if (bias != NULL) {
-            bias_multiplier_ = new Dtype[top_count / channels];
-            hypertea_set(top_count / channels, Dtype(1), bias_multiplier_);
+            bias_multiplier_ = new Dtype[top_count_ / (channels_ * num_)];
+            hypertea_set(top_count_ / (channels_ * num_), Dtype(1), bias_multiplier_);
           }
 
         }
@@ -81,8 +81,11 @@ class BatchNormOp_CPU : public CPUFunctor<Dtype> {
     delete [] spatial_sum_multiplier_;
     delete [] num_by_chans_;
     delete [] batch_sum_multiplier_;
-    delete [] mean_;
-    delete [] variance_;
+
+    if(!use_global_stats_) {
+      delete [] mean_;
+      delete [] variance_;
+    }
 
     if(bias_ != NULL) {
       delete [] bias_multiplier_;
@@ -98,6 +101,7 @@ class BatchNormOp_CPU : public CPUFunctor<Dtype> {
   //     const std::vector<Dtype*> top_datas);
 
   virtual TensorCPU<Dtype> Forward(TensorCPU<Dtype> &input_tensor);
+  TensorCPU<Dtype> TForward(TensorCPU<Dtype> &input_tensor);
 
 
 
@@ -148,9 +152,10 @@ class BatchNormOp_GPU : public GPUFunctor<Dtype> {
         mean_(mean), variance_(variance),
         weight_(weight), bias_(bias),
         sum_shift_num_(sum_shift_num), top_shift_num_(top_shift_num),
-        inplace_(inplace) {
+        inplace_(inplace), ttemp_(TensorGPU<Dtype>(top_count)) {
 
           temp_ = clCreateBuffer(OpenCLHandler::Get().context, CL_MEM_READ_WRITE, sizeof(Dtype) * top_count, NULL, NULL);
+
 
           spatial_dim_ = top_count/(num*channels);
 
@@ -182,6 +187,16 @@ class BatchNormOp_GPU : public GPUFunctor<Dtype> {
   cl_mem weight_ = NULL;
   cl_mem bias_ = NULL;
   cl_mem temp_;
+
+
+
+  TensorGPU<Dtype> tmean_;
+  TensorGPU<Dtype> tvariance_;
+  TensorGPU<Dtype> tweight_;
+  TensorGPU<Dtype> tbias_;
+  TensorGPU<Dtype> ttemp_;
+
+
   bool use_global_stats_;
   
   float eps_;

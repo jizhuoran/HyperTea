@@ -170,7 +170,7 @@ def deconv_oracle_generator():
             in_channel, out_channel, 
             kernel, stride, padding, dilation
         )
-
+ 
         deconv_oracle.append(
             'std::vector<float> {}_result{}'.format(
                 op_name, deconv_result

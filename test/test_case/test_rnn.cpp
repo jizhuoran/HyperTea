@@ -39,7 +39,7 @@ TYPED_TEST_CASE(RNNTestCPU, TestDtypesCPU);
 TYPED_TEST_CASE(RNNTestGPU, TestDtypesGPU);
 
 
-
+ 
 TYPED_TEST(RNNTestCPU, test_uni_single_gru_CPU) {
   typedef typename TypeParam::Dtype Dtype;
   

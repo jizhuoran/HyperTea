@@ -1,3 +1,46 @@
+#include <algorithm>
+#include <vector>
+
+#include "gtest/gtest.h"
+
+
+#include "hypertea/common.hpp"
+
+#include "test_hypertea_util.hpp"
+#include "hypertea/operators/batch_norm_op.hpp"
+#include "test_result/bn_result.hpp"
+
+
+namespace hypertea {
+
+
+template <typename TypeParam>
+class BNTestCPU : public ::testing::Test {
+ public:
+  typedef typename TypeParam::Dtype Dtype;
+ protected:
+  BNTestCPU() {}
+  virtual ~BNTestCPU() {}
+};
+
+template <typename TypeParam>
+class BNTestGPU : public ::testing::Test {
+ public:
+  typedef typename TypeParam::Dtype Dtype;
+ protected:
+  BNTestGPU() {
+    hypertea::OpenCLHandler::Get().build_opencl_math_code(false);
+  }
+  virtual ~BNTestGPU() {}
+};
+
+
+TYPED_TEST_CASE(BNTestCPU, TestDtypesCPU);
+TYPED_TEST_CASE(BNTestGPU, TestDtypesGPU);
+
+
+
+
 
 
 TYPED_TEST(BNTestCPU, test_bn_1_t_f_f_CPU) {
@@ -878,3 +921,11 @@ TYPED_TEST(BNTestGPU, test_bn_3_f_t_t_GPU) {
 }
 
     
+
+    
+
+
+
+
+
+}  // namespace caffe

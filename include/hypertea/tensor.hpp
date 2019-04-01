@@ -24,8 +24,10 @@ template<typename Dtype> TensorGPU<Dtype> operator+ (const TensorGPU<Dtype>& lhs
 template<typename Dtype> TensorGPU<Dtype> operator+ (const TensorGPU<Dtype>& lhs, const float rhs);
 template<typename Dtype> TensorGPU<Dtype> operator- (const TensorGPU<Dtype>& lhs, const TensorGPU<Dtype>& rhs);
 template<typename Dtype> TensorGPU<Dtype> operator- (const TensorGPU<Dtype>& lhs, const float rhs);
-
+template<typename Dtype> TensorGPU<Dtype> operator* (const TensorGPU<Dtype>& lhs, const TensorGPU<Dtype>& rhs);
 template<typename Dtype> TensorGPU<Dtype> operator* (const TensorGPU<Dtype>& lhs, const float rhs);
+template<typename Dtype> TensorGPU<Dtype> operator/ (const TensorGPU<Dtype>& lhs, const TensorGPU<Dtype>& rhs);
+// template<typename Dtype> TensorGPU<Dtype> operator/ (const TensorGPU<Dtype>& lhs, const float rhs);
 
 template <typename Dtype>
 class Tensor
@@ -185,6 +187,8 @@ public:
 	TensorGPU& operator-=(const float other);
 	TensorGPU& operator*=(const TensorGPU & other);
 	TensorGPU& operator*=(const float other);
+	TensorGPU& operator/=(const TensorGPU & other);
+	// TensorGPU& operator/=(const float other);
 
 
 

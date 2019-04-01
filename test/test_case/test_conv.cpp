@@ -13,9 +13,9 @@
 #include "test_result/conv_result.hpp"
 #include "test_result/deconv_result.hpp"
 
-namespace hypertea {
+namespace hypertea { 
 
-
+ 
 template <typename TypeParam>
 class CONVTestCPU : public ::testing::Test {
  public:

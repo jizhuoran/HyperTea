@@ -88,23 +88,23 @@ void hypertea_div(const int N, const Dtype* a, const Dtype* b, Dtype* y);
 template <typename Dtype>
 void hypertea_powx(const int n, const Dtype* a, const float b, Dtype* y);
 
-unsigned int hypertea_rng_rand();
+// unsigned int hypertea_rng_rand();
 
-template <typename Dtype>
-Dtype hypertea_nextafter(const Dtype b);
+// template <typename Dtype>
+// Dtype hypertea_nextafter(const Dtype b);
 
-template <typename Dtype>
-void hypertea_rng_uniform(const int n, const float a, const float b, Dtype* r);
+// template <typename Dtype>
+// void hypertea_rng_uniform(const int n, const float a, const float b, Dtype* r);
 
-template <typename Dtype>
-void hypertea_rng_gaussian(const int n, const float mu, const float sigma,
-                        Dtype* r);
+// template <typename Dtype>
+// void hypertea_rng_gaussian(const int n, const float mu, const float sigma,
+//                         Dtype* r);
 
-template <typename Dtype>
-void hypertea_rng_bernoulli(const int n, const Dtype p, int* r);
+// template <typename Dtype>
+// void hypertea_rng_bernoulli(const int n, const Dtype p, int* r);
 
-template <typename Dtype>
-void hypertea_rng_bernoulli(const int n, const Dtype p, unsigned int* r);
+// template <typename Dtype>
+// void hypertea_rng_bernoulli(const int n, const Dtype p, unsigned int* r);
 
 template <typename Dtype>
 void hypertea_exp(const int n, const Dtype* a, Dtype* y);
