@@ -120,6 +120,8 @@ class BatchNormOp_CPU : public CPUFunctor<Dtype> {
 
   bool inplace_;
 
+
+
   // extra temporarary variables is used to carry out sums/broadcasting
   // using BLAS
   Dtype* batch_sum_multiplier_;
@@ -154,6 +156,10 @@ class BatchNormOp_GPU : public GPUFunctor<Dtype> {
         sum_shift_num_(sum_shift_num), top_shift_num_(top_shift_num),
         inplace_(inplace), ttemp_(TensorGPU<Dtype>(top_count)) {
 
+          has_bias = (bias != NULL);
+          affine = (weight != NULL);
+
+
           temp_ = clCreateBuffer(OpenCLHandler::Get().context, CL_MEM_READ_WRITE, sizeof(Dtype) * top_count, NULL, NULL);
 
 
@@ -170,6 +176,21 @@ class BatchNormOp_GPU : public GPUFunctor<Dtype> {
           if(!use_global_stats) {
             mean_ = clCreateBuffer(OpenCLHandler::Get().context, CL_MEM_READ_WRITE, sizeof(Dtype) * channels, NULL, NULL);
             variance_ = clCreateBuffer(OpenCLHandler::Get().context, CL_MEM_READ_WRITE, sizeof(Dtype) * channels, NULL, NULL);
+
+            tmean_ = TensorGPU<Dtype>(channels);
+            tvariance_ = TensorGPU<Dtype>(channels);
+
+          } else {
+            tmean_ = TensorGPU<Dtype>(mean, channels, true);
+            tvariance_ = TensorGPU<Dtype>(variance, channels, true);
+          }
+
+          if(weight != NULL) {
+            tweight_ = TensorGPU<Dtype>(weight, channels, true);
+          }
+
+          if(bias != NULL) {
+            tbias_ = TensorGPU<Dtype>(bias, channels, true);
           }
 
         }
@@ -217,6 +238,9 @@ class BatchNormOp_GPU : public GPUFunctor<Dtype> {
 
   
   bool inplace_;
+
+  bool has_bias;
+  bool affine;
 };
 
 #endif //USE_OPENCL

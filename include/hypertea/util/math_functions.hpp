@@ -252,6 +252,9 @@ template <typename Dtype>
 void hypertea_gpu_abs(const int n, const cl_mem a, cl_mem y);
 
 template <typename Dtype>
+void hypertea_gpu_inv(const int n, const cl_mem a, cl_mem y);
+
+template <typename Dtype>
 void hypertea_gpu_exp(const int n, const cl_mem a, cl_mem y);
 
 template <typename Dtype>

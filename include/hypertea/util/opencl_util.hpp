@@ -29,6 +29,12 @@ void opencl_launch_wrapper(
   cl_event *event = nullptr
 );
 
+
+
+
+
+
+
 size_t reference_count(cl_mem mem_obj);
 size_t cl_mem_count(cl_mem mem_obj);
 

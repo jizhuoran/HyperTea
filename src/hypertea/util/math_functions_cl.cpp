@@ -687,6 +687,41 @@ template void hypertea_gpu_abs<half>(
 );
 
 
+template <typename Dtype>
+void hypertea_gpu_inv(
+  const int n, 
+  const cl_mem a, 
+  cl_mem y) {
+  
+  cl_int ret;
+
+  cl_kernel kernel = clCreateKernel(OpenCLHandler::Get().math_program, "inv_kernel", &ret);
+  OPENCL_CHECK(ret);
+
+  // Set arguments for kernel
+  OPENCL_CHECK(clSetKernelArg(kernel, 0, sizeof(cl_mem), (void *)&a));  
+  OPENCL_CHECK(clSetKernelArg(kernel, 1, sizeof(cl_mem), (void *)&y));  
+  OPENCL_CHECK(clSetKernelArg(kernel, 2, sizeof(cl_int), (void *)&n));  
+
+  size_t global_size = HYPERTEA_GET_BLOCKS(n);
+  
+  OPENCL_CHECK(clEnqueueNDRangeKernel(OpenCLHandler::Get().commandQueue, kernel, 1, NULL, &global_size, &HYPERTEA_OPENCL_NUM_THREADS, 0, NULL, NULL));  
+  
+}
+
+template void hypertea_gpu_inv<float>(
+  const int n, 
+  const cl_mem a, 
+  cl_mem y
+);
+
+template void hypertea_gpu_inv<half>(
+  const int n, 
+  const cl_mem a, 
+  cl_mem y
+);
+
+
 
 
 template <typename Dtype>

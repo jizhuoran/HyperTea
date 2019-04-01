@@ -20,7 +20,9 @@ template<typename Dtype> TensorCPU<Dtype> operator* (const TensorCPU<Dtype>& lhs
 
 
 
-template<typename Dtype> TensorGPU<Dtype> operator+ (const TensorGPU<Dtype>& lhs, const TensorGPU<Dtype>& rhs);
+// template<typename Dtype> TensorGPU<Dtype> operator+ (const TensorGPU<Dtype>& lhs, const TensorGPU<Dtype>& rhs) {
+// 	return gpu_add(lhs ,rhs);
+// }
 template<typename Dtype> TensorGPU<Dtype> operator+ (const TensorGPU<Dtype>& lhs, const float rhs);
 template<typename Dtype> TensorGPU<Dtype> operator- (const TensorGPU<Dtype>& lhs, const TensorGPU<Dtype>& rhs);
 template<typename Dtype> TensorGPU<Dtype> operator- (const TensorGPU<Dtype>& lhs, const float rhs);
@@ -181,13 +183,13 @@ public:
 	}
 
 
-	TensorGPU& operator+=(const TensorGPU & other);
+	TensorGPU& operator+=(const TensorGPU & other) {return inplace_gpu_add(other, *this);}
 	TensorGPU& operator+=(const float other);
-	TensorGPU& operator-=(const TensorGPU & other);
+	TensorGPU& operator-=(const TensorGPU & other) {return inplace_gpu_sub(other, *this);}
 	TensorGPU& operator-=(const float other);
-	TensorGPU& operator*=(const TensorGPU & other);
+	TensorGPU& operator*=(const TensorGPU & other) {return inplace_gpu_mul(other, *this);}
 	TensorGPU& operator*=(const float other);
-	TensorGPU& operator/=(const TensorGPU & other);
+	TensorGPU& operator/=(const TensorGPU & other) {return inplace_gpu_div(other, *this);}
 	// TensorGPU& operator/=(const float other);
 
 
@@ -196,7 +198,11 @@ public:
 
 	TensorGPU& sigmoid();
 	TensorGPU& tanh();
-
+	TensorGPU& abs();
+	TensorGPU& exp();
+	TensorGPU& log();
+	TensorGPU& powx(float e);
+	TensorGPU& sqrt();
 
 
 

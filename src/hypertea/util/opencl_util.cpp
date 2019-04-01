@@ -55,6 +55,8 @@ void opencl_launch_wrapper(
 
 
 
+
+
 size_t reference_count(cl_mem mem_obj) {
 
   cl_uint refer_count;
@@ -532,6 +534,23 @@ std::string OpenCLHandler::opencl_math_code(bool is_half) {
 	}
 	}
 
+  __kernel void ChanneledAddForward(__global Dtype *in,
+  __global Dtype *out,
+  int N, __global Dtype *bias, int scale_dim, int inner_dim) {
+  OPENCL_KERNEL_LOOP(index, N) {
+  const int scale_index = (index / inner_dim) % scale_dim;
+  out[index] = in[index] + bias[scale_index];
+  }
+  }
+
+  __kernel void ChanneledSubForward(__global Dtype *in,
+  __global Dtype *out,
+  int N, __global Dtype *bias, int scale_dim, int inner_dim) {
+  OPENCL_KERNEL_LOOP(index, N) {
+  const int scale_index = (index / inner_dim) % scale_dim;
+  out[index] = in[index] - bias[scale_index];
+  }
+  }
 
 	__kernel void ScaleBiasForward(__global Dtype *in,
 	__global Dtype *out,
@@ -611,6 +630,14 @@ std::string OpenCLHandler::opencl_math_code(bool is_half) {
 	}
 	}
 
+
+  __kernel void inv_kernel(__global Dtype *a,
+  __global Dtype *y,
+  int N) {
+  OPENCL_KERNEL_LOOP(index, N) {
+   y[index] = 1 / a[index];
+  }
+  }
 
 
 
