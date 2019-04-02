@@ -70,10 +70,10 @@ TYPED_TEST(RNNTestCPU, test_uni_single_gru_CPU) {
     std::vector<hypertea::TensorCPU<Dtype> > {hidden_tensor}
   );
 
-  const Dtype* output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.cpu_data_gtest();
 
   for (int i = 0; i < test_result::uni_single_gru_result.size(); ++i) {
-    EXPECT_NEAR(output_data[i], test_result::uni_single_gru_result[i], 1e-3);
+    EXPECT_NEAR(output_data.get()[i], test_result::uni_single_gru_result[i], 1e-3);
   }
 }
 
@@ -117,10 +117,10 @@ TYPED_TEST(RNNTestCPU, test_bi_single_gru_CPU) {
   );
 
 
-  const Dtype* output_data = output_tensor.immutable_data();
+  auto output_data = output_tensor.cpu_data_gtest();
 
   for (int i = 0; i < test_result::bi_single_gru_result.size(); ++i) {
-    EXPECT_NEAR(output_data[i], test_result::bi_single_gru_result[i], 1e-3);
+    EXPECT_NEAR(output_data.get()[i], test_result::bi_single_gru_result[i], 1e-3);
   }
 }
 
@@ -184,9 +184,9 @@ TYPED_TEST(RNNTestCPU, test_uni_multi3_gru_CPU) {
   );
 
 
-  const Dtype* output_data = output_tensor.immutable_data();
+  auto output_data = output_tensor.cpu_data_gtest();
   for (int i = 0; i < test_result::uni_multi3_gru_result.size(); ++i) {
-    EXPECT_NEAR(output_data[i], test_result::uni_multi3_gru_result[i], 1e-3);
+    EXPECT_NEAR(output_data.get()[i], test_result::uni_multi3_gru_result[i], 1e-3);
   }
 
 }
@@ -270,9 +270,9 @@ TYPED_TEST(RNNTestCPU, test_bi_multi3_gru_CPU) {
     std::vector<hypertea::TensorCPU<float> > {hidden_tensor0, hidden_tensor1, hidden_tensor2}
   );
 
-  const Dtype* output_data = output_tensor.immutable_data();
+  auto output_data = output_tensor.cpu_data_gtest();
   for (int i = 0; i < test_result::bi_multi3_gru_result.size(); ++i) {
-    EXPECT_NEAR(output_data[i], test_result::bi_multi3_gru_result[i], 1e-3);
+    EXPECT_NEAR(output_data.get()[i], test_result::bi_multi3_gru_result[i], 1e-3);
   }
 
 }
@@ -313,9 +313,9 @@ TYPED_TEST(RNNTestCPU, test_uni_single_lstm_CPU) {
     std::vector<hypertea::TensorCPU<float> > {hidden_tensor}
   );
 
-  const Dtype* output_data = output_tensor.immutable_data();
+  auto output_data = output_tensor.cpu_data_gtest();
   for (int i = 0; i < test_result::uni_single_lstm_result.size(); ++i) {
-    EXPECT_NEAR(output_data[i], test_result::uni_single_lstm_result[i], 1e-3);
+    EXPECT_NEAR(output_data.get()[i], test_result::uni_single_lstm_result[i], 1e-3);
   }
 
 }
@@ -360,9 +360,9 @@ TYPED_TEST(RNNTestCPU, test_bi_single_lstm_CPU) {
   );
 
 
-  const Dtype* output_data = output_tensor.immutable_data();
+  auto output_data = output_tensor.cpu_data_gtest();
   for (int i = 0; i < test_result::bi_single_lstm_result.size(); ++i) {
-    EXPECT_NEAR(output_data[i], test_result::bi_single_lstm_result[i], 1e-3);
+    EXPECT_NEAR(output_data.get()[i], test_result::bi_single_lstm_result[i], 1e-3);
   }
 
 }
@@ -427,9 +427,9 @@ TYPED_TEST(RNNTestCPU, test_uni_multi3_lstm_CPU) {
     std::vector<hypertea::TensorCPU<float> > {hidden_tensor0, hidden_tensor1, hidden_tensor2}
   );
 
-  const Dtype* output_data = output_tensor.immutable_data();
+  auto output_data = output_tensor.cpu_data_gtest();
   for (int i = 0; i < test_result::uni_multi3_lstm_result.size(); ++i) {
-    EXPECT_NEAR(output_data[i], test_result::uni_multi3_lstm_result[i], 1e-3);
+    EXPECT_NEAR(output_data.get()[i], test_result::uni_multi3_lstm_result[i], 1e-3);
   }
 
 }
@@ -514,9 +514,9 @@ TYPED_TEST(RNNTestCPU, test_bi_multi3_lstm_CPU) {
     std::vector<hypertea::TensorCPU<float> > {hidden_tensor0, hidden_tensor1, hidden_tensor2}
   );
 
-  const Dtype* output_data = output_tensor.immutable_data();
+  auto output_data = output_tensor.cpu_data_gtest();
   for (int i = 0; i < test_result::bi_multi3_lstm_result.size(); ++i) {
-    EXPECT_NEAR(output_data[i], test_result::bi_multi3_lstm_result[i], 1e-3);
+    EXPECT_NEAR(output_data.get()[i], test_result::bi_multi3_lstm_result[i], 1e-3);
   }
 
 }
@@ -559,9 +559,9 @@ TYPED_TEST(RNNTestGPU, test_uni_single_gru_GPU) {
     std::vector<hypertea::TensorGPU<float> > {hidden_tensor}
   );
 
-  const float* output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.cpu_data_gtest();
   for (int i = 0; i < test_result::uni_single_gru_result.size(); ++i) {
-    EXPECT_NEAR(output_data[i], test_result::uni_single_gru_result[i], 1e-3);
+    EXPECT_NEAR(output_data.get()[i], test_result::uni_single_gru_result[i], 1e-3);
   }
 
 }
@@ -616,9 +616,9 @@ TYPED_TEST(RNNTestGPU, test_bi_single_gru_GPU) {
   );
 
 
-  const float* output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.cpu_data_gtest();
   for (int i = 0; i < test_result::bi_single_gru_result.size(); ++i) {
-    EXPECT_NEAR(output_data[i], test_result::bi_single_gru_result[i], 1e-3);
+    EXPECT_NEAR(output_data.get()[i], test_result::bi_single_gru_result[i], 1e-3);
   }
 
 }
@@ -693,9 +693,9 @@ TYPED_TEST(RNNTestGPU, test_uni_multi3_gru_GPU) {
     std::vector<hypertea::TensorGPU<float> > {hidden_tensor0, hidden_tensor1, hidden_tensor2}
   );
 
-  const float* output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.cpu_data_gtest();
   for (int i = 0; i < test_result::uni_multi3_gru_result.size(); ++i) {
-    EXPECT_NEAR(output_data[i], test_result::uni_multi3_gru_result[i], 1e-3);
+    EXPECT_NEAR(output_data.get()[i], test_result::uni_multi3_gru_result[i], 1e-3);
   }
 
 }
@@ -803,10 +803,10 @@ TYPED_TEST(RNNTestGPU, test_bi_multi3_gru_GPU) {
 
 
 
-  const float* output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.cpu_data_gtest();
 
   for (int i = 0; i < test_result::bi_multi3_gru_result.size(); ++i) {
-    EXPECT_NEAR(output_data[i], test_result::bi_multi3_gru_result[i], 1e-3);
+    EXPECT_NEAR(output_data.get()[i], test_result::bi_multi3_gru_result[i], 1e-3);
   }
 
 }
@@ -850,9 +850,9 @@ TYPED_TEST(RNNTestGPU, test_uni_single_lstm_GPU) {
     std::vector<hypertea::TensorGPU<float> > {hidden_tensor}
   );
 
-  const float* output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.cpu_data_gtest();
   for (int i = 0; i < test_result::uni_single_lstm_result.size(); ++i) {
-    EXPECT_NEAR(output_data[i], test_result::uni_single_lstm_result[i], 1e-3);
+    EXPECT_NEAR(output_data.get()[i], test_result::uni_single_lstm_result[i], 1e-3);
   }
 
 }
@@ -907,9 +907,9 @@ TYPED_TEST(RNNTestGPU, test_bi_single_lstm_GPU) {
   );
 
 
-  const float* output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.cpu_data_gtest();
   for (int i = 0; i < test_result::bi_single_lstm_result.size(); ++i) {
-    EXPECT_NEAR(output_data[i], test_result::bi_single_lstm_result[i], 1e-3);
+    EXPECT_NEAR(output_data.get()[i], test_result::bi_single_lstm_result[i], 1e-3);
   }
 
 }
@@ -984,9 +984,9 @@ TYPED_TEST(RNNTestGPU, test_uni_multi3_lstm_GPU) {
     std::vector<hypertea::TensorGPU<float> > {hidden_tensor0, hidden_tensor1, hidden_tensor2}
   );
 
-  const float* output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.cpu_data_gtest();
   for (int i = 0; i < test_result::uni_multi3_lstm_result.size(); ++i) {
-    EXPECT_NEAR(output_data[i], test_result::uni_multi3_lstm_result[i], 1e-3);
+    EXPECT_NEAR(output_data.get()[i], test_result::uni_multi3_lstm_result[i], 1e-3);
   }
 
 }
@@ -1094,10 +1094,10 @@ TYPED_TEST(RNNTestGPU, test_bi_multi3_lstm_GPU) {
 
 
 
-  const float* output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.cpu_data_gtest();
 
   for (int i = 0; i < test_result::bi_multi3_lstm_result.size(); ++i) {
-    EXPECT_NEAR(output_data[i], test_result::bi_multi3_lstm_result[i], 1e-3);
+    EXPECT_NEAR(output_data.get()[i], test_result::bi_multi3_lstm_result[i], 1e-3);
   }
 
 }

@@ -14,6 +14,7 @@ namespace hypertea {
 
 
 
+
 template <typename Dtype>
 TensorGPU<Dtype> unary_math_gpu(
   const TensorGPU<Dtype> &x,
@@ -100,6 +101,106 @@ template TensorGPU<half> binary_math_gpu(
 
 
 
+template <typename Dtype>
+TensorGPU<Dtype> unary_scalar_math_gpu(
+  const TensorGPU<Dtype> &x,
+  const float scalar,
+  const std::string& op_name
+) {
+
+  int N = x.count();
+  TensorGPU<Dtype> y(N);
+
+  auto x_data = x.mutable_data();
+  auto y_data = y.mutable_data();
+  Dtype scalar_(to_dtype<Dtype>(scalar));
+
+  opencl_launch_wrapper(
+    OpenCLHandler::Get().math_program,
+    op_name,
+    std::vector<std::pair<size_t, const void *> > {
+      std::make_pair(sizeof(cl_mem), (void *)&x_data),
+      std::make_pair(sizeof(cl_mem), (void *)&y_data),
+      std::make_pair(sizeof(Dtype), (void *)&scalar_),
+      std::make_pair(sizeof(cl_int), (void *)&N)
+    },
+    std::vector<size_t> {HYPERTEA_GET_BLOCKS(N)},
+    std::vector<size_t> {HYPERTEA_OPENCL_NUM_THREADS}
+  );
+
+  return y;
+
+}
+
+template TensorGPU<float> unary_scalar_math_gpu(
+  const TensorGPU<float> &x,
+  const float scalar,
+  const std::string& op_name
+);
+template TensorGPU<half> unary_scalar_math_gpu(
+  const TensorGPU<half> &x,
+  const float scalar,
+  const std::string& op_name
+);
+
+
+
+template <typename Dtype>
+TensorGPU<Dtype> binary_scalar_math_gpu(
+  const TensorGPU<Dtype> &x,
+  const TensorGPU<Dtype> &y,
+  const float scalar,
+  const std::string& op_name
+) {
+  
+  int N = x.count();
+  TensorGPU<Dtype> z(N);
+
+  cl_mem x_data = x.mutable_data();
+  cl_mem y_data = y.mutable_data();
+  cl_mem z_data = z.mutable_data();
+  Dtype scalar_(to_dtype<Dtype>(scalar));
+
+  opencl_launch_wrapper(
+    OpenCLHandler::Get().math_program,
+    op_name,
+    std::vector<std::pair<size_t, const void *> > {
+      std::make_pair(sizeof(cl_mem), (void *)&x_data),
+      std::make_pair(sizeof(cl_mem), (void *)&y_data),
+      std::make_pair(sizeof(cl_mem), (void *)&z_data),
+      std::make_pair(sizeof(Dtype), (void *)&scalar_),
+      std::make_pair(sizeof(cl_int), (void *)&N)
+    },
+    std::vector<size_t> {HYPERTEA_GET_BLOCKS(N)},
+    std::vector<size_t> {HYPERTEA_OPENCL_NUM_THREADS}
+  );
+
+  return z;
+}
+
+template TensorGPU<float> binary_scalar_math_gpu(
+  const TensorGPU<float> &x,
+  const TensorGPU<float> &y,
+  const float scalar,
+  const std::string& op_name
+);
+
+template TensorGPU<half> binary_scalar_math_gpu(
+  const TensorGPU<half> &x,
+  const TensorGPU<half> &y,
+  const float scalar,
+  const std::string& op_name
+);
+
+
+
+
+
+
+
+
+
+
 
 
 template <typename Dtype>
@@ -174,6 +275,99 @@ template TensorGPU<float>& binary_math_gpu_inplace(
 template TensorGPU<half>& binary_math_gpu_inplace(
   const TensorGPU<half> &x,
   TensorGPU<half> &y,
+  const std::string& op_name
+);
+
+
+
+
+
+
+
+
+
+template <typename Dtype>
+TensorGPU<Dtype>& unary_scalar_math_gpu_inplace(
+  TensorGPU<Dtype> &x,
+  const float scalar,
+  const std::string& op_name
+) {
+
+  int N = x.count();
+  auto x_data = x.mutable_data();
+  Dtype scalar_(to_dtype<Dtype>(scalar));
+
+  opencl_launch_wrapper(
+    OpenCLHandler::Get().math_program,
+    op_name,
+    std::vector<std::pair<size_t, const void *> > {
+      std::make_pair(sizeof(cl_mem), (void *)&x_data),
+      std::make_pair(sizeof(cl_mem), (void *)&x_data),
+      std::make_pair(sizeof(Dtype), (void *)&scalar_),
+      std::make_pair(sizeof(cl_int), (void *)&N)
+    },
+    std::vector<size_t> {HYPERTEA_GET_BLOCKS(N)},
+    std::vector<size_t> {HYPERTEA_OPENCL_NUM_THREADS}
+  );
+
+  return x;
+
+}
+
+template TensorGPU<float>& unary_scalar_math_gpu_inplace(
+  TensorGPU<float> &x,
+  const float scalar,
+  const std::string& op_name
+);
+template TensorGPU<half>& unary_scalar_math_gpu_inplace(
+  TensorGPU<half> &x,
+  const float scalar,
+  const std::string& op_name
+);
+
+
+
+template <typename Dtype>
+TensorGPU<Dtype>& binary_scalar_math_gpu_inplace(
+  const TensorGPU<Dtype> &x,
+  TensorGPU<Dtype> &y,
+  const float scalar,
+  const std::string& op_name
+) {
+  
+  int N = x.count();
+  cl_mem x_data = x.mutable_data();
+  cl_mem y_data = y.mutable_data();
+  Dtype scalar_(to_dtype<Dtype>(scalar));
+
+  opencl_launch_wrapper(
+    OpenCLHandler::Get().math_program,
+    op_name,
+    std::vector<std::pair<size_t, const void *> > {
+      std::make_pair(sizeof(cl_mem), (void *)&y_data),
+      std::make_pair(sizeof(cl_mem), (void *)&x_data),
+      std::make_pair(sizeof(cl_mem), (void *)&y_data),
+      std::make_pair(sizeof(Dtype), (void *)&scalar_),
+      std::make_pair(sizeof(cl_int), (void *)&N)
+    },
+    std::vector<size_t> {HYPERTEA_GET_BLOCKS(N)},
+    std::vector<size_t> {HYPERTEA_OPENCL_NUM_THREADS}
+  );
+
+  return y;
+}
+
+template TensorGPU<float>& binary_scalar_math_gpu_inplace(
+  const TensorGPU<float> &x,
+  TensorGPU<float> &y,
+  const float scalar,
+  const std::string& op_name
+);
+
+template TensorGPU<half>& binary_scalar_math_gpu_inplace(
+  const TensorGPU<half> &x,
+  TensorGPU<half> &y,
+  const float scalar,
   const std::string& op_name
 );
 

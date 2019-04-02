@@ -499,7 +499,8 @@ std::string OpenCLHandler::opencl_math_code(bool is_half) {
 
 	__kernel void ReLUForward(__global Dtype *in,
 	__global Dtype *out,
-	int N, Dtype negative_slope) {
+	Dtype negative_slope,
+  int N) {
 	OPENCL_KERNEL_LOOP(index, N) {
 	out[index] = in[index] > 0 ? in[index] : in[index] * negative_slope;
 	}
@@ -519,7 +520,8 @@ std::string OpenCLHandler::opencl_math_code(bool is_half) {
 
 	__kernel void ELUForward(__global Dtype *in,
 	__global Dtype *out,
-	int N, Dtype alpha) {
+	Dtype alpha,
+  int N) {
 	OPENCL_KERNEL_LOOP(index, N) {
 	out[index] = in[index] > 0 ? in[index] : alpha * (exp(in[index]) - 1);
 	}
@@ -594,6 +596,15 @@ std::string OpenCLHandler::opencl_math_code(bool is_half) {
 	 y[index] = sqrt(x[index]);
 	}
 	}
+
+
+  __kernel void sqr_kernel(__global Dtype *x,
+  __global Dtype *y,
+  int N) {
+  OPENCL_KERNEL_LOOP(index, N) {
+   y[index] = x[index] * x[index];
+  }
+  }
 
 
 	__kernel void log_kernel(__global Dtype *a,
@@ -792,6 +803,26 @@ std::string OpenCLHandler::opencl_math_code(bool is_half) {
 	y[index] += alpha;
 	}
 	}
+
+
+  __kernel void outplace_scal_scalar_kernel(
+    __global Dtype* x,
+    __global Dtype* y,
+    Dtype alpha, int N) {
+      OPENCL_KERNEL_LOOP(index, N) {
+        y[index] = x[index] * alpha;
+      }
+  }
+
+
+  __kernel void outplace_add_scalar_kernel(
+    __global Dtype* x,
+    __global Dtype* y,
+    Dtype alpha, int N) {
+      OPENCL_KERNEL_LOOP(index, N) {
+        y[index] = x[index] + alpha;
+      }
+  }
 
 
 	__kernel void BiasForward(__global Dtype *in, __global Dtype *bias,

@@ -5,6 +5,7 @@
 #include <assert.h>
 #include <numeric>
 #include "hypertea/common.hpp"
+#include "hypertea/util/tensor_math_functions.hpp"
 
 namespace hypertea {
 
@@ -20,16 +21,7 @@ template<typename Dtype> TensorCPU<Dtype> operator* (const TensorCPU<Dtype>& lhs
 
 
 
-// template<typename Dtype> TensorGPU<Dtype> operator+ (const TensorGPU<Dtype>& lhs, const TensorGPU<Dtype>& rhs) {
-// 	return gpu_add(lhs ,rhs);
-// }
-template<typename Dtype> TensorGPU<Dtype> operator+ (const TensorGPU<Dtype>& lhs, const float rhs);
-template<typename Dtype> TensorGPU<Dtype> operator- (const TensorGPU<Dtype>& lhs, const TensorGPU<Dtype>& rhs);
-template<typename Dtype> TensorGPU<Dtype> operator- (const TensorGPU<Dtype>& lhs, const float rhs);
-template<typename Dtype> TensorGPU<Dtype> operator* (const TensorGPU<Dtype>& lhs, const TensorGPU<Dtype>& rhs);
-template<typename Dtype> TensorGPU<Dtype> operator* (const TensorGPU<Dtype>& lhs, const float rhs);
-template<typename Dtype> TensorGPU<Dtype> operator/ (const TensorGPU<Dtype>& lhs, const TensorGPU<Dtype>& rhs);
-// template<typename Dtype> TensorGPU<Dtype> operator/ (const TensorGPU<Dtype>& lhs, const float rhs);
+
 
 template <typename Dtype>
 class Tensor
@@ -176,33 +168,46 @@ public:
 	}
 
 
-	const Dtype* cpu_data_gtest() const {
-		Dtype* cpu_data = new Dtype[this->count_];
-		OPENCL_CHECK(clEnqueueReadBuffer(OpenCLHandler::Get().commandQueue, (cl_mem)data_.get(), CL_TRUE, 0, sizeof(Dtype) * this->count_, cpu_data, 0, NULL, NULL));
+	std::shared_ptr<Dtype> cpu_data_gtest() const {
+
+		auto cpu_data = std::shared_ptr<Dtype>(new Dtype[this->count_], std::default_delete<Dtype[]>());
+		OPENCL_CHECK(clEnqueueReadBuffer(OpenCLHandler::Get().commandQueue, (cl_mem)data_.get(), CL_TRUE, 0, sizeof(Dtype) * this->count_, cpu_data.get(), 0, NULL, NULL));
 		return cpu_data;
 	}
 
 
-	TensorGPU& operator+=(const TensorGPU & other) {return inplace_gpu_add(other, *this);}
-	TensorGPU& operator+=(const float other);
-	TensorGPU& operator-=(const TensorGPU & other) {return inplace_gpu_sub(other, *this);}
-	TensorGPU& operator-=(const float other);
-	TensorGPU& operator*=(const TensorGPU & other) {return inplace_gpu_mul(other, *this);}
-	TensorGPU& operator*=(const float other);
-	TensorGPU& operator/=(const TensorGPU & other) {return inplace_gpu_div(other, *this);}
-	// TensorGPU& operator/=(const float other);
+	TensorGPU& operator+=(const TensorGPU & other) {return inplace_gpu_add(other, *this); }
+	TensorGPU& operator+=(const float other) {return inplace_gpu_add_scalar(*this, other); }
+	TensorGPU& operator-=(const TensorGPU & other) {return inplace_gpu_sub(other, *this); }
+	TensorGPU& operator-=(const float other) {return inplace_gpu_sub_scalar(*this, other); }
+	TensorGPU& operator*=(const TensorGPU & other) {return inplace_gpu_mul(other, *this); }
+	TensorGPU& operator*=(const float other) {return inplace_gpu_mul_scalar(*this, other); }
+	TensorGPU& operator/=(const TensorGPU & other) {return inplace_gpu_div(other, *this); }
+	TensorGPU& operator/=(const float other) {return inplace_gpu_div_scalar(*this, other); }
 
 
 
 	TensorGPU& copy_data(const TensorGPU & other);
 
-	TensorGPU& sigmoid();
-	TensorGPU& tanh();
-	TensorGPU& abs();
-	TensorGPU& exp();
-	TensorGPU& log();
-	TensorGPU& powx(float e);
-	TensorGPU& sqrt();
+
+	TensorGPU& sigmoid() {return inplace_gpu_sigmoid(*this); }
+	TensorGPU& tanh() {return inplace_gpu_tanh(*this); }
+	TensorGPU& abs() {return inplace_gpu_abs(*this); }
+	TensorGPU& exp() {return inplace_gpu_exp(*this); }
+	TensorGPU& log() {return inplace_gpu_log(*this); }
+	TensorGPU& sqr() {return inplace_gpu_sqr(*this); }
+	TensorGPU& sqrt() {return inplace_gpu_sqrt(*this); }
+
+	TensorGPU& set(const Dtype e) {return inplace_gpu_set(*this, e); }
+	TensorGPU& powx(const float e) {return inplace_gpu_powx(*this, e); }
+	TensorGPU& elu(const float e) {return inplace_gpu_elu(*this, e); }
+	TensorGPU& relu(const float e) {return inplace_gpu_relu(*this, e); }
+
+
+
+
+
+
 
 
 
@@ -268,8 +273,13 @@ public:
 
 	std::shared_ptr<Dtype> duplicate_data() const;
 
-	const Dtype* cpu_data_gtest() const {
-		return data_.get();
+	// const Dtype* cpu_data_gtest() const {
+	// 	return data_.get();
+	// }
+
+
+	std::shared_ptr<Dtype> cpu_data_gtest() const {
+		return duplicate_data();
 	}
 
 

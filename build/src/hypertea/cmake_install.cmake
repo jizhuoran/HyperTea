@@ -1,8 +1,8 @@
-# Install script for directory: /home/zrji/HyperTea/src/hypertea
+# Install script for directory: /home/zrji/hypertea/src/hypertea
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/home/zrji/HyperTea/build/install")
+  set(CMAKE_INSTALL_PREFIX "/home/zrji/hypertea/build/install")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 

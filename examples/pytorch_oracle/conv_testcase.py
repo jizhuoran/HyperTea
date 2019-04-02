@@ -77,7 +77,7 @@ TYPED_TEST(CONVTestCPU, test_{op_name}_CPU) {{
 
   auto output_tensor = convolutional.Forward(input_tensor);
 
-  const Dtype* output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.cpu_data_gtest();
 
   for (int i = 0; i < test_result::{op_name}_result.size(); ++i) {{
     EXPECT_NEAR(output_data[i], test_result::{op_name}_result[i], 1e-3);

@@ -74,7 +74,17 @@ class ScaleOp_GPU: public GPUFunctor<Dtype> {
                    int scale_dim, int inner_dim)
       : GPUFunctor<Dtype>(), top_count_(top_count), 
         bias_data_(bias_data), scale_data_(scale_data), 
-        scale_dim_(scale_dim), inner_dim_(inner_dim) {}
+        scale_dim_(scale_dim), inner_dim_(inner_dim) {
+
+          tweight_ = TensorGPU<Dtype>(scale_data, scale_dim, true);
+
+          has_bias_ = bias_data != nullptr;
+
+          if (has_bias_) {
+            tbias_ = TensorGPU<Dtype>(bias_data, scale_dim, true);
+          }
+
+        }
 
 
   virtual inline const char* type() const { return "Scale"; }
@@ -90,6 +100,11 @@ class ScaleOp_GPU: public GPUFunctor<Dtype> {
 
   cl_mem bias_data_;
   cl_mem scale_data_;
+
+
+  bool has_bias_;
+  TensorGPU<Dtype> tbias_;
+  TensorGPU<Dtype> tweight_;
   
   int scale_dim_, inner_dim_;
 
