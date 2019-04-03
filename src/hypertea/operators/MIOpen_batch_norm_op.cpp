@@ -38,7 +38,11 @@ TensorGPU<Dtype> MIOpenBatchNormOp_GPU<Dtype>::Forward(TensorGPU<Dtype> input_te
         size_t* global_size = global_size_.data();
         size_t* local_size  = local_size_.data();
 
-        OPENCL_CHECK(clEnqueueNDRangeKernel(OpenCLHandler::Get().commandQueue, kernel, 1, NULL, global_size, local_size, 0, NULL, NULL));  
+
+        for (int i = 0; i < 1000; ++i) {
+          OPENCL_CHECK(clEnqueueNDRangeKernel(OpenCLHandler::Get().commandQueue, kernel, 1, NULL, global_size, local_size, 0, NULL, NULL));  
+        }
+        
 
 
         

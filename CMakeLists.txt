@@ -95,5 +95,6 @@ add_subdirectory(src/hypertea)
 if(NOT ANDROID)
     add_subdirectory(test)
     add_subdirectory(tools)
+    add_subdirectory(small_benchmarks)
 endif()
 
