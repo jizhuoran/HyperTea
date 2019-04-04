@@ -287,21 +287,21 @@ TensorCPU<Dtype> StackedRNN_CPU<Dtype>::Forward(
 
 //     // hypertea_gpu_add<Dtype>(4 * this->hidden_dim_, inter_i_data, inter_h_data, inter_i_data);
     
-//     auto ingate_tensor = this->intermediate_i.sub_tensor_view(0, this->hidden_dim_).sigmoid();
+//     auto ingate_tensor = this->intermediate_i.sub_view(0, this->hidden_dim_).sigmoid();
 //     auto ingate = ingate_tensor.mutable_data();
 //     // hypertea_gpu_sigmoid<Dtype>(this->hidden_dim_, ingate, ingate);
 
-//     auto forgetgate_tensor = this->intermediate_i.sub_tensor_view(this->hidden_dim_, this->hidden_dim_).sigmoid();
+//     auto forgetgate_tensor = this->intermediate_i.sub_view(this->hidden_dim_, this->hidden_dim_).sigmoid();
 //     auto forgetgate = forgetgate_tensor.mutable_data();
     
 //     // hypertea_gpu_sigmoid<Dtype>(this->hidden_dim_, forgetgate, forgetgate);
 
-//     auto cellgate_tensor = this->intermediate_i.sub_tensor_view(this->hidden_dim_ * 2, this->hidden_dim_).tanh();
+//     auto cellgate_tensor = this->intermediate_i.sub_view(this->hidden_dim_ * 2, this->hidden_dim_).tanh();
 //     auto cellgate = cellgate_tensor.mutable_data();
     
 //     // hypertea_gpu_tanh<Dtype>(this->hidden_dim_, cellgate, cellgate);
 
-//     auto outgate_tensor = this->intermediate_i.sub_tensor_view(this->hidden_dim_ * 3, this->hidden_dim_).sigmoid();
+//     auto outgate_tensor = this->intermediate_i.sub_view(this->hidden_dim_ * 3, this->hidden_dim_).sigmoid();
 //     auto outgate = outgate_tensor.mutable_data();
     
 //     // hypertea_gpu_sigmoid<Dtype>(this->hidden_dim_, outgate, outgate);

@@ -22,7 +22,7 @@ TensorCPU<float> ScaleOp_CPU<float>::Forward(TensorCPU<float> &input_tensor) {
       input_data += inner_dim_;
       output_data += inner_dim_;
     } 
-  }
+  } 
 
   if (bias_data_ != NULL) {
 
@@ -54,9 +54,9 @@ TensorGPU<Dtype> ScaleOp_GPU<Dtype>::Forward(TensorGPU<Dtype> input_tensor){
   }
 
   if (has_bias_) {
-      inplace_channeled_scaladd(output_tensor, tweight_, tbias_, scale_dim_, inner_dim_);
+      inplace_channeled_scaladd(output_tensor, weight_, bias_, scale_dim_, inner_dim_);
   } else {
-      inplace_channeled_scal(output_tensor, tweight_, scale_dim_, inner_dim_);
+      inplace_channeled_scal(output_tensor, weight_, scale_dim_, inner_dim_);
   }
 
   return output_tensor;

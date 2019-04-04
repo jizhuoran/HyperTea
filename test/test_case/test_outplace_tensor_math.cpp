@@ -386,4 +386,51 @@ TYPED_TEST(OUTPLACE_TENSOR_MATH_TestGPU, test_outplace_div_scalar_GPU) {
   }
 }
 
+
+TYPED_TEST(OUTPLACE_TENSOR_MATH_TestGPU, test_outplace_avg_GPU) {
+  typedef typename TypeParam::Dtype Dtype;
+  
+  fake_random_number random_generator;
+  const int N = 64*64*32;
+
+  auto a = hypertea::TensorGPU<Dtype>(random_generator.generate_random_vector(N));
+  auto a_data = a.cpu_data_gtest();
+  
+
+  auto mean = hypertea::TensorGPU<Dtype>(32);
+  auto var = hypertea::TensorGPU<Dtype>(32);
+
+  gpu_channeled_avg(a, mean, var, 32, 64*64);
+
+  auto mean_data = mean.cpu_data_gtest();
+  auto var_data = var.cpu_data_gtest();
+
+  Dtype mean_cpu[32];
+  Dtype var_cpu[32];
+
+
+  for (int i = 0; i < 32; ++i) {
+    mean_cpu[i] = 0;
+    var_cpu[i] = 0;
+    for (int j = 0; j < 64*64; ++j) {
+      mean_cpu[i] += a_data.get()[i*64*64 + j];
+      var_cpu[i] += (a_data.get()[i*64*64 + j] * a_data.get()[i*64*64 + j]);
+    }
+    mean_cpu[i] /= 64*64;
+    var_cpu[i] /= 64*64;
+    var_cpu[i] -= (mean_cpu[i] * mean_cpu[i]);
+
+    var_cpu[i] = sqrt(var_cpu[i] + 1e-05);
+
+  }
+
+  for (int i = 0; i < 32; ++i) {
+    EXPECT_NEAR(mean_cpu[i], mean_data.get()[i], 1e-3);
+  }
+
+  for (int i = 0; i < 32; ++i) {
+    EXPECT_NEAR(var_cpu[i], var_data.get()[i], 1e-3);
+  }
+}
+
 }  // namespace caffe

@@ -105,8 +105,8 @@ int main(int argc, char** argv) {
   std::cin >> ib;
   std::cout << b.debug_cpu_data()[ib];
 
-  // auto a1 = a.sub_tensor_view(79, 1024*1024*32);
-  // auto b1 = b.sub_tensor_view(101, 1024*1024*32);
+  // auto a1 = a.sub_view(79, 1024*1024*32);
+  // auto b1 = b.sub_view(101, 1024*1024*32);
   // auto c1 = a1 + b1;
 
   // std::cout << reference_count(a1.mutable_data()) << std::endl;

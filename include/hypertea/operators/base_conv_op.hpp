@@ -204,13 +204,21 @@ template <typename Dtype>
 class BaseConvolutionOp_GPU : public GPUFunctor<Dtype> {
 
 public:
-  explicit BaseConvolutionOp_GPU(std::string kernel_name, int top_count,
-                             cl_mem weight, cl_mem bias,
-                             std::vector<int> local,
-                             std::vector<int> global)
+  explicit BaseConvolutionOp_GPU(
+    std::string kernel_name,
+    int top_count,
+    const TensorGPU<float>& weight, 
+    const TensorGPU<float>& bias,
+    std::vector<int> local,
+    std::vector<int> global)
 
-      : GPUFunctor<Dtype>(), kernel_name_(kernel_name), top_count_(top_count),
-        weight_(weight), bias_(bias) {
+      : GPUFunctor<Dtype>(), 
+      kernel_name_(kernel_name),
+      top_count_(top_count), 
+      weight_(weight), bias_(bias),
+      weight_data_(weight.immutable_data()) {
+
+          bias_data_ = bias.count() != 0 ? bias.immutable_data(): nullptr;
 
           local_size_.push_back(local[0]);
           local_size_.push_back(local[1]);
@@ -225,12 +233,15 @@ public:
 
 protected:
 
-  const cl_mem weight_;
-  const cl_mem bias_;
   int top_count_;
-
-
   std::string kernel_name_;
+
+  TensorGPU<float> weight_;
+  TensorGPU<float> bias_;
+
+  cl_mem weight_data_;
+  cl_mem bias_data_;
+
   std::vector<size_t> local_size_;
   std::vector<size_t> global_size_;
 

@@ -143,25 +143,24 @@ class BatchNormOp_GPU : public GPUFunctor<Dtype> {
     int channels,
     float eps, float scale_factor,
     bool use_global_stats,
-    cl_mem mean, cl_mem variance,
-    cl_mem weight, cl_mem bias,
+    const TensorGPU<Dtype>& mean, const TensorGPU<Dtype>& variance,
+    const TensorGPU<Dtype>& weight, const TensorGPU<Dtype>& bias,
     float sum_shift_num = 1.0, float top_shift_num = 1.0,
     bool inplace = false)
       : GPUFunctor<Dtype>(), top_count_(top_count), num_(num),
         channels_(channels),
         eps_(eps), scale_factor_(scale_factor),
         use_global_stats_(use_global_stats),
-        mean_(mean), variance_(variance),
-        weight_(weight), bias_(bias),
+        // mean_(mean), variance_(variance),
+        tmean_(mean), tvariance_(variance),
+        tweight_(weight), tbias_(bias),
         sum_shift_num_(sum_shift_num), top_shift_num_(top_shift_num),
         inplace_(inplace), ttemp_(TensorGPU<Dtype>(top_count)) {
 
-          has_bias = (bias != NULL);
-          affine = (weight != NULL);
-
+          has_bias_ = (bias.count() != 0);
+          affine = (weight.count() != 0);
 
           temp_ = clCreateBuffer(OpenCLHandler::Get().context, CL_MEM_READ_WRITE, sizeof(Dtype) * top_count, NULL, NULL);
-
 
           spatial_dim_ = top_count/(num*channels);
 
@@ -173,29 +172,9 @@ class BatchNormOp_GPU : public GPUFunctor<Dtype> {
           batch_sum_multiplier_ = clCreateBuffer(OpenCLHandler::Get().context, CL_MEM_READ_WRITE, sizeof(Dtype) * num, NULL, NULL);
           hypertea_gpu_set<Dtype>(num, float(1.), batch_sum_multiplier_);
 
-          if(!use_global_stats) {
-            mean_ = clCreateBuffer(OpenCLHandler::Get().context, CL_MEM_READ_WRITE, sizeof(Dtype) * channels, NULL, NULL);
-            variance_ = clCreateBuffer(OpenCLHandler::Get().context, CL_MEM_READ_WRITE, sizeof(Dtype) * channels, NULL, NULL);
-
-            tmean_ = TensorGPU<Dtype>(channels);
-            tvariance_ = TensorGPU<Dtype>(channels);
-
-          } else {
-            tmean_ = TensorGPU<Dtype>(mean, channels, true);
-            tvariance_ = TensorGPU<Dtype>(variance, channels, true);
-          }
-
-          if(weight != NULL) {
-            tweight_ = TensorGPU<Dtype>(weight, channels, true);
-          }
-
-          if(bias != NULL) {
-            tbias_ = TensorGPU<Dtype>(bias, channels, true);
-          }
-
         }
 
-
+ 
 
 
   virtual inline const char* type() const { return "BatchNorm"; }
@@ -204,9 +183,9 @@ class BatchNormOp_GPU : public GPUFunctor<Dtype> {
   //     const std::vector<cl_mem> top_datas);
   virtual TensorGPU<Dtype> Forward(TensorGPU<Dtype> input_tensor);
 
-  cl_mem mean_, variance_;
-  cl_mem weight_ = NULL;
-  cl_mem bias_ = NULL;
+  // cl_mem mean_, variance_;
+  // cl_mem weight_ = NULL;
+  // cl_mem bias_ = NULL;
   cl_mem temp_;
 
 
@@ -239,7 +218,7 @@ class BatchNormOp_GPU : public GPUFunctor<Dtype> {
   
   bool inplace_;
 
-  bool has_bias;
+  bool has_bias_;
   bool affine;
 };
 

@@ -56,12 +56,12 @@ TensorGPU<Dtype> DeconvolutionOp_GPU<Dtype>::Forward(TensorGPU<Dtype> input_tens
 
   std::vector<std::pair<size_t, const void *> > arg_list {
     std::make_pair(sizeof(cl_mem), (void *)&input_data),
-    std::make_pair(sizeof(cl_mem), (void *)&this->weight_),
+    std::make_pair(sizeof(cl_mem), (void *)&this->weight_data_),
     std::make_pair(sizeof(cl_mem), (void *)&output_data)
   };
 
-  if (this->bias_) {
-    arg_list.push_back(std::make_pair(sizeof(cl_mem), (void *)&this->bias_));
+  if (this->bias_.count() != 0) {
+    arg_list.push_back(std::make_pair(sizeof(cl_mem), (void *)&this->bias_data_));
   }
 
 

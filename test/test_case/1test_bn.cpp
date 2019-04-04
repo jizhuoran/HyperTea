@@ -55,7 +55,7 @@ TYPED_TEST(BNTestCPU, test_bn_1_t_f_f_CPU) {
 
   auto input_tensor = hypertea::TensorCPU<Dtype>(random_generator.generate_random_vector(32));
   
-  hypertea::BatchNormOp_CPU<float> bn = BatchNormOp_CPU<float>(32, 2, 1, 1e-05, 1, false, NULL, NULL, weight.mutable_data(), bias.mutable_data(), NOT_IN_PLACE);
+  hypertea::BatchNormOp_CPU<float> bn = BatchNormOp_CPU<float>(32, 2, 1, 1e-05, 1, false, TensorGPU<float>(0), TensorGPU<float>(0), weight, bias, NOT_IN_PLACE);
 
 
   auto output_tensor = bn.Forward(input_tensor);
@@ -82,7 +82,7 @@ TYPED_TEST(BNTestGPU, test_bn_1_t_f_f_GPU) {
 
   auto input_tensor = hypertea::TensorGPU<Dtype>(random_generator.generate_random_vector(32));
   
-  hypertea::BatchNormOp_GPU<float> bn = BatchNormOp_GPU<float>(32, 2, 1, 1e-05, 1, false, NULL, NULL, weight.mutable_data(), bias.mutable_data(), 1.0, 1.0, NOT_IN_PLACE);
+  hypertea::BatchNormOp_GPU<float> bn = BatchNormOp_GPU<float>(32, 2, 1, 1e-05, 1, false, TensorGPU<float>(0), TensorGPU<float>(0), weight, bias, 1.0, 1.0, NOT_IN_PLACE);
 
 
   auto output_tensor = bn.Forward(input_tensor);
@@ -109,7 +109,7 @@ TYPED_TEST(BNTestCPU, test_bn_1_t_f_t_CPU) {
 
   auto input_tensor = hypertea::TensorCPU<Dtype>(random_generator.generate_random_vector(32));
   
-  hypertea::BatchNormOp_CPU<float> bn = BatchNormOp_CPU<float>(32, 2, 1, 1e-05, 1, false, NULL, NULL, weight.mutable_data(), bias.mutable_data(), IN_PLACE);
+  hypertea::BatchNormOp_CPU<float> bn = BatchNormOp_CPU<float>(32, 2, 1, 1e-05, 1, false, TensorGPU<float>(0), TensorGPU<float>(0), weight, bias, IN_PLACE);
 
 
   auto output_tensor = bn.Forward(input_tensor);
@@ -136,7 +136,7 @@ TYPED_TEST(BNTestGPU, test_bn_1_t_f_t_GPU) {
 
   auto input_tensor = hypertea::TensorGPU<Dtype>(random_generator.generate_random_vector(32));
   
-  hypertea::BatchNormOp_GPU<float> bn = BatchNormOp_GPU<float>(32, 2, 1, 1e-05, 1, false, NULL, NULL, weight.mutable_data(), bias.mutable_data(), 1.0, 1.0, IN_PLACE);
+  hypertea::BatchNormOp_GPU<float> bn = BatchNormOp_GPU<float>(32, 2, 1, 1e-05, 1, false, TensorGPU<float>(0), TensorGPU<float>(0), weight, bias, 1.0, 1.0, IN_PLACE);
 
 
   auto output_tensor = bn.Forward(input_tensor);
@@ -164,7 +164,7 @@ TYPED_TEST(BNTestCPU, test_bn_1_t_t_f_CPU) {
 
   auto input_tensor = hypertea::TensorCPU<Dtype>(random_generator.generate_random_vector(32));
   
-  hypertea::BatchNormOp_CPU<float> bn = BatchNormOp_CPU<float>(32, 2, 1, 1e-05, 1, true, mean.mutable_data(), var.mutable_data(), weight.mutable_data(), bias.mutable_data(), NOT_IN_PLACE);
+  hypertea::BatchNormOp_CPU<float> bn = BatchNormOp_CPU<float>(32, 2, 1, 1e-05, 1, true, mean.mutable_data(), var.mutable_data(), weight, bias, NOT_IN_PLACE);
 
 
   auto output_tensor = bn.Forward(input_tensor);
@@ -192,7 +192,7 @@ TYPED_TEST(BNTestGPU, test_bn_1_t_t_f_GPU) {
 
   auto input_tensor = hypertea::TensorGPU<Dtype>(random_generator.generate_random_vector(32));
   
-  hypertea::BatchNormOp_GPU<float> bn = BatchNormOp_GPU<float>(32, 2, 1, 1e-05, 1, true, mean.mutable_data(), var.mutable_data(), weight.mutable_data(), bias.mutable_data(), 1.0, 1.0, NOT_IN_PLACE);
+  hypertea::BatchNormOp_GPU<float> bn = BatchNormOp_GPU<float>(32, 2, 1, 1e-05, 1, true, mean.mutable_data(), var.mutable_data(), weight, bias, 1.0, 1.0, NOT_IN_PLACE);
 
 
   auto output_tensor = bn.Forward(input_tensor);
@@ -220,7 +220,7 @@ TYPED_TEST(BNTestCPU, test_bn_1_t_t_t_CPU) {
 
   auto input_tensor = hypertea::TensorCPU<Dtype>(random_generator.generate_random_vector(32));
   
-  hypertea::BatchNormOp_CPU<float> bn = BatchNormOp_CPU<float>(32, 2, 1, 1e-05, 1, true, mean.mutable_data(), var.mutable_data(), weight.mutable_data(), bias.mutable_data(), IN_PLACE);
+  hypertea::BatchNormOp_CPU<float> bn = BatchNormOp_CPU<float>(32, 2, 1, 1e-05, 1, true, mean.mutable_data(), var.mutable_data(), weight, bias, IN_PLACE);
 
 
   auto output_tensor = bn.Forward(input_tensor);
@@ -248,7 +248,7 @@ TYPED_TEST(BNTestGPU, test_bn_1_t_t_t_GPU) {
 
   auto input_tensor = hypertea::TensorGPU<Dtype>(random_generator.generate_random_vector(32));
   
-  hypertea::BatchNormOp_GPU<float> bn = BatchNormOp_GPU<float>(32, 2, 1, 1e-05, 1, true, mean.mutable_data(), var.mutable_data(), weight.mutable_data(), bias.mutable_data(), 1.0, 1.0, IN_PLACE);
+  hypertea::BatchNormOp_GPU<float> bn = BatchNormOp_GPU<float>(32, 2, 1, 1e-05, 1, true, mean.mutable_data(), var.mutable_data(), weight, bias, 1.0, 1.0, IN_PLACE);
 
 
   auto output_tensor = bn.Forward(input_tensor);
@@ -275,7 +275,7 @@ TYPED_TEST(BNTestCPU, test_bn_1_f_f_f_CPU) {
 
   auto input_tensor = hypertea::TensorCPU<Dtype>(random_generator.generate_random_vector(32));
   
-  hypertea::BatchNormOp_CPU<float> bn = BatchNormOp_CPU<float>(32, 2, 1, 1e-05, 1, false, NULL, NULL, NULL, NULL, NOT_IN_PLACE);
+  hypertea::BatchNormOp_CPU<float> bn = BatchNormOp_CPU<float>(32, 2, 1, 1e-05, 1, false, TensorGPU<float>(0), TensorGPU<float>(0), TensorGPU<float>(0), TensorGPU<float>(0), NOT_IN_PLACE);
 
 
   auto output_tensor = bn.Forward(input_tensor);
@@ -302,7 +302,7 @@ TYPED_TEST(BNTestGPU, test_bn_1_f_f_f_GPU) {
 
   auto input_tensor = hypertea::TensorGPU<Dtype>(random_generator.generate_random_vector(32));
   
-  hypertea::BatchNormOp_GPU<float> bn = BatchNormOp_GPU<float>(32, 2, 1, 1e-05, 1, false, NULL, NULL, NULL, NULL, 1.0, 1.0, NOT_IN_PLACE);
+  hypertea::BatchNormOp_GPU<float> bn = BatchNormOp_GPU<float>(32, 2, 1, 1e-05, 1, false, TensorGPU<float>(0), TensorGPU<float>(0), TensorGPU<float>(0), TensorGPU<float>(0), 1.0, 1.0, NOT_IN_PLACE);
 
 
   auto output_tensor = bn.Forward(input_tensor);
@@ -329,7 +329,7 @@ TYPED_TEST(BNTestCPU, test_bn_1_f_f_t_CPU) {
 
   auto input_tensor = hypertea::TensorCPU<Dtype>(random_generator.generate_random_vector(32));
   
-  hypertea::BatchNormOp_CPU<float> bn = BatchNormOp_CPU<float>(32, 2, 1, 1e-05, 1, false, NULL, NULL, NULL, NULL, IN_PLACE);
+  hypertea::BatchNormOp_CPU<float> bn = BatchNormOp_CPU<float>(32, 2, 1, 1e-05, 1, false, TensorGPU<float>(0), TensorGPU<float>(0), TensorGPU<float>(0), TensorGPU<float>(0), IN_PLACE);
 
 
   auto output_tensor = bn.Forward(input_tensor);
@@ -356,7 +356,7 @@ TYPED_TEST(BNTestGPU, test_bn_1_f_f_t_GPU) {
 
   auto input_tensor = hypertea::TensorGPU<Dtype>(random_generator.generate_random_vector(32));
   
-  hypertea::BatchNormOp_GPU<float> bn = BatchNormOp_GPU<float>(32, 2, 1, 1e-05, 1, false, NULL, NULL, NULL, NULL, 1.0, 1.0, IN_PLACE);
+  hypertea::BatchNormOp_GPU<float> bn = BatchNormOp_GPU<float>(32, 2, 1, 1e-05, 1, false, TensorGPU<float>(0), TensorGPU<float>(0), TensorGPU<float>(0), TensorGPU<float>(0), 1.0, 1.0, IN_PLACE);
 
 
   auto output_tensor = bn.Forward(input_tensor);
@@ -384,7 +384,7 @@ TYPED_TEST(BNTestCPU, test_bn_1_f_t_f_CPU) {
 
   auto input_tensor = hypertea::TensorCPU<Dtype>(random_generator.generate_random_vector(32));
   
-  hypertea::BatchNormOp_CPU<float> bn = BatchNormOp_CPU<float>(32, 2, 1, 1e-05, 1, true, mean.mutable_data(), var.mutable_data(), NULL, NULL, NOT_IN_PLACE);
+  hypertea::BatchNormOp_CPU<float> bn = BatchNormOp_CPU<float>(32, 2, 1, 1e-05, 1, true, mean.mutable_data(), var.mutable_data(), TensorGPU<float>(0), TensorGPU<float>(0), NOT_IN_PLACE);
 
 
   auto output_tensor = bn.Forward(input_tensor);
@@ -412,7 +412,7 @@ TYPED_TEST(BNTestGPU, test_bn_1_f_t_f_GPU) {
 
   auto input_tensor = hypertea::TensorGPU<Dtype>(random_generator.generate_random_vector(32));
   
-  hypertea::BatchNormOp_GPU<float> bn = BatchNormOp_GPU<float>(32, 2, 1, 1e-05, 1, true, mean.mutable_data(), var.mutable_data(), NULL, NULL, 1.0, 1.0, NOT_IN_PLACE);
+  hypertea::BatchNormOp_GPU<float> bn = BatchNormOp_GPU<float>(32, 2, 1, 1e-05, 1, true, mean.mutable_data(), var.mutable_data(), TensorGPU<float>(0), TensorGPU<float>(0), 1.0, 1.0, NOT_IN_PLACE);
 
 
   auto output_tensor = bn.Forward(input_tensor);
@@ -440,7 +440,7 @@ TYPED_TEST(BNTestCPU, test_bn_1_f_t_t_CPU) {
 
   auto input_tensor = hypertea::TensorCPU<Dtype>(random_generator.generate_random_vector(32));
   
-  hypertea::BatchNormOp_CPU<float> bn = BatchNormOp_CPU<float>(32, 2, 1, 1e-05, 1, true, mean.mutable_data(), var.mutable_data(), NULL, NULL, IN_PLACE);
+  hypertea::BatchNormOp_CPU<float> bn = BatchNormOp_CPU<float>(32, 2, 1, 1e-05, 1, true, mean.mutable_data(), var.mutable_data(), TensorGPU<float>(0), TensorGPU<float>(0), IN_PLACE);
 
 
   auto output_tensor = bn.Forward(input_tensor);
@@ -468,7 +468,7 @@ TYPED_TEST(BNTestGPU, test_bn_1_f_t_t_GPU) {
 
   auto input_tensor = hypertea::TensorGPU<Dtype>(random_generator.generate_random_vector(32));
   
-  hypertea::BatchNormOp_GPU<float> bn = BatchNormOp_GPU<float>(32, 2, 1, 1e-05, 1, true, mean.mutable_data(), var.mutable_data(), NULL, NULL, 1.0, 1.0, IN_PLACE);
+  hypertea::BatchNormOp_GPU<float> bn = BatchNormOp_GPU<float>(32, 2, 1, 1e-05, 1, true, mean.mutable_data(), var.mutable_data(), TensorGPU<float>(0), TensorGPU<float>(0), 1.0, 1.0, IN_PLACE);
 
 
   auto output_tensor = bn.Forward(input_tensor);
@@ -495,7 +495,7 @@ TYPED_TEST(BNTestCPU, test_bn_3_t_f_f_CPU) {
 
   auto input_tensor = hypertea::TensorCPU<Dtype>(random_generator.generate_random_vector(96));
   
-  hypertea::BatchNormOp_CPU<float> bn = BatchNormOp_CPU<float>(96, 2, 3, 1e-05, 1, false, NULL, NULL, weight.mutable_data(), bias.mutable_data(), NOT_IN_PLACE);
+  hypertea::BatchNormOp_CPU<float> bn = BatchNormOp_CPU<float>(96, 2, 3, 1e-05, 1, false, TensorGPU<float>(0), TensorGPU<float>(0), weight, bias, NOT_IN_PLACE);
 
 
   auto output_tensor = bn.Forward(input_tensor);
@@ -522,7 +522,7 @@ TYPED_TEST(BNTestGPU, test_bn_3_t_f_f_GPU) {
 
   auto input_tensor = hypertea::TensorGPU<Dtype>(random_generator.generate_random_vector(96));
   
-  hypertea::BatchNormOp_GPU<float> bn = BatchNormOp_GPU<float>(96, 2, 3, 1e-05, 1, false, NULL, NULL, weight.mutable_data(), bias.mutable_data(), 1.0, 1.0, NOT_IN_PLACE);
+  hypertea::BatchNormOp_GPU<float> bn = BatchNormOp_GPU<float>(96, 2, 3, 1e-05, 1, false, TensorGPU<float>(0), TensorGPU<float>(0), weight, bias, 1.0, 1.0, NOT_IN_PLACE);
 
 
   auto output_tensor = bn.Forward(input_tensor);
@@ -549,7 +549,7 @@ TYPED_TEST(BNTestCPU, test_bn_3_t_f_t_CPU) {
 
   auto input_tensor = hypertea::TensorCPU<Dtype>(random_generator.generate_random_vector(96));
   
-  hypertea::BatchNormOp_CPU<float> bn = BatchNormOp_CPU<float>(96, 2, 3, 1e-05, 1, false, NULL, NULL, weight.mutable_data(), bias.mutable_data(), IN_PLACE);
+  hypertea::BatchNormOp_CPU<float> bn = BatchNormOp_CPU<float>(96, 2, 3, 1e-05, 1, false, TensorGPU<float>(0), TensorGPU<float>(0), weight, bias, IN_PLACE);
 
 
   auto output_tensor = bn.Forward(input_tensor);
@@ -576,7 +576,7 @@ TYPED_TEST(BNTestGPU, test_bn_3_t_f_t_GPU) {
 
   auto input_tensor = hypertea::TensorGPU<Dtype>(random_generator.generate_random_vector(96));
   
-  hypertea::BatchNormOp_GPU<float> bn = BatchNormOp_GPU<float>(96, 2, 3, 1e-05, 1, false, NULL, NULL, weight.mutable_data(), bias.mutable_data(), 1.0, 1.0, IN_PLACE);
+  hypertea::BatchNormOp_GPU<float> bn = BatchNormOp_GPU<float>(96, 2, 3, 1e-05, 1, false, TensorGPU<float>(0), TensorGPU<float>(0), weight, bias, 1.0, 1.0, IN_PLACE);
 
 
   auto output_tensor = bn.Forward(input_tensor);
@@ -604,7 +604,7 @@ TYPED_TEST(BNTestCPU, test_bn_3_t_t_f_CPU) {
 
   auto input_tensor = hypertea::TensorCPU<Dtype>(random_generator.generate_random_vector(96));
   
-  hypertea::BatchNormOp_CPU<float> bn = BatchNormOp_CPU<float>(96, 2, 3, 1e-05, 1, true, mean.mutable_data(), var.mutable_data(), weight.mutable_data(), bias.mutable_data(), NOT_IN_PLACE);
+  hypertea::BatchNormOp_CPU<float> bn = BatchNormOp_CPU<float>(96, 2, 3, 1e-05, 1, true, mean.mutable_data(), var.mutable_data(), weight, bias, NOT_IN_PLACE);
 
 
   auto output_tensor = bn.Forward(input_tensor);
@@ -632,7 +632,7 @@ TYPED_TEST(BNTestGPU, test_bn_3_t_t_f_GPU) {
 
   auto input_tensor = hypertea::TensorGPU<Dtype>(random_generator.generate_random_vector(96));
   
-  hypertea::BatchNormOp_GPU<float> bn = BatchNormOp_GPU<float>(96, 2, 3, 1e-05, 1, true, mean.mutable_data(), var.mutable_data(), weight.mutable_data(), bias.mutable_data(), 1.0, 1.0, NOT_IN_PLACE);
+  hypertea::BatchNormOp_GPU<float> bn = BatchNormOp_GPU<float>(96, 2, 3, 1e-05, 1, true, mean.mutable_data(), var.mutable_data(), weight, bias, 1.0, 1.0, NOT_IN_PLACE);
 
 
   auto output_tensor = bn.Forward(input_tensor);
@@ -660,7 +660,7 @@ TYPED_TEST(BNTestCPU, test_bn_3_t_t_t_CPU) {
 
   auto input_tensor = hypertea::TensorCPU<Dtype>(random_generator.generate_random_vector(96));
   
-  hypertea::BatchNormOp_CPU<float> bn = BatchNormOp_CPU<float>(96, 2, 3, 1e-05, 1, true, mean.mutable_data(), var.mutable_data(), weight.mutable_data(), bias.mutable_data(), IN_PLACE);
+  hypertea::BatchNormOp_CPU<float> bn = BatchNormOp_CPU<float>(96, 2, 3, 1e-05, 1, true, mean.mutable_data(), var.mutable_data(), weight, bias, IN_PLACE);
 
 
   auto output_tensor = bn.Forward(input_tensor);
@@ -688,7 +688,7 @@ TYPED_TEST(BNTestGPU, test_bn_3_t_t_t_GPU) {
 
   auto input_tensor = hypertea::TensorGPU<Dtype>(random_generator.generate_random_vector(96));
   
-  hypertea::BatchNormOp_GPU<float> bn = BatchNormOp_GPU<float>(96, 2, 3, 1e-05, 1, true, mean.mutable_data(), var.mutable_data(), weight.mutable_data(), bias.mutable_data(), 1.0, 1.0, IN_PLACE);
+  hypertea::BatchNormOp_GPU<float> bn = BatchNormOp_GPU<float>(96, 2, 3, 1e-05, 1, true, mean.mutable_data(), var.mutable_data(), weight, bias, 1.0, 1.0, IN_PLACE);
 
 
   auto output_tensor = bn.Forward(input_tensor);
@@ -715,7 +715,7 @@ TYPED_TEST(BNTestCPU, test_bn_3_f_f_f_CPU) {
 
   auto input_tensor = hypertea::TensorCPU<Dtype>(random_generator.generate_random_vector(96));
   
-  hypertea::BatchNormOp_CPU<float> bn = BatchNormOp_CPU<float>(96, 2, 3, 1e-05, 1, false, NULL, NULL, NULL, NULL, NOT_IN_PLACE);
+  hypertea::BatchNormOp_CPU<float> bn = BatchNormOp_CPU<float>(96, 2, 3, 1e-05, 1, false, TensorGPU<float>(0), TensorGPU<float>(0), TensorGPU<float>(0), TensorGPU<float>(0), NOT_IN_PLACE);
 
 
   auto output_tensor = bn.Forward(input_tensor);
@@ -742,7 +742,7 @@ TYPED_TEST(BNTestGPU, test_bn_3_f_f_f_GPU) {
 
   auto input_tensor = hypertea::TensorGPU<Dtype>(random_generator.generate_random_vector(96));
   
-  hypertea::BatchNormOp_GPU<float> bn = BatchNormOp_GPU<float>(96, 2, 3, 1e-05, 1, false, NULL, NULL, NULL, NULL, 1.0, 1.0, NOT_IN_PLACE);
+  hypertea::BatchNormOp_GPU<float> bn = BatchNormOp_GPU<float>(96, 2, 3, 1e-05, 1, false, TensorGPU<float>(0), TensorGPU<float>(0), TensorGPU<float>(0), TensorGPU<float>(0), 1.0, 1.0, NOT_IN_PLACE);
 
 
   auto output_tensor = bn.Forward(input_tensor);
@@ -769,7 +769,7 @@ TYPED_TEST(BNTestCPU, test_bn_3_f_f_t_CPU) {
 
   auto input_tensor = hypertea::TensorCPU<Dtype>(random_generator.generate_random_vector(96));
   
-  hypertea::BatchNormOp_CPU<float> bn = BatchNormOp_CPU<float>(96, 2, 3, 1e-05, 1, false, NULL, NULL, NULL, NULL, IN_PLACE);
+  hypertea::BatchNormOp_CPU<float> bn = BatchNormOp_CPU<float>(96, 2, 3, 1e-05, 1, false, TensorGPU<float>(0), TensorGPU<float>(0), TensorGPU<float>(0), TensorGPU<float>(0), IN_PLACE);
 
 
   auto output_tensor = bn.Forward(input_tensor);
@@ -796,7 +796,7 @@ TYPED_TEST(BNTestGPU, test_bn_3_f_f_t_GPU) {
 
   auto input_tensor = hypertea::TensorGPU<Dtype>(random_generator.generate_random_vector(96));
   
-  hypertea::BatchNormOp_GPU<float> bn = BatchNormOp_GPU<float>(96, 2, 3, 1e-05, 1, false, NULL, NULL, NULL, NULL, 1.0, 1.0, IN_PLACE);
+  hypertea::BatchNormOp_GPU<float> bn = BatchNormOp_GPU<float>(96, 2, 3, 1e-05, 1, false, TensorGPU<float>(0), TensorGPU<float>(0), TensorGPU<float>(0), TensorGPU<float>(0), 1.0, 1.0, IN_PLACE);
 
 
   auto output_tensor = bn.Forward(input_tensor);
@@ -824,7 +824,7 @@ TYPED_TEST(BNTestCPU, test_bn_3_f_t_f_CPU) {
 
   auto input_tensor = hypertea::TensorCPU<Dtype>(random_generator.generate_random_vector(96));
   
-  hypertea::BatchNormOp_CPU<float> bn = BatchNormOp_CPU<float>(96, 2, 3, 1e-05, 1, true, mean.mutable_data(), var.mutable_data(), NULL, NULL, NOT_IN_PLACE);
+  hypertea::BatchNormOp_CPU<float> bn = BatchNormOp_CPU<float>(96, 2, 3, 1e-05, 1, true, mean.mutable_data(), var.mutable_data(), TensorGPU<float>(0), TensorGPU<float>(0), NOT_IN_PLACE);
 
 
   auto output_tensor = bn.Forward(input_tensor);
@@ -852,7 +852,7 @@ TYPED_TEST(BNTestGPU, test_bn_3_f_t_f_GPU) {
 
   auto input_tensor = hypertea::TensorGPU<Dtype>(random_generator.generate_random_vector(96));
   
-  hypertea::BatchNormOp_GPU<float> bn = BatchNormOp_GPU<float>(96, 2, 3, 1e-05, 1, true, mean.mutable_data(), var.mutable_data(), NULL, NULL, 1.0, 1.0, NOT_IN_PLACE);
+  hypertea::BatchNormOp_GPU<float> bn = BatchNormOp_GPU<float>(96, 2, 3, 1e-05, 1, true, mean.mutable_data(), var.mutable_data(), TensorGPU<float>(0), TensorGPU<float>(0), 1.0, 1.0, NOT_IN_PLACE);
 
 
   auto output_tensor = bn.Forward(input_tensor);
@@ -880,7 +880,7 @@ TYPED_TEST(BNTestCPU, test_bn_3_f_t_t_CPU) {
 
   auto input_tensor = hypertea::TensorCPU<Dtype>(random_generator.generate_random_vector(96));
   
-  hypertea::BatchNormOp_CPU<float> bn = BatchNormOp_CPU<float>(96, 2, 3, 1e-05, 1, true, mean.mutable_data(), var.mutable_data(), NULL, NULL, IN_PLACE);
+  hypertea::BatchNormOp_CPU<float> bn = BatchNormOp_CPU<float>(96, 2, 3, 1e-05, 1, true, mean.mutable_data(), var.mutable_data(), TensorGPU<float>(0), TensorGPU<float>(0), IN_PLACE);
 
 
   auto output_tensor = bn.Forward(input_tensor);
@@ -908,7 +908,7 @@ TYPED_TEST(BNTestGPU, test_bn_3_f_t_t_GPU) {
 
   auto input_tensor = hypertea::TensorGPU<Dtype>(random_generator.generate_random_vector(96));
   
-  hypertea::BatchNormOp_GPU<float> bn = BatchNormOp_GPU<float>(96, 2, 3, 1e-05, 1, true, mean.mutable_data(), var.mutable_data(), NULL, NULL, 1.0, 1.0, IN_PLACE);
+  hypertea::BatchNormOp_GPU<float> bn = BatchNormOp_GPU<float>(96, 2, 3, 1e-05, 1, true, mean.mutable_data(), var.mutable_data(), TensorGPU<float>(0), TensorGPU<float>(0), 1.0, 1.0, IN_PLACE);
 
 
   auto output_tensor = bn.Forward(input_tensor);

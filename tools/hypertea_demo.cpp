@@ -136,16 +136,14 @@ int main(int argc, char** argv) {
     }
 
     
-    
 
 
-
-    hypertea::new_net tmp_net("pytorch_weight");
+    hypertea::new_net tmp_net("archive/pytorch_weight");
 
 
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 
-    for (int i = 0; i < 50; ++i) {
+    for (int i = 0; i < 1; ++i) {
     	tmp_net.inference(converter, converter1);
     }
   
@@ -174,16 +172,7 @@ int main(int argc, char** argv) {
       std::cout << " " << std::endl;
     }
     
-    // f = fopen("./examples/style_transfer/hypertea2.ppm", "wb");
-    // fprintf(f, "P6\n%i %i 255\n", 512, 512);
-    // for (int y = 0; y < 512; y++) {
-    //     for (int x = 0; x < 512; x++) {
-    //         fputc(converter1[512*512*3 + y * 512 + x], f);   // 0 .. 255
-    //         fputc(converter1[512*512*3 + y * 512 + x + 512 * 512], f); // 0 .. 255
-    //         fputc(converter1[512*512*3 + y * 512 + x + 2 * 512 * 512], f);  // 0 .. 255
-    //     }
-    // }
-    // fclose(f);
+
 
     
 }

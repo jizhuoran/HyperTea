@@ -1100,6 +1100,107 @@ std::string OpenCLHandler::opencl_math_code(bool is_half) {
 
 
 
+  static inline void ReduceKernel(__local Dtype* lcl_mem,
+                                  unsigned int sum_stride,
+                                  unsigned int unit_id,
+                                  unsigned int unit_len)
+  {
+      Dtype sum              = (Dtype)0.;
+      unsigned int lcl_offset = unit_id * unit_len;
+
+      for(unsigned int i = 0; i < unit_len; i += sum_stride) {
+          sum += lcl_mem[lcl_offset + i];
+      }
+      lcl_mem[lcl_offset] = sum;
+  }
+          
+  static inline void
+  regLDSreduce(Dtype* value, __local Dtype* data, unsigned int localID, Dtype scale)
+  {
+      data[localID] = *value;
+      barrier(CLK_LOCAL_MEM_FENCE);
+      if(localID < (128 >> 2))
+          ReduceKernel(data, 1, localID, 4);
+      barrier(CLK_LOCAL_MEM_FENCE);
+      if(localID < (128 >> 4))
+          ReduceKernel(data, 4, localID, 16);
+      barrier(CLK_LOCAL_MEM_FENCE);
+      if(localID == 0)
+          ReduceKernel(data, 16, localID, 128);
+      barrier(CLK_LOCAL_MEM_FENCE);
+      *value = data[0] * scale;
+  }
+
+
+  #define BUFFER_SIZE 128
+ 
+  __attribute__((reqd_work_group_size(BUFFER_SIZE, 1, 1))) 
+  __kernel void average_channeled(
+    const __global Dtype* __restrict in,
+    __global Dtype* __restrict mean_out,
+    __global Dtype* __restrict var_out,
+    const int spatial_dim,
+    const int input_size,
+    Dtype alpha) {
+
+
+    Dtype mean        = (Dtype)0.;
+    Dtype variance    = (Dtype)0.;
+
+    uint index = 0;
+    uint lid   = get_local_id(0);
+    uint chwid = get_global_id(1) * spatial_dim;
+    uint nidx  = 0;
+    uint hwidx = 0;
+    
+    Dtype4 read4;
+    for(unsigned int k = lid << 2; k < spatial_dim; k += BUFFER_SIZE * 4) {
+        nidx  = k / spatial_dim;
+        hwidx = k - (nidx * spatial_dim);
+
+        index = nidx * input_size + chwid + hwidx;
+        
+        read4 = *((const global Dtype4*)(in + index));
+        mean += (Dtype)read4.x;
+        mean += (Dtype)read4.y;
+        mean += (Dtype)read4.z;
+        mean += (Dtype)read4.w;
+        variance = mad((Dtype)read4.x, (Dtype)read4.x, variance);
+        variance = mad((Dtype)read4.y, (Dtype)read4.y, variance);
+        variance = mad((Dtype)read4.z, (Dtype)read4.z, variance);
+        variance = mad((Dtype)read4.w, (Dtype)read4.w, variance);
+    }
+     
+
+    barrier(CLK_LOCAL_MEM_FENCE | CLK_GLOBAL_MEM_FENCE);
+
+    local Dtype lcl_data[BUFFER_SIZE];
+
+    lcl_data[lid] = mean;
+    regLDSreduce(&mean, lcl_data, lid, alpha);
+    barrier(CLK_LOCAL_MEM_FENCE);
+    
+    if (lid == 0) {
+      mean_out[get_group_id(1)] = mean;
+    }
+    barrier(CLK_LOCAL_MEM_FENCE);
+
+
+    lcl_data[lid] = variance;
+    barrier(CLK_LOCAL_MEM_FENCE);
+    regLDSreduce(&variance, lcl_data, lid, alpha);
+    barrier(CLK_LOCAL_MEM_FENCE);
+
+    if (lid == 0) {
+      variance = mad(-mean, mean, variance);
+      var_out[get_group_id(1)] = sqrt(variance + 1e-05);
+    }
+    barrier(CLK_LOCAL_MEM_FENCE);
+
+
+} // end spatial norm
+
+
 
 
 

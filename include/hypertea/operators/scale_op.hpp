@@ -69,45 +69,28 @@ template <typename Dtype>
 class ScaleOp_GPU: public GPUFunctor<Dtype> {
  public:
 
-  explicit ScaleOp_GPU(int top_count,
-                   cl_mem bias_data, cl_mem scale_data, 
-                   int scale_dim, int inner_dim)
-      : GPUFunctor<Dtype>(), top_count_(top_count), 
-        bias_data_(bias_data), scale_data_(scale_data), 
-        scale_dim_(scale_dim), inner_dim_(inner_dim) {
-
-          tweight_ = TensorGPU<Dtype>(scale_data, scale_dim, true);
-
-          has_bias_ = bias_data != nullptr;
-
-          if (has_bias_) {
-            tbias_ = TensorGPU<Dtype>(bias_data, scale_dim, true);
-          }
-
-        }
+  explicit ScaleOp_GPU(
+    const TensorGPU<Dtype>& weight, 
+    const TensorGPU<Dtype>& bias, 
+    int scale_dim, int inner_dim)
+  : GPUFunctor<Dtype>(), 
+    has_bias_(bias.count() != 0),
+    weight_(weight),
+    bias_(bias),
+    scale_dim_(scale_dim), inner_dim_(inner_dim) {}
 
 
   virtual inline const char* type() const { return "Scale"; }
 
-  // virtual void Forward(const std::vector<cl_mem> bottom_datas,
-  //     const std::vector<cl_mem> top_datas);
-
   virtual TensorGPU<Dtype> Forward(TensorGPU<Dtype> input_tensor);
   
 
-
-  int top_count_;
-
-  cl_mem bias_data_;
-  cl_mem scale_data_;
-
-
   bool has_bias_;
-  TensorGPU<Dtype> tbias_;
-  TensorGPU<Dtype> tweight_;
+
+  TensorGPU<Dtype> bias_;
+  TensorGPU<Dtype> weight_;
   
   int scale_dim_, inner_dim_;
-
   bool inplace_ = false;
 
 };

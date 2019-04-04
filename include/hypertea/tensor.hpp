@@ -117,7 +117,7 @@ public:
 	}
 
 
-	cl_mem sub_view(unsigned int offset, unsigned int size, cl_mem_flags flags = CL_MEM_READ_WRITE) {
+	cl_mem sub_cl_view(unsigned int offset, unsigned int size, cl_mem_flags flags = CL_MEM_READ_WRITE) {
 		cl_int ret;
 		cl_buffer_region region{offset * sizeof(Dtype), size * sizeof(Dtype)};
         auto temp = clCreateSubBuffer((cl_mem)data_.get(), flags, CL_BUFFER_CREATE_TYPE_REGION, &region, &ret); 
@@ -126,7 +126,7 @@ public:
 	}
 
 
-	TensorGPU<Dtype> sub_tensor_view(unsigned int offset, unsigned int size, cl_mem_flags flags = CL_MEM_READ_WRITE) {
+	TensorGPU<Dtype> sub_view(unsigned int offset, unsigned int size, cl_mem_flags flags = CL_MEM_READ_WRITE) {
 		cl_int ret;
 		cl_buffer_region region{offset * sizeof(Dtype), size * sizeof(Dtype)};
         auto temp = clCreateSubBuffer((cl_mem)data_.get(), flags, CL_BUFFER_CREATE_TYPE_REGION, &region, &ret); 

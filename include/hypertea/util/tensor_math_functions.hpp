@@ -325,12 +325,12 @@ inline TensorGPU<Dtype>& inplace_gpu_powx(TensorGPU<Dtype>& x, const float a) {
 }
 
 template <typename Dtype>
-inline TensorGPU<Dtype>& inplace_gpu_elu(TensorGPU<Dtype>& x, const float a) {
+inline TensorGPU<Dtype>& inplace_gpu_elu(TensorGPU<Dtype>& x, const float a = 1.) {
 	return unary_scalar_math_gpu_inplace(x, a, "ELUForward");
 }
 
 template <typename Dtype>
-inline TensorGPU<Dtype>& inplace_gpu_relu(TensorGPU<Dtype>& x, const float a) {
+inline TensorGPU<Dtype>& inplace_gpu_relu(TensorGPU<Dtype>& x, const float a = .0) {
 	return unary_scalar_math_gpu_inplace(x, a, "ReLUForward");
 }
 
@@ -378,13 +378,13 @@ inline TensorGPU<Dtype> gpu_powx(const TensorGPU<Dtype>& x, const float a) {
 }
 
 template <typename Dtype>
-inline TensorGPU<Dtype> gpu_elu(const TensorGPU<Dtype>& x, const float a) {
+inline TensorGPU<Dtype> gpu_elu(const TensorGPU<Dtype>& x, const float a = 1.) {
 	return unary_scalar_math_gpu(x, a, "ELUForward");
 }
 
 
 template <typename Dtype>
-inline TensorGPU<Dtype> gpu_relu(const TensorGPU<Dtype>& x, const float a) {
+inline TensorGPU<Dtype> gpu_relu(const TensorGPU<Dtype>& x, const float a = .0) {
 	return unary_scalar_math_gpu(x, a, "ReLUForward");
 }
 
@@ -425,6 +425,15 @@ TensorGPU<Dtype>& inplace_channeled_scaladd(
 );
 
 
+
+template <typename Dtype>
+void gpu_channeled_avg(
+  const TensorGPU<Dtype>& x, 
+  TensorGPU<Dtype>& mean,
+  TensorGPU<Dtype>& var,
+  int channels,
+  int inner_dim
+ );
 
 
 

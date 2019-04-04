@@ -51,7 +51,7 @@ class ConvolutionOp_CPU : public BaseConvolutionOp_CPU<Dtype> {
 
   virtual TensorCPU<Dtype> Forward(TensorCPU<Dtype> &input_tensor);
 
-  
+   
 };
 
 #ifdef USE_OPENCL
@@ -60,13 +60,16 @@ template <typename Dtype>
 class ConvolutionOp_GPU : public BaseConvolutionOp_GPU<Dtype> {
  public:
 
-  explicit ConvolutionOp_GPU(std::string kernel_name, int bottom_size,
-                             cl_mem weight, cl_mem bias,
-                             std::vector<int> local,
-                             std::vector<int> global)
-
-      : BaseConvolutionOp_GPU<Dtype>(kernel_name, bottom_size, weight, bias,
-                                 local, global) { }
+  explicit ConvolutionOp_GPU(
+    std::string kernel_name,
+    int top_count,
+    const TensorGPU<float>& weight, 
+    const TensorGPU<float>& bias,
+    std::vector<int> local,
+    std::vector<int> global)
+    : BaseConvolutionOp_GPU<Dtype>(
+      kernel_name, top_count, weight, bias,
+      local, global) { }
 
   virtual inline const char* type() const { return "Convolution"; }
 

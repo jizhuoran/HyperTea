@@ -8,7 +8,7 @@ class new_net
 public:
 new_net() { 
 
-FILE *f = fopen("new_net.weight", "rb");
+FILE *f = fopen("archive/new_net.weight", "rb");
 size_t read_size = fread(all_weights, 1, weight_size, f);
 if (read_size != weight_size) {  LOG(ERROR) << "Weight File Size Mismatch" << read_size << " and " << weight_size << std::endl;
 }
