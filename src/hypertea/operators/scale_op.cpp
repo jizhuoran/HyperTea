@@ -47,11 +47,7 @@ TensorCPU<float> ScaleOp_CPU<float>::Forward(TensorCPU<float> &input_tensor) {
 template <typename Dtype>
 TensorGPU<Dtype> ScaleOp_GPU<Dtype>::Forward(TensorGPU<Dtype> input_tensor){
 
-  TensorGPU<Dtype> output_tensor = inplace_? input_tensor : TensorGPU<Dtype>(input_tensor.count());
-
-  if(!inplace_) {
-    output_tensor.copy_data(input_tensor);
-  }
+  TensorGPU<Dtype> output_tensor = inplace_? input_tensor : input_tensor.duplicate();
 
   if (has_bias_) {
       inplace_channeled_scaladd(output_tensor, weight_, bias_, scale_dim_, inner_dim_);
@@ -60,56 +56,6 @@ TensorGPU<Dtype> ScaleOp_GPU<Dtype>::Forward(TensorGPU<Dtype> input_tensor){
   }
 
   return output_tensor;
-
-
-  // int data_count = input_tensor.count();
-
-  // if (bias_data_) {
-
-  //   cl_int ret;
-
-  //   cl_kernel kernel = clCreateKernel(OpenCLHandler::Get().math_program, "ScaleBiasForward", &ret);
-  //   OPENCL_CHECK(ret);
-
-
-  //   // Set arguments for kernel
-  //   OPENCL_CHECK(clSetKernelArg(kernel, 0, sizeof(cl_mem), (void *)&input_data));  
-  //   OPENCL_CHECK(clSetKernelArg(kernel, 1, sizeof(cl_mem), (void *)&output_data));  
-  //   OPENCL_CHECK(clSetKernelArg(kernel, 2, sizeof(cl_int), (void *)&data_count));  
-  //   OPENCL_CHECK(clSetKernelArg(kernel, 3, sizeof(cl_mem), (void *)&scale_data_)); 
-  //   OPENCL_CHECK(clSetKernelArg(kernel, 4, sizeof(cl_mem), (void *)&bias_data_));   
-  //   OPENCL_CHECK(clSetKernelArg(kernel, 5, sizeof(cl_int), (void *)&scale_dim_));  
-  //   OPENCL_CHECK(clSetKernelArg(kernel, 6, sizeof(cl_int), (void *)&inner_dim_));  
-
-  //   size_t global_size = HYPERTEA_GET_BLOCKS(data_count);
-    
-  //   OPENCL_CHECK(clEnqueueNDRangeKernel(OpenCLHandler::Get().commandQueue, kernel, 1, NULL, &global_size, &HYPERTEA_OPENCL_NUM_THREADS, 0, NULL, NULL));  
-
-
-  // } else {
-
-
-  //   cl_int ret;
-
-  //   cl_kernel kernel = clCreateKernel(OpenCLHandler::Get().math_program, "ScaleForward", &ret);
-  //   OPENCL_CHECK(ret);
-
-  //   // Set arguments for kernel
-  //   OPENCL_CHECK(clSetKernelArg(kernel, 0, sizeof(cl_mem), (void *)&input_data));  
-  //   OPENCL_CHECK(clSetKernelArg(kernel, 1, sizeof(cl_mem), (void *)&output_data));  
-  //   OPENCL_CHECK(clSetKernelArg(kernel, 2, sizeof(cl_int), (void *)&data_count));  
-  //   OPENCL_CHECK(clSetKernelArg(kernel, 3, sizeof(cl_mem), (void *)&scale_data_)); 
-  //   OPENCL_CHECK(clSetKernelArg(kernel, 4, sizeof(cl_int), (void *)&scale_dim_));  
-  //   OPENCL_CHECK(clSetKernelArg(kernel, 5, sizeof(cl_int), (void *)&inner_dim_));  
-
-  //   size_t global_size = HYPERTEA_GET_BLOCKS(data_count);
-    
-  //   OPENCL_CHECK(clEnqueueNDRangeKernel(OpenCLHandler::Get().commandQueue, kernel, 1, NULL, &global_size, &HYPERTEA_OPENCL_NUM_THREADS, 0, NULL, NULL));  
-
-  // }
-
-
-  // return output_tensor;
 
 }
 

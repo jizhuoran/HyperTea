@@ -133,56 +133,15 @@ TensorCPU<float> BatchNormOp_CPU<float>::Forward(TensorCPU<float> &input_tensor)
 template <typename Dtype>
 TensorGPU<Dtype> BatchNormOp_GPU<Dtype>::Forward(TensorGPU<Dtype> input_tensor){
 
-  const cl_mem input_data = input_tensor.immutable_data();
-  TensorGPU<Dtype> output_tensor = inplace_? input_tensor : TensorGPU<Dtype>(input_tensor.count());
-  cl_mem output_data = output_tensor.mutable_data();
-
-
-  if (!inplace_) {
-    output_tensor.copy_data(input_tensor);
-  }
+  TensorGPU<Dtype> output_tensor = inplace_? input_tensor : input_tensor.duplicate();
 
   if (!use_global_stats_) {
-    // compute mean
-
-
-    gpu_channeled_avg(input_tensor, tmean_, tvariance_, channels_, spatial_dim_);
-
-
-    // hypertea_gpu_bsum<Dtype>(channels_ * num_, spatial_dim_, input_data, 
-    //                       1/sum_shift_num_, (sum_shift_num_*sum_shift_num_)/(num_ * spatial_dim_), 
-    //                       num_by_chans_, 1);
-    
-    // hypertea_gpu_gemv<Dtype>(CblasTrans, num_, channels_, float(1.),
-    //     num_by_chans_, batch_sum_multiplier_, float(0.), tmean_.mutable_data());
-
+    gpu_channeled_avg(input_tensor, tmean_, tvariance_, num_, spatial_dim_);
   }
 
 
   inplace_channeled_sub<Dtype>(output_tensor, tmean_, channels_, spatial_dim_);
 
-
-  // if (!use_global_stats_) {
-
-  //   // compute variance using var(X) = E((X-EX)^2)
-
-  //   output_tensor *= static_cast<float>(1/top_shift_num_);
-  //   ttemp_ = output_tensor * output_tensor;
-
-  //   hypertea_gpu_bsum<Dtype>(channels_ * num_, spatial_dim_, ttemp_.mutable_data(), 
-  //                         1/sum_shift_num_, (sum_shift_num_*sum_shift_num_) / (num_ * spatial_dim_), 
-  //                         num_by_chans_, 1);
-
-  //   hypertea_gpu_gemv<Dtype>(CblasTrans, num_, channels_, float(1.0),
-  //       num_by_chans_, batch_sum_multiplier_, float(0.),
-  //       tvariance_.mutable_data());  // E((X_EX)^2)
-
-  // }
-
-  // tvariance_ += eps_;
-  // tvariance_.sqrt();
-
-  // normalize variance
 
   output_tensor *= top_shift_num_;
   tvariance_ *= top_shift_num_;
@@ -190,7 +149,7 @@ TensorGPU<Dtype> BatchNormOp_GPU<Dtype>::Forward(TensorGPU<Dtype> input_tensor){
 
   if(affine) {
     auto weight_with_var = tweight_ / tvariance_;
-    if (has_bias_ != NULL) {
+    if (has_bias_) {
       inplace_channeled_scaladd(output_tensor, weight_with_var, tbias_, channels_, spatial_dim_);
     } else {
       inplace_channeled_scal(output_tensor, weight_with_var, channels_, spatial_dim_);
@@ -200,8 +159,6 @@ TensorGPU<Dtype> BatchNormOp_GPU<Dtype>::Forward(TensorGPU<Dtype> input_tensor){
     inplace_channeled_scal(output_tensor, tvariance_, channels_, spatial_dim_);
   }
 
-
-  
   return output_tensor;
 
 }

@@ -28,15 +28,9 @@ TensorCPU<float> ReLUOp_CPU<float>::Forward(TensorCPU<float> &input_tensor) {
 
 template <typename Dtype>
 TensorGPU<Dtype> ReLUOp_GPU<Dtype>::Forward(TensorGPU<Dtype> input_tensor){
-// void ReLUOp_GPU<Dtype>::Forward(const std::vector<cl_mem> bottom_datas,
-      // const std::vector<cl_mem> top_datas) {
 
-  if(inplace_) {
-   input_tensor.relu(negative_slope_);
-   return input_tensor;
-  } {
-    return gpu_relu(input_tensor, negative_slope_);
-  }
+  return inplace_? TensorGPU<Dtype>(input_tensor.relu(negative_slope_)) : gpu_relu(input_tensor, negative_slope_);
+
 }
 
 #endif //USE_OPENCL

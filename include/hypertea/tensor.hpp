@@ -5,19 +5,20 @@
 #include <assert.h>
 #include <numeric>
 #include "hypertea/common.hpp"
-#include "hypertea/util/tensor_math_functions.hpp"
+#include "hypertea/util/tensor_gpu_math_func.hpp"
+#include "hypertea/util/tensor_cpu_math_func.hpp"
 
 namespace hypertea {
 
 template<typename Dtype> class Tensor;
 template<typename Dtype> class TensorCPU;
 template<typename Dtype> class TensorGPU;
-template<typename Dtype> TensorCPU<Dtype> operator+ (const TensorCPU<Dtype>& lhs, const TensorCPU<Dtype>& rhs);
-template<typename Dtype> TensorCPU<Dtype> operator+ (const TensorCPU<Dtype>& lhs, const float rhs);
-template<typename Dtype> TensorCPU<Dtype> operator- (const TensorCPU<Dtype>& lhs, const TensorCPU<Dtype>& rhs);
-template<typename Dtype> TensorCPU<Dtype> operator- (const TensorCPU<Dtype>& lhs, const float rhs);
-template<typename Dtype> TensorCPU<Dtype> operator* (const TensorCPU<Dtype>& lhs, const TensorCPU<Dtype>& rhs);
-template<typename Dtype> TensorCPU<Dtype> operator* (const TensorCPU<Dtype>& lhs, const float rhs);
+// template<typename Dtype> TensorCPU<Dtype> operator+ (const TensorCPU<Dtype>& lhs, const TensorCPU<Dtype>& rhs);
+// template<typename Dtype> TensorCPU<Dtype> operator+ (const TensorCPU<Dtype>& lhs, const float rhs);
+// template<typename Dtype> TensorCPU<Dtype> operator- (const TensorCPU<Dtype>& lhs, const TensorCPU<Dtype>& rhs);
+// template<typename Dtype> TensorCPU<Dtype> operator- (const TensorCPU<Dtype>& lhs, const float rhs);
+// template<typename Dtype> TensorCPU<Dtype> operator* (const TensorCPU<Dtype>& lhs, const TensorCPU<Dtype>& rhs);
+// template<typename Dtype> TensorCPU<Dtype> operator* (const TensorCPU<Dtype>& lhs, const float rhs);
 
 
 
@@ -29,27 +30,14 @@ class Tensor
 
 public:
 	Tensor() {}
-	~Tensor() {}
+	virtual ~Tensor() {}
 	
 	const int size() const {return count_; }
 	const int count() const {return count_; }
 
-
-
-	// virtual Tensor add(Tensor & other, Dtype alpha=1);
-
-	// virtual Tensor& operator+=(const Tensor & other);
-	// virtual Tensor& operator+=(const Dtype other);
-
-
-	// // Tensor& operator*=(const Tensor & other);
-	// virtual Tensor& operator*=(const Dtype other);
-
-
 protected:
 
 	int count_ = 0;
-	// std::vector<int> shape_;
 
 };
 
@@ -59,122 +47,27 @@ class TensorGPU : public Tensor<Dtype>
 {
 public:
 
-	TensorGPU() {}
-
-	TensorGPU(int count) {
+	explicit TensorGPU(int count) {
 		data_.reset((void*)clCreateBuffer(OpenCLHandler::Get().context, CL_MEM_READ_WRITE, count * sizeof(Dtype), NULL, NULL), [=](void *ptr){clReleaseMemObject((cl_mem) ptr);});
 		this->count_ = count;
 	}
 
-	TensorGPU(std::vector<Dtype> data) {
-		data_.reset((void*)clCreateBuffer(OpenCLHandler::Get().context, CL_MEM_COPY_HOST_PTR|CL_MEM_READ_WRITE,  data.size() * sizeof(Dtype), data.data(), NULL), [=](void *ptr){clReleaseMemObject((cl_mem) ptr);});
-		this->count_ = data.size();
-	}
+	explicit TensorGPU(int count, Dtype value);
+	explicit TensorGPU(std::vector<Dtype> data);
+	explicit TensorGPU(cl_mem data_ptr, int count, bool shared = false);
 
-	TensorGPU(cl_mem data_ptr, int count, bool shared = false) {
-		if (shared) {
-			data_.reset((void*)data_ptr, [](void *ptr){});
-		} else {
-			data_.reset((void*)data_ptr, [=](void *ptr){clReleaseMemObject((cl_mem) ptr);});
-		}
-		
-		this->count_ = count;
-	}
+	TensorGPU& copy_data(const TensorGPU & other);
+ 	TensorGPU duplicate();
 
-	// TensorGPU& operator=(TensorGPU other) {
- //        std::cout << "copy assignment of A\n";
- //        this->data_ = other.data_;
- //        return *this;
- //    }
-
-	~TensorGPU() {}
+	virtual ~TensorGPU() {}
 	
+	cl_mem mutable_data() const { return (cl_mem)data_.get(); }
+	const cl_mem immutable_data() const { return (cl_mem)data_.get(); }
 
-	cl_mem mutable_data() const {
-		return (cl_mem)data_.get();
-	}
+	TensorGPU<Dtype> sub_view(unsigned int offset, unsigned int size, cl_mem_flags flags = CL_MEM_READ_WRITE);
+	std::vector<TensorGPU<Dtype> > chunked_tensors(int chunck_num, cl_mem_flags flags = CL_MEM_READ_WRITE);
 
-	const cl_mem immutable_data() const {
-		return (cl_mem)data_.get();
-	}
-
-
-	const size_t reference_count() const {
-
-		cl_uint refer_count;
-
-		OPENCL_CHECK(
-			clGetMemObjectInfo (
-				data_.get(),
-			 	CL_MEM_REFERENCE_COUNT,
-			 	sizeof(cl_uint),
-			 	&refer_count,
-			 	nullptr
- 			)
- 		);
-
- 		return refer_count;
-	}
-
-
-	cl_mem sub_cl_view(unsigned int offset, unsigned int size, cl_mem_flags flags = CL_MEM_READ_WRITE) {
-		cl_int ret;
-		cl_buffer_region region{offset * sizeof(Dtype), size * sizeof(Dtype)};
-        auto temp = clCreateSubBuffer((cl_mem)data_.get(), flags, CL_BUFFER_CREATE_TYPE_REGION, &region, &ret); 
-        OPENCL_CHECK(ret);
-        return temp;
-	}
-
-
-	TensorGPU<Dtype> sub_view(unsigned int offset, unsigned int size, cl_mem_flags flags = CL_MEM_READ_WRITE) {
-		cl_int ret;
-		cl_buffer_region region{offset * sizeof(Dtype), size * sizeof(Dtype)};
-        auto temp = clCreateSubBuffer((cl_mem)data_.get(), flags, CL_BUFFER_CREATE_TYPE_REGION, &region, &ret); 
-        OPENCL_CHECK(ret);
-        return TensorGPU<Dtype>(temp, size, true);
-	}
-
-	std::vector<TensorGPU<Dtype> > chunked_tensors(int chunck_num, cl_mem_flags flags = CL_MEM_READ_WRITE) {
-		
-		size_t chunck_count = this->count_ / chunck_num;
-		size_t chunck_size = chunck_count * sizeof(Dtype);
-
-
-		cl_int ret;
-		cl_buffer_region region{0, chunck_size};
-
-		std::vector<TensorGPU<Dtype> > tensors;
-		for (int i = 0; i < chunck_num; ++i) {
-			tensors.push_back(
-				TensorGPU<Dtype>(
-					clCreateSubBuffer((cl_mem)data_.get(), flags, CL_BUFFER_CREATE_TYPE_REGION, &region, &ret),
-					chunck_count,
-					true
-				)
-			);
-        	OPENCL_CHECK(ret);
-        	region.origin += chunck_size;
-
-		}
-
-        return tensors;
-	}
-
-
-	const Dtype* debug_cpu_data() const {
-		Dtype* cpu_data = new Dtype[this->count_];
-		OPENCL_CHECK(clEnqueueReadBuffer(OpenCLHandler::Get().commandQueue, (cl_mem)data_.get(), CL_TRUE, 0, sizeof(Dtype) * this->count_, cpu_data, 0, NULL, NULL));
-		return cpu_data;
-	}
-
-
-	std::shared_ptr<Dtype> cpu_data_gtest() const {
-
-		auto cpu_data = std::shared_ptr<Dtype>(new Dtype[this->count_], std::default_delete<Dtype[]>());
-		OPENCL_CHECK(clEnqueueReadBuffer(OpenCLHandler::Get().commandQueue, (cl_mem)data_.get(), CL_TRUE, 0, sizeof(Dtype) * this->count_, cpu_data.get(), 0, NULL, NULL));
-		return cpu_data;
-	}
-
+	std::shared_ptr<Dtype> debug_gtest_cpu_data() const;
 
 	TensorGPU& operator+=(const TensorGPU & other) {return inplace_gpu_add(other, *this); }
 	TensorGPU& operator+=(const float other) {return inplace_gpu_add_scalar(*this, other); }
@@ -184,11 +77,6 @@ public:
 	TensorGPU& operator*=(const float other) {return inplace_gpu_mul_scalar(*this, other); }
 	TensorGPU& operator/=(const TensorGPU & other) {return inplace_gpu_div(other, *this); }
 	TensorGPU& operator/=(const float other) {return inplace_gpu_div_scalar(*this, other); }
-
-
-
-	TensorGPU& copy_data(const TensorGPU & other);
-
 
 	TensorGPU& sigmoid() {return inplace_gpu_sigmoid(*this); }
 	TensorGPU& tanh() {return inplace_gpu_tanh(*this); }
@@ -203,27 +91,11 @@ public:
 	TensorGPU& elu(const float e) {return inplace_gpu_elu(*this, e); }
 	TensorGPU& relu(const float e) {return inplace_gpu_relu(*this, e); }
 
-
-
-
-
-
-
-
-
 private:
 
+	TensorGPU();
+
 	std::shared_ptr<void> data_;
-
-	// TensorGPU();
-
-	// virtual Tensor add(Tensor & other, Dtype alpha=1) {}
-
-	// virtual Tensor& operator+=(const Tensor & other) {}
-	// virtual Tensor& operator+=(const Dtype other) {}
-
-	// virtual Tensor& operator*=(const Dtype other) {}
-
 
 };
 
@@ -265,6 +137,10 @@ public:
 		this->count_ = count;
 	}
 
+	TensorCPU& copy_data(const TensorCPU & other);
+	TensorCPU duplicate() const;
+
+
 	~TensorCPU() {}
 
 
@@ -273,30 +149,36 @@ public:
 
 	std::shared_ptr<Dtype> duplicate_data() const;
 
-	// const Dtype* cpu_data_gtest() const {
-	// 	return data_.get();
-	// }
-
-
-	std::shared_ptr<Dtype> cpu_data_gtest() const {
+	std::shared_ptr<Dtype> debug_gtest_cpu_data() const {
 		return duplicate_data();
 	}
 
 
 	TensorCPU add(TensorCPU & other, Dtype alpha=1);
 
-	TensorCPU& operator+=(const TensorCPU & other);
-	TensorCPU& operator+=(const Dtype other);
+	TensorCPU& operator+=(const TensorCPU & other) {return inplace_cpu_add(other, *this); }
+	TensorCPU& operator+=(const float other) {return inplace_cpu_add_scalar(*this, other); }
+	TensorCPU& operator-=(const TensorCPU & other) {return inplace_cpu_sub(other, *this); }
+	TensorCPU& operator-=(const float other) {return inplace_cpu_sub_scalar(*this, other); }
+	TensorCPU& operator*=(const TensorCPU & other) {return inplace_cpu_mul(other, *this); }
+	TensorCPU& operator*=(const float other) {return inplace_cpu_mul_scalar(*this, other); }
+	TensorCPU& operator/=(const TensorCPU & other) {return inplace_cpu_div(other, *this); }
+	TensorCPU& operator/=(const float other) {return inplace_cpu_div_scalar(*this, other); }
 
-	TensorCPU& operator*=(const Dtype other);
 
+	// TensorCPU& sigmoid() {return inplace_cpu_sigmoid(*this); }
+	// TensorCPU& tanh() {return inplace_cpu_tanh(*this); }
+	TensorCPU& abs() {return inplace_cpu_abs(*this); }
+	// TensorCPU& exp() {return inplace_cpu_exp(*this); }
+	TensorCPU& log() {return inplace_cpu_log(*this); }
+	// TensorCPU& sqr() {return inplace_cpu_sqr(*this); }
+	// TensorCPU& sqrt() {return inplace_cpu_sqrt(*this); }
 
-	friend TensorCPU<Dtype> operator+ <>(const TensorCPU<Dtype>& lhs, const TensorCPU<Dtype>& rhs);
-	friend TensorCPU<Dtype> operator+ <>(const TensorCPU<Dtype>& lhs, const float rhs);
-	friend TensorCPU<Dtype> operator- <>(const TensorCPU<Dtype>& lhs, const TensorCPU<Dtype>& rhs);
-	friend TensorCPU<Dtype> operator- <>(const TensorCPU<Dtype>& lhs, const float rhs);
-	friend TensorCPU<Dtype> operator* <>(const TensorCPU<Dtype>& lhs, const TensorCPU<Dtype>& rhs);
-	friend TensorCPU<Dtype> operator* <>(const TensorCPU<Dtype>& lhs, const float rhs);
+	// TensorCPU& set(const Dtype e) {return inplace_cpu_set(*this, e); }
+	// TensorCPU& powx(const float e) {return inplace_cpu_powx(*this, e); }
+	// TensorCPU& elu(const float e) {return inplace_cpu_elu(*this, e); }
+	// TensorCPU& relu(const float e) {return inplace_cpu_relu(*this, e); }
+
 
 private:
 	std::shared_ptr<Dtype> data_;

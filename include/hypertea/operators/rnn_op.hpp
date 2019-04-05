@@ -293,24 +293,23 @@ public:
 
   Cell_GPU(
       const int input_dim, const int hidden_dim,
-      cl_mem weight_ih,
-      cl_mem weight_hh,
-      cl_mem bias_ih,
-      cl_mem bias_hh
-  ) : input_dim_(input_dim), hidden_dim_(hidden_dim),
-      weight_ih_(weight_ih),
-      weight_hh_(weight_hh),
-      bias_ih_(bias_ih),
-      bias_hh_(bias_hh) { }
+      TensorGPU<Dtype> weight_ih,
+      TensorGPU<Dtype> weight_hh,
+      TensorGPU<Dtype> bias_ih,
+      TensorGPU<Dtype> bias_hh,
+      TensorGPU<Dtype> intere_i,
+      TensorGPU<Dtype> intere_h) 
+  : input_dim_(input_dim), 
+    hidden_dim_(hidden_dim),
+    weight_ih_(weight_ih),
+    weight_hh_(weight_hh),
+    bias_ih_(bias_ih),
+    bias_hh_(bias_hh),
+    intermediate_i(intere_i),
+    intermediate_h(intere_h) { }
 
   virtual ~Cell_GPU() {}
   
-  // virtual void Forward(
-  //   cl_mem input_data,
-  //   cl_mem hidden_data,
-  //   cl_mem output_data
-  // ) = 0;
-
   virtual void Forward(
     TensorGPU<Dtype>& input,
     TensorGPU<Dtype>& hidden,
@@ -324,15 +323,10 @@ protected:
 
   int input_dim_, hidden_dim_;
 
-  cl_mem weight_ih_;
-  cl_mem weight_hh_;
-  cl_mem bias_ih_;
-  cl_mem bias_hh_;
-
-  TensorGPU<Dtype> __weight_ih_;
-  TensorGPU<Dtype> __weight_hh_;
-  TensorGPU<Dtype> __bias_ih_;
-  TensorGPU<Dtype> __bias_hh_;
+  TensorGPU<Dtype> weight_ih_;
+  TensorGPU<Dtype> weight_hh_;
+  TensorGPU<Dtype> bias_ih_;
+  TensorGPU<Dtype> bias_hh_;
 
   TensorGPU<Dtype> intermediate_i;
   TensorGPU<Dtype> intermediate_h;
@@ -348,38 +342,22 @@ class GRUCell_GPU : public Cell_GPU<Dtype> {
 public:
   GRUCell_GPU(
       const int input_dim, const int hidden_dim,
-      cl_mem weight_ih,
-      cl_mem weight_hh,
-      cl_mem bias_ih,
-      cl_mem bias_hh) : 
+      TensorGPU<Dtype> weight_ih,
+      TensorGPU<Dtype> weight_hh,
+      TensorGPU<Dtype> bias_ih,
+      TensorGPU<Dtype> bias_hh) : 
         Cell_GPU<Dtype>(
           input_dim, hidden_dim, 
           weight_ih, weight_hh,
-          bias_ih, bias_hh
+          bias_ih, bias_hh,
+          TensorGPU<Dtype>(3 * hidden_dim),
+          TensorGPU<Dtype>(3 * hidden_dim)
         ) {
-    
-    this->__weight_ih_ = TensorGPU<Dtype>(weight_ih, 3 * this->hidden_dim_ * this->input_dim_, true);
-    this->__weight_hh_ = TensorGPU<Dtype>(weight_hh, 3 * this->hidden_dim_ * this->hidden_dim_, true);
-
-    this->__bias_ih_ = TensorGPU<Dtype>(bias_ih, 3 * this->hidden_dim_, true);
-    this->__bias_hh_ = TensorGPU<Dtype>(bias_hh, 3 * this->hidden_dim_, true);
-
-    this->intermediate_i = TensorGPU<Dtype>(3 * this->hidden_dim_);//clCreateBuffer(OpenCLHandler::Get().context, CL_MEM_READ_WRITE, 3 * this->hidden_dim_ * sizeof(Dtype), NULL, NULL);
-    this->intermediate_h = TensorGPU<Dtype>(3 * this->hidden_dim_);//clCreateBuffer(OpenCLHandler::Get().context, CL_MEM_READ_WRITE, 3 * this->hidden_dim_ * sizeof(Dtype), NULL, NULL);
 
   }
 
-  virtual ~GRUCell_GPU() {
-    // clReleaseMemObject(this->intermediate_i);
-    // clReleaseMemObject(this->intermediate_h);
-  }
+  virtual ~GRUCell_GPU() {}
   
-  // virtual void Forward(
-  //   cl_mem input_data,
-  //   cl_mem hidden_data,
-  //   cl_mem output_data
-  // );
-
   virtual void Forward(
     TensorGPU<Dtype>& input,
     TensorGPU<Dtype>& hidden,
@@ -398,38 +376,20 @@ class LSTMCell_GPU : public Cell_GPU<Dtype> {
 public:
   LSTMCell_GPU(
       const int input_dim, const int hidden_dim,
-      cl_mem weight_ih,
-      cl_mem weight_hh,
-      cl_mem bias_ih,
-      cl_mem bias_hh) : 
-        Cell_GPU<Dtype>(
-          input_dim, hidden_dim, 
-          weight_ih, weight_hh,
-          bias_ih, bias_hh
-        ) {
+      TensorGPU<Dtype> weight_ih,
+      TensorGPU<Dtype> weight_hh,
+      TensorGPU<Dtype> bias_ih,
+      TensorGPU<Dtype> bias_hh) 
+  : Cell_GPU<Dtype>(
+      input_dim, hidden_dim, 
+      weight_ih, weight_hh,
+      bias_ih, bias_hh,
+      TensorGPU<Dtype>(4 * hidden_dim),
+      TensorGPU<Dtype>(4 * hidden_dim)
+    ) { }
 
-    this->__weight_ih_ = TensorGPU<Dtype>(weight_ih, 4 * this->hidden_dim_ * this->input_dim_, true);
-    this->__weight_hh_ = TensorGPU<Dtype>(weight_hh, 4 * this->hidden_dim_ * this->hidden_dim_, true);
-
-    this->__bias_ih_ = TensorGPU<Dtype>(bias_ih, 4 * this->hidden_dim_, true);
-    this->__bias_hh_ = TensorGPU<Dtype>(bias_hh, 4 * this->hidden_dim_, true);
-    
-    this->intermediate_i = TensorGPU<Dtype>(4 * this->hidden_dim_);//clCreateBuffer(OpenCLHandler::Get().context, CL_MEM_READ_WRITE, 4 * this->hidden_dim_ * sizeof(Dtype), NULL, NULL);
-    this->intermediate_h = TensorGPU<Dtype>(4 * this->hidden_dim_);//clCreateBuffer(OpenCLHandler::Get().context, CL_MEM_READ_WRITE, 4 * this->hidden_dim_ * sizeof(Dtype), NULL, NULL);
-
-  }
-
-  virtual ~LSTMCell_GPU() {
-    // clReleaseMemObject(this->intermediate_i);
-    // clReleaseMemObject(this->intermediate_h);
-  }
+  virtual ~LSTMCell_GPU() {}
   
-  // virtual void Forward(
-  //   cl_mem input_data,
-  //   cl_mem hidden_data,
-  //   cl_mem output_data
-  // );
-
   virtual void Forward(
     TensorGPU<Dtype>& input,
     TensorGPU<Dtype>& hidden,
@@ -445,10 +405,10 @@ template <typename Dtype>
 Cell_GPU<Dtype>* cell_factory_gpu_(
     const int input_dim, 
     const int hidden_dim,
-    cl_mem w_ih,
-    cl_mem w_hh,
-    cl_mem b_ih,
-    cl_mem b_hh,
+    TensorGPU<Dtype> w_ih,
+    TensorGPU<Dtype> w_hh,
+    TensorGPU<Dtype> b_ih,
+    TensorGPU<Dtype> b_hh,
     RNN_CELL_TYPE cell_type) {
 
   switch (cell_type) {
@@ -473,16 +433,16 @@ public:
   RNNOp_GPU(
     int input_dim,
     int hidden_dim,
-    cl_mem w_ih,
-    cl_mem w_hh,
-    cl_mem b_ih,
-    cl_mem b_hh,
+    TensorGPU<Dtype> w_ih,
+    TensorGPU<Dtype> w_hh,
+    TensorGPU<Dtype> b_ih,
+    TensorGPU<Dtype> b_hh,
     RNN_CELL_TYPE cell_type) 
       : input_dim_(input_dim), 
         hidden_dim_(hidden_dim),
         cell_(cell_factory_gpu_<Dtype>(input_dim, hidden_dim, w_ih, w_hh, b_ih, b_hh, cell_type)) {}
 
-  ~RNNOp_GPU()  {}
+  virtual ~RNNOp_GPU() {}
 
   
   virtual TensorGPU<Dtype> Forward(TensorGPU<Dtype> &input_tensor, TensorGPU<Dtype> &hidden_tensor) = 0;
@@ -523,14 +483,14 @@ public:
   UnidirectionalRNN_GPU(
     int input_dim,
     int hidden_dim,
-    cl_mem w_ih,
-    cl_mem w_hh,
-    cl_mem b_ih,
-    cl_mem b_hh,
+    TensorGPU<Dtype> w_ih,
+    TensorGPU<Dtype> w_hh,
+    TensorGPU<Dtype> b_ih,
+    TensorGPU<Dtype> b_hh,
     RNN_CELL_TYPE cell_type) 
       : RNNOp_GPU<Dtype>(input_dim, hidden_dim, w_ih, w_hh, b_ih, b_hh, cell_type) {}
 
-  ~UnidirectionalRNN_GPU() {}
+  virtual ~UnidirectionalRNN_GPU() {}
 
 
   virtual TensorGPU<Dtype> Forward(TensorGPU<Dtype> &input_tensor, TensorGPU<Dtype> &hidden_tensor);
@@ -552,16 +512,15 @@ public:
   BidirectionalRNN_GPU(
     int input_dim,
     int hidden_dim,
-    cl_mem w_ih, cl_mem rw_ih,
-    cl_mem w_hh, cl_mem rw_hh,
-    cl_mem b_ih, cl_mem rb_ih,
-    cl_mem b_hh, cl_mem rb_hh,
+    TensorGPU<Dtype> w_ih, TensorGPU<Dtype> rw_ih,
+    TensorGPU<Dtype> w_hh, TensorGPU<Dtype> rw_hh,
+    TensorGPU<Dtype> b_ih, TensorGPU<Dtype> rb_ih,
+    TensorGPU<Dtype> b_hh, TensorGPU<Dtype> rb_hh,
     RNN_CELL_TYPE cell_type) 
       : RNNOp_GPU<Dtype>(input_dim, hidden_dim, w_ih, w_hh, b_ih, b_hh, cell_type),
         reverse_cell_(cell_factory_gpu_<Dtype>(input_dim, hidden_dim, rw_ih, rw_hh, rb_ih, rb_hh, cell_type)) { }
 
-  ~BidirectionalRNN_GPU() {}
-
+  virtual ~BidirectionalRNN_GPU() {}
 
   virtual TensorGPU<Dtype> Forward(TensorGPU<Dtype> &input_tensor, TensorGPU<Dtype> &hidden_tensor);
 

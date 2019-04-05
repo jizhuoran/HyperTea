@@ -49,8 +49,8 @@ TYPED_TEST(MATHFUNCTestCPU, test_sqr_CPU) {
 
   hypertea_sqr(N, a.immutable_data(), y.mutable_data());
 
-  auto a_data = a.cpu_data_gtest();
-  auto y_data = y.cpu_data_gtest();
+  auto a_data = a.debug_gtest_cpu_data();
+  auto y_data = y.debug_gtest_cpu_data();
 
 
   for (int i = 0; i < N; ++i) {
@@ -73,8 +73,8 @@ TYPED_TEST(MATHFUNCTestCPU, test_sqrt_CPU) {
 
   hypertea_sqrt(N, a.immutable_data(), y.mutable_data());
 
-  auto a_data = a.cpu_data_gtest();
-  auto y_data = y.cpu_data_gtest();
+  auto a_data = a.debug_gtest_cpu_data();
+  auto y_data = y.debug_gtest_cpu_data();
 
 
   for (int i = 0; i < N; ++i) {
@@ -97,8 +97,8 @@ TYPED_TEST(MATHFUNCTestCPU, test_powx_CPU) {
 
   hypertea_powx(N, a.immutable_data(), static_cast<float>(1.5), y.mutable_data());
 
-  auto a_data = a.cpu_data_gtest();
-  auto y_data = y.cpu_data_gtest();
+  auto a_data = a.debug_gtest_cpu_data();
+  auto y_data = y.debug_gtest_cpu_data();
 
 
   for (int i = 0; i < N; ++i) {
@@ -119,8 +119,8 @@ TYPED_TEST(MATHFUNCTestCPU, test_exp_CPU) {
   
   hypertea_exp(N, a.immutable_data(), y.mutable_data());
 
-  auto a_data = a.cpu_data_gtest();
-  auto y_data = y.cpu_data_gtest();
+  auto a_data = a.debug_gtest_cpu_data();
+  auto y_data = y.debug_gtest_cpu_data();
 
   for (int i = 0; i < N; ++i) {
     EXPECT_NEAR(y_data.get()[i], exp(a_data.get()[i]), 1e-3);
@@ -141,8 +141,8 @@ TYPED_TEST(MATHFUNCTestCPU, test_log_CPU) {
 
   hypertea_log(N, a.immutable_data(), y.mutable_data());
 
-  auto a_data = a.cpu_data_gtest();
-  auto y_data = y.cpu_data_gtest();
+  auto a_data = a.debug_gtest_cpu_data();
+  auto y_data = y.debug_gtest_cpu_data();
 
 
   for (int i = 0; i < N; ++i) {
@@ -163,8 +163,8 @@ TYPED_TEST(MATHFUNCTestCPU, test_abs_CPU) {
   
   hypertea_abs(N, a.immutable_data(), y.mutable_data());
 
-  auto a_data = a.cpu_data_gtest();
-  auto y_data = y.cpu_data_gtest();
+  auto a_data = a.debug_gtest_cpu_data();
+  auto y_data = y.debug_gtest_cpu_data();
 
   for (int i = 0; i < N; ++i) {
     EXPECT_NEAR(y_data.get()[i], std::abs(a_data.get()[i]), 1e-3);
@@ -184,8 +184,8 @@ TYPED_TEST(MATHFUNCTestCPU, test_tanh_CPU) {
   
   hypertea_tanh(N, a.immutable_data(), y.mutable_data());
 
-  auto a_data = a.cpu_data_gtest();
-  auto y_data = y.cpu_data_gtest();
+  auto a_data = a.debug_gtest_cpu_data();
+  auto y_data = y.debug_gtest_cpu_data();
 
   for (int i = 0; i < N; ++i) {
     EXPECT_NEAR(y_data.get()[i], tanh(a_data.get()[i]), 1e-3);
@@ -204,8 +204,8 @@ TYPED_TEST(MATHFUNCTestCPU, test_sigmoid_CPU) {
   
   hypertea_sigmoid(N, a.immutable_data(), y.mutable_data());
 
-  auto a_data = a.cpu_data_gtest();
-  auto y_data = y.cpu_data_gtest();
+  auto a_data = a.debug_gtest_cpu_data();
+  auto y_data = y.debug_gtest_cpu_data();
 
   for (int i = 0; i < N; ++i) {
     EXPECT_NEAR(y_data.get()[i], 0.5 * tanh(0.5 * a_data.get()[i]) + 0.5, 1e-3);
@@ -227,9 +227,9 @@ TYPED_TEST(MATHFUNCTestCPU, test_add_CPU) {
 
   hypertea_add(N, a.immutable_data(), b.immutable_data(), c.mutable_data());
 
-  auto a_data = a.cpu_data_gtest();
-  auto b_data = b.cpu_data_gtest();
-  auto c_data = c.cpu_data_gtest();
+  auto a_data = a.debug_gtest_cpu_data();
+  auto b_data = b.debug_gtest_cpu_data();
+  auto c_data = c.debug_gtest_cpu_data();
 
 
   for (int i = 0; i < N; ++i) {
@@ -249,9 +249,9 @@ TYPED_TEST(MATHFUNCTestCPU, test_sub_CPU) {
 
   hypertea_sub(N, a.immutable_data(), b.immutable_data(), c.mutable_data());
 
-  auto a_data = a.cpu_data_gtest();
-  auto b_data = b.cpu_data_gtest();
-  auto c_data = c.cpu_data_gtest();
+  auto a_data = a.debug_gtest_cpu_data();
+  auto b_data = b.debug_gtest_cpu_data();
+  auto c_data = c.debug_gtest_cpu_data();
 
 
   for (int i = 0; i < N; ++i) {
@@ -271,9 +271,9 @@ TYPED_TEST(MATHFUNCTestCPU, test_mul_CPU) {
 
   hypertea_mul(N, a.immutable_data(), b.immutable_data(), c.mutable_data());
 
-  auto a_data = a.cpu_data_gtest();
-  auto b_data = b.cpu_data_gtest();
-  auto c_data = c.cpu_data_gtest();
+  auto a_data = a.debug_gtest_cpu_data();
+  auto b_data = b.debug_gtest_cpu_data();
+  auto c_data = c.debug_gtest_cpu_data();
 
 
   for (int i = 0; i < N; ++i) {
@@ -293,9 +293,9 @@ TYPED_TEST(MATHFUNCTestCPU, test_div_CPU) {
 
   hypertea_div(N, a.immutable_data(), b.immutable_data(), c.mutable_data());
 
-  auto a_data = a.cpu_data_gtest();
-  auto b_data = b.cpu_data_gtest();
-  auto c_data = c.cpu_data_gtest();
+  auto a_data = a.debug_gtest_cpu_data();
+  auto b_data = b.debug_gtest_cpu_data();
+  auto c_data = c.debug_gtest_cpu_data();
 
 
   for (int i = 0; i < N; ++i) {

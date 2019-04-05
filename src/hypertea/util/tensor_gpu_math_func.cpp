@@ -3,7 +3,7 @@
 #include <limits>
 
 #include "hypertea/common.hpp"
-#include "hypertea/util/tensor_math_functions.hpp"
+#include "hypertea/util/tensor_gpu_math_func.hpp"
 
 #ifdef USE_OPENCL
 
@@ -583,16 +583,19 @@ void gpu_channeled_avg(
   const TensorGPU<Dtype>& x, 
   TensorGPU<Dtype>& mean,
   TensorGPU<Dtype>& var,
-  int channels,
-  int inner_dim ){
+  int batch_size,
+  int spatial_dim){
   
 
-  int N = x.count();
+  int nspatial_dim = batch_size * spatial_dim;
+  size_t channels = x.count() / nspatial_dim;
+  int cspatial_dim = spatial_dim * channels;
+
   auto data = x.mutable_data();
   auto mean_ = mean.mutable_data();
   auto var_ = var.mutable_data();
 
-  Dtype alpha_ = to_dtype<Dtype>(static_cast<float>(channels) / N);
+  Dtype alpha_ = to_dtype<Dtype>(1. / nspatial_dim);
 
   opencl_launch_wrapper(
     OpenCLHandler::Get().math_program,
@@ -601,8 +604,9 @@ void gpu_channeled_avg(
       std::make_pair(sizeof(cl_mem), (void *)&data),
       std::make_pair(sizeof(cl_mem), (void *)&mean_),
       std::make_pair(sizeof(cl_mem), (void *)&var_),
-      std::make_pair(sizeof(cl_int), (void *)&inner_dim),
-      std::make_pair(sizeof(cl_int), (void *)&N),
+      std::make_pair(sizeof(cl_int), (void *)&spatial_dim),
+      std::make_pair(sizeof(cl_int), (void *)&cspatial_dim),
+      std::make_pair(sizeof(cl_int), (void *)&nspatial_dim),
       std::make_pair(sizeof(Dtype), (void *)&alpha_),
 
     },

@@ -29,12 +29,7 @@ TensorCPU<float> TanHOp_CPU<float>::Forward(TensorCPU<float> &input_tensor) {
 template <typename Dtype>
 TensorGPU<Dtype> TanHOp_GPU<Dtype>::Forward(TensorGPU<Dtype> input_tensor){
 
-  if(inplace_) {
-   input_tensor.tanh();
-   return input_tensor;
-  } {
-    return gpu_tanh(input_tensor);
-  }
+  return inplace_? TensorGPU<Dtype>(input_tensor.tanh()) : gpu_tanh(input_tensor);
 
 }
 

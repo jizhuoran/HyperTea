@@ -9,7 +9,7 @@
 #include "hypertea/common.hpp"
 #include "hypertea/util/math_functions.hpp"
 #include "hypertea/util/benchmark.hpp"
-#include "hypertea/util/tensor_math_functions.hpp"
+#include "hypertea/util/tensor_gpu_math_func.hpp"
 
 namespace hypertea {
 

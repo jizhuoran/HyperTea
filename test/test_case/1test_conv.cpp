@@ -56,7 +56,7 @@ TYPED_TEST(CONVTestCPU, test_conv_2_3_1_1_0_1_CPU) {
 
   auto output_tensor = convolutional.Forward(input_tensor);
 
-  auto output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.debug_gtest_cpu_data();
 
   for (int i = 0; i < test_result::conv_2_3_1_1_0_1_result.size(); ++i) {
     EXPECT_NEAR(output_data.get()[i], test_result::conv_2_3_1_1_0_1_result[i], 1e-3);
@@ -81,7 +81,7 @@ TYPED_TEST(CONVTestCPU, test_conv_2_3_1_2_2_3_CPU) {
 
   auto output_tensor = convolutional.Forward(input_tensor);
 
-  auto output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.debug_gtest_cpu_data();
 
   for (int i = 0; i < test_result::conv_2_3_1_2_2_3_result.size(); ++i) {
     EXPECT_NEAR(output_data.get()[i], test_result::conv_2_3_1_2_2_3_result[i], 1e-3);
@@ -106,7 +106,7 @@ TYPED_TEST(CONVTestCPU, test_conv_2_3_3_1_0_1_CPU) {
 
   auto output_tensor = convolutional.Forward(input_tensor);
 
-  auto output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.debug_gtest_cpu_data();
 
   for (int i = 0; i < test_result::conv_2_3_3_1_0_1_result.size(); ++i) {
     EXPECT_NEAR(output_data.get()[i], test_result::conv_2_3_3_1_0_1_result[i], 1e-3);
@@ -131,7 +131,7 @@ TYPED_TEST(CONVTestCPU, test_conv_2_3_3_2_2_3_CPU) {
 
   auto output_tensor = convolutional.Forward(input_tensor);
 
-  auto output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.debug_gtest_cpu_data();
 
   for (int i = 0; i < test_result::conv_2_3_3_2_2_3_result.size(); ++i) {
     EXPECT_NEAR(output_data.get()[i], test_result::conv_2_3_3_2_2_3_result[i], 1e-3);
@@ -156,7 +156,7 @@ TYPED_TEST(CONVTestCPU, test_conv_4_3_1_1_0_1_CPU) {
 
   auto output_tensor = convolutional.Forward(input_tensor);
 
-  auto output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.debug_gtest_cpu_data();
 
   for (int i = 0; i < test_result::conv_4_3_1_1_0_1_result.size(); ++i) {
     EXPECT_NEAR(output_data.get()[i], test_result::conv_4_3_1_1_0_1_result[i], 1e-3);
@@ -181,7 +181,7 @@ TYPED_TEST(CONVTestCPU, test_conv_4_3_1_2_2_3_CPU) {
 
   auto output_tensor = convolutional.Forward(input_tensor);
 
-  auto output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.debug_gtest_cpu_data();
 
   for (int i = 0; i < test_result::conv_4_3_1_2_2_3_result.size(); ++i) {
     EXPECT_NEAR(output_data.get()[i], test_result::conv_4_3_1_2_2_3_result[i], 1e-3);
@@ -206,7 +206,7 @@ TYPED_TEST(CONVTestCPU, test_conv_4_3_3_1_0_1_CPU) {
 
   auto output_tensor = convolutional.Forward(input_tensor);
 
-  auto output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.debug_gtest_cpu_data();
 
   for (int i = 0; i < test_result::conv_4_3_3_1_0_1_result.size(); ++i) {
     EXPECT_NEAR(output_data.get()[i], test_result::conv_4_3_3_1_0_1_result[i], 1e-3);
@@ -231,7 +231,7 @@ TYPED_TEST(CONVTestCPU, test_conv_4_3_3_2_2_3_CPU) {
 
   auto output_tensor = convolutional.Forward(input_tensor);
 
-  auto output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.debug_gtest_cpu_data();
 
   for (int i = 0; i < test_result::conv_4_3_3_2_2_3_result.size(); ++i) {
     EXPECT_NEAR(output_data.get()[i], test_result::conv_4_3_3_2_2_3_result[i], 1e-3);
@@ -256,7 +256,7 @@ TYPED_TEST(CONVTestCPU, test_deconv_2_2_1_1_0_1_CPU) {
 
   auto output_tensor = convolutional.Forward(input_tensor);
 
-  auto output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.debug_gtest_cpu_data();
 
   for (int i = 0; i < test_result::deconv_2_2_1_1_0_1_result.size(); ++i) {
     EXPECT_NEAR(output_data.get()[i], test_result::deconv_2_2_1_1_0_1_result[i], 1e-3);
@@ -281,7 +281,7 @@ TYPED_TEST(CONVTestCPU, test_deconv_2_2_1_2_2_3_CPU) {
 
   auto output_tensor = convolutional.Forward(input_tensor);
 
-  auto output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.debug_gtest_cpu_data();
 
   for (int i = 0; i < test_result::deconv_2_2_1_2_2_3_result.size(); ++i) {
     EXPECT_NEAR(output_data.get()[i], test_result::deconv_2_2_1_2_2_3_result[i], 1e-3);
@@ -306,7 +306,7 @@ TYPED_TEST(CONVTestCPU, test_deconv_2_2_3_1_0_1_CPU) {
 
   auto output_tensor = convolutional.Forward(input_tensor);
 
-  auto output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.debug_gtest_cpu_data();
 
   for (int i = 0; i < test_result::deconv_2_2_3_1_0_1_result.size(); ++i) {
     EXPECT_NEAR(output_data.get()[i], test_result::deconv_2_2_3_1_0_1_result[i], 1e-3);
@@ -331,7 +331,7 @@ TYPED_TEST(CONVTestCPU, test_deconv_2_2_3_2_2_3_CPU) {
 
   auto output_tensor = convolutional.Forward(input_tensor);
 
-  auto output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.debug_gtest_cpu_data();
 
   for (int i = 0; i < test_result::deconv_2_2_3_2_2_3_result.size(); ++i) {
     EXPECT_NEAR(output_data.get()[i], test_result::deconv_2_2_3_2_2_3_result[i], 1e-3);
@@ -356,7 +356,7 @@ TYPED_TEST(CONVTestCPU, test_deconv_3_4_1_1_0_1_CPU) {
 
   auto output_tensor = convolutional.Forward(input_tensor);
 
-  auto output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.debug_gtest_cpu_data();
 
   for (int i = 0; i < test_result::deconv_3_4_1_1_0_1_result.size(); ++i) {
     EXPECT_NEAR(output_data.get()[i], test_result::deconv_3_4_1_1_0_1_result[i], 1e-3);
@@ -381,7 +381,7 @@ TYPED_TEST(CONVTestCPU, test_deconv_3_4_1_2_2_3_CPU) {
 
   auto output_tensor = convolutional.Forward(input_tensor);
 
-  auto output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.debug_gtest_cpu_data();
 
   for (int i = 0; i < test_result::deconv_3_4_1_2_2_3_result.size(); ++i) {
     EXPECT_NEAR(output_data.get()[i], test_result::deconv_3_4_1_2_2_3_result[i], 1e-3);
@@ -406,7 +406,7 @@ TYPED_TEST(CONVTestCPU, test_deconv_3_4_3_1_0_1_CPU) {
 
   auto output_tensor = convolutional.Forward(input_tensor);
 
-  auto output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.debug_gtest_cpu_data();
 
   for (int i = 0; i < test_result::deconv_3_4_3_1_0_1_result.size(); ++i) {
     EXPECT_NEAR(output_data.get()[i], test_result::deconv_3_4_3_1_0_1_result[i], 1e-3);
@@ -431,7 +431,7 @@ TYPED_TEST(CONVTestCPU, test_deconv_3_4_3_2_2_3_CPU) {
 
   auto output_tensor = convolutional.Forward(input_tensor);
 
-  auto output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.debug_gtest_cpu_data();
 
   for (int i = 0; i < test_result::deconv_3_4_3_2_2_3_result.size(); ++i) {
     EXPECT_NEAR(output_data.get()[i], test_result::deconv_3_4_3_2_2_3_result[i], 1e-3);
@@ -456,7 +456,7 @@ TYPED_TEST(CONVTestCPU, test_deconv_5_3_1_1_0_1_CPU) {
 
   auto output_tensor = convolutional.Forward(input_tensor);
 
-  auto output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.debug_gtest_cpu_data();
 
   for (int i = 0; i < test_result::deconv_5_3_1_1_0_1_result.size(); ++i) {
     EXPECT_NEAR(output_data.get()[i], test_result::deconv_5_3_1_1_0_1_result[i], 1e-3);
@@ -481,7 +481,7 @@ TYPED_TEST(CONVTestCPU, test_deconv_5_3_1_2_2_3_CPU) {
 
   auto output_tensor = convolutional.Forward(input_tensor);
 
-  auto output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.debug_gtest_cpu_data();
 
   for (int i = 0; i < test_result::deconv_5_3_1_2_2_3_result.size(); ++i) {
     EXPECT_NEAR(output_data.get()[i], test_result::deconv_5_3_1_2_2_3_result[i], 1e-3);
@@ -506,7 +506,7 @@ TYPED_TEST(CONVTestCPU, test_deconv_5_3_3_1_0_1_CPU) {
 
   auto output_tensor = convolutional.Forward(input_tensor);
 
-  auto output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.debug_gtest_cpu_data();
 
   for (int i = 0; i < test_result::deconv_5_3_3_1_0_1_result.size(); ++i) {
     EXPECT_NEAR(output_data.get()[i], test_result::deconv_5_3_3_1_0_1_result[i], 1e-3);
@@ -531,7 +531,7 @@ TYPED_TEST(CONVTestCPU, test_deconv_5_3_3_2_2_3_CPU) {
 
   auto output_tensor = convolutional.Forward(input_tensor);
 
-  auto output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.debug_gtest_cpu_data();
 
   for (int i = 0; i < test_result::deconv_5_3_3_2_2_3_result.size(); ++i) {
     EXPECT_NEAR(output_data.get()[i], test_result::deconv_5_3_3_2_2_3_result[i], 1e-3);

@@ -657,32 +657,59 @@ util/opencl_util.cpp.s:
 	cd /home/zrji/hypertea/build && $(MAKE) -f src/hypertea/CMakeFiles/hypertea.dir/build.make src/hypertea/CMakeFiles/hypertea.dir/util/opencl_util.cpp.s
 .PHONY : util/opencl_util.cpp.s
 
-util/tensor_math_functions.o: util/tensor_math_functions.cpp.o
+util/tensor_cpu_math_func.o: util/tensor_cpu_math_func.cpp.o
 
-.PHONY : util/tensor_math_functions.o
+.PHONY : util/tensor_cpu_math_func.o
 
 # target to build an object file
-util/tensor_math_functions.cpp.o:
-	cd /home/zrji/hypertea/build && $(MAKE) -f src/hypertea/CMakeFiles/hypertea.dir/build.make src/hypertea/CMakeFiles/hypertea.dir/util/tensor_math_functions.cpp.o
-.PHONY : util/tensor_math_functions.cpp.o
+util/tensor_cpu_math_func.cpp.o:
+	cd /home/zrji/hypertea/build && $(MAKE) -f src/hypertea/CMakeFiles/hypertea.dir/build.make src/hypertea/CMakeFiles/hypertea.dir/util/tensor_cpu_math_func.cpp.o
+.PHONY : util/tensor_cpu_math_func.cpp.o
 
-util/tensor_math_functions.i: util/tensor_math_functions.cpp.i
+util/tensor_cpu_math_func.i: util/tensor_cpu_math_func.cpp.i
 
-.PHONY : util/tensor_math_functions.i
+.PHONY : util/tensor_cpu_math_func.i
 
 # target to preprocess a source file
-util/tensor_math_functions.cpp.i:
-	cd /home/zrji/hypertea/build && $(MAKE) -f src/hypertea/CMakeFiles/hypertea.dir/build.make src/hypertea/CMakeFiles/hypertea.dir/util/tensor_math_functions.cpp.i
-.PHONY : util/tensor_math_functions.cpp.i
+util/tensor_cpu_math_func.cpp.i:
+	cd /home/zrji/hypertea/build && $(MAKE) -f src/hypertea/CMakeFiles/hypertea.dir/build.make src/hypertea/CMakeFiles/hypertea.dir/util/tensor_cpu_math_func.cpp.i
+.PHONY : util/tensor_cpu_math_func.cpp.i
 
-util/tensor_math_functions.s: util/tensor_math_functions.cpp.s
+util/tensor_cpu_math_func.s: util/tensor_cpu_math_func.cpp.s
 
-.PHONY : util/tensor_math_functions.s
+.PHONY : util/tensor_cpu_math_func.s
 
 # target to generate assembly for a file
-util/tensor_math_functions.cpp.s:
-	cd /home/zrji/hypertea/build && $(MAKE) -f src/hypertea/CMakeFiles/hypertea.dir/build.make src/hypertea/CMakeFiles/hypertea.dir/util/tensor_math_functions.cpp.s
-.PHONY : util/tensor_math_functions.cpp.s
+util/tensor_cpu_math_func.cpp.s:
+	cd /home/zrji/hypertea/build && $(MAKE) -f src/hypertea/CMakeFiles/hypertea.dir/build.make src/hypertea/CMakeFiles/hypertea.dir/util/tensor_cpu_math_func.cpp.s
+.PHONY : util/tensor_cpu_math_func.cpp.s
+
+util/tensor_gpu_math_func.o: util/tensor_gpu_math_func.cpp.o
+
+.PHONY : util/tensor_gpu_math_func.o
+
+# target to build an object file
+util/tensor_gpu_math_func.cpp.o:
+	cd /home/zrji/hypertea/build && $(MAKE) -f src/hypertea/CMakeFiles/hypertea.dir/build.make src/hypertea/CMakeFiles/hypertea.dir/util/tensor_gpu_math_func.cpp.o
+.PHONY : util/tensor_gpu_math_func.cpp.o
+
+util/tensor_gpu_math_func.i: util/tensor_gpu_math_func.cpp.i
+
+.PHONY : util/tensor_gpu_math_func.i
+
+# target to preprocess a source file
+util/tensor_gpu_math_func.cpp.i:
+	cd /home/zrji/hypertea/build && $(MAKE) -f src/hypertea/CMakeFiles/hypertea.dir/build.make src/hypertea/CMakeFiles/hypertea.dir/util/tensor_gpu_math_func.cpp.i
+.PHONY : util/tensor_gpu_math_func.cpp.i
+
+util/tensor_gpu_math_func.s: util/tensor_gpu_math_func.cpp.s
+
+.PHONY : util/tensor_gpu_math_func.s
+
+# target to generate assembly for a file
+util/tensor_gpu_math_func.cpp.s:
+	cd /home/zrji/hypertea/build && $(MAKE) -f src/hypertea/CMakeFiles/hypertea.dir/build.make src/hypertea/CMakeFiles/hypertea.dir/util/tensor_gpu_math_func.cpp.s
+.PHONY : util/tensor_gpu_math_func.cpp.s
 
 # Help Target
 help:
@@ -751,9 +778,12 @@ help:
 	@echo "... util/opencl_util.o"
 	@echo "... util/opencl_util.i"
 	@echo "... util/opencl_util.s"
-	@echo "... util/tensor_math_functions.o"
-	@echo "... util/tensor_math_functions.i"
-	@echo "... util/tensor_math_functions.s"
+	@echo "... util/tensor_cpu_math_func.o"
+	@echo "... util/tensor_cpu_math_func.i"
+	@echo "... util/tensor_cpu_math_func.s"
+	@echo "... util/tensor_gpu_math_func.o"
+	@echo "... util/tensor_gpu_math_func.i"
+	@echo "... util/tensor_gpu_math_func.s"
 .PHONY : help
 
 

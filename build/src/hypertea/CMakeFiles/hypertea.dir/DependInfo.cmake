@@ -22,7 +22,8 @@ set(CMAKE_DEPENDS_CHECK_CXX
   "/home/zrji/hypertea/src/hypertea/util/math_functions.cpp" "/home/zrji/hypertea/build/src/hypertea/CMakeFiles/hypertea.dir/util/math_functions.cpp.o"
   "/home/zrji/hypertea/src/hypertea/util/math_functions_cl.cpp" "/home/zrji/hypertea/build/src/hypertea/CMakeFiles/hypertea.dir/util/math_functions_cl.cpp.o"
   "/home/zrji/hypertea/src/hypertea/util/opencl_util.cpp" "/home/zrji/hypertea/build/src/hypertea/CMakeFiles/hypertea.dir/util/opencl_util.cpp.o"
-  "/home/zrji/hypertea/src/hypertea/util/tensor_math_functions.cpp" "/home/zrji/hypertea/build/src/hypertea/CMakeFiles/hypertea.dir/util/tensor_math_functions.cpp.o"
+  "/home/zrji/hypertea/src/hypertea/util/tensor_cpu_math_func.cpp" "/home/zrji/hypertea/build/src/hypertea/CMakeFiles/hypertea.dir/util/tensor_cpu_math_func.cpp.o"
+  "/home/zrji/hypertea/src/hypertea/util/tensor_gpu_math_func.cpp" "/home/zrji/hypertea/build/src/hypertea/CMakeFiles/hypertea.dir/util/tensor_gpu_math_func.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 

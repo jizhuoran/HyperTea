@@ -60,7 +60,7 @@ TYPED_TEST(BNTestCPU, test_bn_1_t_f_f_CPU) {
 
   auto output_tensor = bn.Forward(input_tensor);
 
-  auto output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.debug_gtest_cpu_data();
 
   for (int i = 0; i < test_result::bn_1_t_f_f_result.size(); ++i) {
     EXPECT_NEAR(output_data.get()[i], test_result::bn_1_t_f_f_result[i], 1e-3);
@@ -87,7 +87,7 @@ TYPED_TEST(BNTestGPU, test_bn_1_t_f_f_GPU) {
 
   auto output_tensor = bn.Forward(input_tensor);
 
-  auto output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.debug_gtest_cpu_data();
 
   for (int i = 0; i < test_result::bn_1_t_f_f_result.size(); ++i) {
     EXPECT_NEAR(output_data.get()[i], test_result::bn_1_t_f_f_result[i], 1e-3);
@@ -114,7 +114,7 @@ TYPED_TEST(BNTestCPU, test_bn_1_t_f_t_CPU) {
 
   auto output_tensor = bn.Forward(input_tensor);
 
-  auto output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.debug_gtest_cpu_data();
 
   for (int i = 0; i < test_result::bn_1_t_f_t_result.size(); ++i) {
     EXPECT_NEAR(output_data.get()[i], test_result::bn_1_t_f_t_result[i], 1e-3);
@@ -141,7 +141,7 @@ TYPED_TEST(BNTestGPU, test_bn_1_t_f_t_GPU) {
 
   auto output_tensor = bn.Forward(input_tensor);
 
-  auto output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.debug_gtest_cpu_data();
 
   for (int i = 0; i < test_result::bn_1_t_f_t_result.size(); ++i) {
     EXPECT_NEAR(output_data.get()[i], test_result::bn_1_t_f_t_result[i], 1e-3);
@@ -169,7 +169,7 @@ TYPED_TEST(BNTestCPU, test_bn_1_t_t_f_CPU) {
 
   auto output_tensor = bn.Forward(input_tensor);
 
-  auto output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.debug_gtest_cpu_data();
 
   for (int i = 0; i < test_result::bn_1_t_t_f_result.size(); ++i) {
     EXPECT_NEAR(output_data.get()[i], test_result::bn_1_t_t_f_result[i], 1e-3);
@@ -197,7 +197,7 @@ TYPED_TEST(BNTestGPU, test_bn_1_t_t_f_GPU) {
 
   auto output_tensor = bn.Forward(input_tensor);
 
-  auto output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.debug_gtest_cpu_data();
 
   for (int i = 0; i < test_result::bn_1_t_t_f_result.size(); ++i) {
     EXPECT_NEAR(output_data.get()[i], test_result::bn_1_t_t_f_result[i], 1e-3);
@@ -225,7 +225,7 @@ TYPED_TEST(BNTestCPU, test_bn_1_t_t_t_CPU) {
 
   auto output_tensor = bn.Forward(input_tensor);
 
-  auto output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.debug_gtest_cpu_data();
 
   for (int i = 0; i < test_result::bn_1_t_t_t_result.size(); ++i) {
     EXPECT_NEAR(output_data.get()[i], test_result::bn_1_t_t_t_result[i], 1e-3);
@@ -253,7 +253,7 @@ TYPED_TEST(BNTestGPU, test_bn_1_t_t_t_GPU) {
 
   auto output_tensor = bn.Forward(input_tensor);
 
-  auto output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.debug_gtest_cpu_data();
 
   for (int i = 0; i < test_result::bn_1_t_t_t_result.size(); ++i) {
     EXPECT_NEAR(output_data.get()[i], test_result::bn_1_t_t_t_result[i], 1e-3);
@@ -280,7 +280,7 @@ TYPED_TEST(BNTestCPU, test_bn_1_f_f_f_CPU) {
 
   auto output_tensor = bn.Forward(input_tensor);
 
-  auto output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.debug_gtest_cpu_data();
 
   for (int i = 0; i < test_result::bn_1_f_f_f_result.size(); ++i) {
     EXPECT_NEAR(output_data.get()[i], test_result::bn_1_f_f_f_result[i], 1e-3);
@@ -307,7 +307,7 @@ TYPED_TEST(BNTestGPU, test_bn_1_f_f_f_GPU) {
 
   auto output_tensor = bn.Forward(input_tensor);
 
-  auto output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.debug_gtest_cpu_data();
 
   for (int i = 0; i < test_result::bn_1_f_f_f_result.size(); ++i) {
     EXPECT_NEAR(output_data.get()[i], test_result::bn_1_f_f_f_result[i], 1e-3);
@@ -334,7 +334,7 @@ TYPED_TEST(BNTestCPU, test_bn_1_f_f_t_CPU) {
 
   auto output_tensor = bn.Forward(input_tensor);
 
-  auto output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.debug_gtest_cpu_data();
 
   for (int i = 0; i < test_result::bn_1_f_f_t_result.size(); ++i) {
     EXPECT_NEAR(output_data.get()[i], test_result::bn_1_f_f_t_result[i], 1e-3);
@@ -361,7 +361,7 @@ TYPED_TEST(BNTestGPU, test_bn_1_f_f_t_GPU) {
 
   auto output_tensor = bn.Forward(input_tensor);
 
-  auto output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.debug_gtest_cpu_data();
 
   for (int i = 0; i < test_result::bn_1_f_f_t_result.size(); ++i) {
     EXPECT_NEAR(output_data.get()[i], test_result::bn_1_f_f_t_result[i], 1e-3);
@@ -389,7 +389,7 @@ TYPED_TEST(BNTestCPU, test_bn_1_f_t_f_CPU) {
 
   auto output_tensor = bn.Forward(input_tensor);
 
-  auto output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.debug_gtest_cpu_data();
 
   for (int i = 0; i < test_result::bn_1_f_t_f_result.size(); ++i) {
     EXPECT_NEAR(output_data.get()[i], test_result::bn_1_f_t_f_result[i], 1e-3);
@@ -417,7 +417,7 @@ TYPED_TEST(BNTestGPU, test_bn_1_f_t_f_GPU) {
 
   auto output_tensor = bn.Forward(input_tensor);
 
-  auto output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.debug_gtest_cpu_data();
 
   for (int i = 0; i < test_result::bn_1_f_t_f_result.size(); ++i) {
     EXPECT_NEAR(output_data.get()[i], test_result::bn_1_f_t_f_result[i], 1e-3);
@@ -445,7 +445,7 @@ TYPED_TEST(BNTestCPU, test_bn_1_f_t_t_CPU) {
 
   auto output_tensor = bn.Forward(input_tensor);
 
-  auto output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.debug_gtest_cpu_data();
 
   for (int i = 0; i < test_result::bn_1_f_t_t_result.size(); ++i) {
     EXPECT_NEAR(output_data.get()[i], test_result::bn_1_f_t_t_result[i], 1e-3);
@@ -473,7 +473,7 @@ TYPED_TEST(BNTestGPU, test_bn_1_f_t_t_GPU) {
 
   auto output_tensor = bn.Forward(input_tensor);
 
-  auto output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.debug_gtest_cpu_data();
 
   for (int i = 0; i < test_result::bn_1_f_t_t_result.size(); ++i) {
     EXPECT_NEAR(output_data.get()[i], test_result::bn_1_f_t_t_result[i], 1e-3);
@@ -500,7 +500,7 @@ TYPED_TEST(BNTestCPU, test_bn_3_t_f_f_CPU) {
 
   auto output_tensor = bn.Forward(input_tensor);
 
-  auto output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.debug_gtest_cpu_data();
 
   for (int i = 0; i < test_result::bn_3_t_f_f_result.size(); ++i) {
     EXPECT_NEAR(output_data.get()[i], test_result::bn_3_t_f_f_result[i], 1e-3);
@@ -527,7 +527,7 @@ TYPED_TEST(BNTestGPU, test_bn_3_t_f_f_GPU) {
 
   auto output_tensor = bn.Forward(input_tensor);
 
-  auto output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.debug_gtest_cpu_data();
 
   for (int i = 0; i < test_result::bn_3_t_f_f_result.size(); ++i) {
     EXPECT_NEAR(output_data.get()[i], test_result::bn_3_t_f_f_result[i], 1e-3);
@@ -554,7 +554,7 @@ TYPED_TEST(BNTestCPU, test_bn_3_t_f_t_CPU) {
 
   auto output_tensor = bn.Forward(input_tensor);
 
-  auto output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.debug_gtest_cpu_data();
 
   for (int i = 0; i < test_result::bn_3_t_f_t_result.size(); ++i) {
     EXPECT_NEAR(output_data.get()[i], test_result::bn_3_t_f_t_result[i], 1e-3);
@@ -581,7 +581,7 @@ TYPED_TEST(BNTestGPU, test_bn_3_t_f_t_GPU) {
 
   auto output_tensor = bn.Forward(input_tensor);
 
-  auto output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.debug_gtest_cpu_data();
 
   for (int i = 0; i < test_result::bn_3_t_f_t_result.size(); ++i) {
     EXPECT_NEAR(output_data.get()[i], test_result::bn_3_t_f_t_result[i], 1e-3);
@@ -609,7 +609,7 @@ TYPED_TEST(BNTestCPU, test_bn_3_t_t_f_CPU) {
 
   auto output_tensor = bn.Forward(input_tensor);
 
-  auto output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.debug_gtest_cpu_data();
 
   for (int i = 0; i < test_result::bn_3_t_t_f_result.size(); ++i) {
     EXPECT_NEAR(output_data.get()[i], test_result::bn_3_t_t_f_result[i], 1e-3);
@@ -637,7 +637,7 @@ TYPED_TEST(BNTestGPU, test_bn_3_t_t_f_GPU) {
 
   auto output_tensor = bn.Forward(input_tensor);
 
-  auto output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.debug_gtest_cpu_data();
 
   for (int i = 0; i < test_result::bn_3_t_t_f_result.size(); ++i) {
     EXPECT_NEAR(output_data.get()[i], test_result::bn_3_t_t_f_result[i], 1e-3);
@@ -665,7 +665,7 @@ TYPED_TEST(BNTestCPU, test_bn_3_t_t_t_CPU) {
 
   auto output_tensor = bn.Forward(input_tensor);
 
-  auto output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.debug_gtest_cpu_data();
 
   for (int i = 0; i < test_result::bn_3_t_t_t_result.size(); ++i) {
     EXPECT_NEAR(output_data.get()[i], test_result::bn_3_t_t_t_result[i], 1e-3);
@@ -693,7 +693,7 @@ TYPED_TEST(BNTestGPU, test_bn_3_t_t_t_GPU) {
 
   auto output_tensor = bn.Forward(input_tensor);
 
-  auto output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.debug_gtest_cpu_data();
 
   for (int i = 0; i < test_result::bn_3_t_t_t_result.size(); ++i) {
     EXPECT_NEAR(output_data.get()[i], test_result::bn_3_t_t_t_result[i], 1e-3);
@@ -720,7 +720,7 @@ TYPED_TEST(BNTestCPU, test_bn_3_f_f_f_CPU) {
 
   auto output_tensor = bn.Forward(input_tensor);
 
-  auto output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.debug_gtest_cpu_data();
 
   for (int i = 0; i < test_result::bn_3_f_f_f_result.size(); ++i) {
     EXPECT_NEAR(output_data.get()[i], test_result::bn_3_f_f_f_result[i], 1e-3);
@@ -747,7 +747,7 @@ TYPED_TEST(BNTestGPU, test_bn_3_f_f_f_GPU) {
 
   auto output_tensor = bn.Forward(input_tensor);
 
-  auto output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.debug_gtest_cpu_data();
 
   for (int i = 0; i < test_result::bn_3_f_f_f_result.size(); ++i) {
     EXPECT_NEAR(output_data.get()[i], test_result::bn_3_f_f_f_result[i], 1e-3);
@@ -774,7 +774,7 @@ TYPED_TEST(BNTestCPU, test_bn_3_f_f_t_CPU) {
 
   auto output_tensor = bn.Forward(input_tensor);
 
-  auto output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.debug_gtest_cpu_data();
 
   for (int i = 0; i < test_result::bn_3_f_f_t_result.size(); ++i) {
     EXPECT_NEAR(output_data.get()[i], test_result::bn_3_f_f_t_result[i], 1e-3);
@@ -801,7 +801,7 @@ TYPED_TEST(BNTestGPU, test_bn_3_f_f_t_GPU) {
 
   auto output_tensor = bn.Forward(input_tensor);
 
-  auto output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.debug_gtest_cpu_data();
 
   for (int i = 0; i < test_result::bn_3_f_f_t_result.size(); ++i) {
     EXPECT_NEAR(output_data.get()[i], test_result::bn_3_f_f_t_result[i], 1e-3);
@@ -829,7 +829,7 @@ TYPED_TEST(BNTestCPU, test_bn_3_f_t_f_CPU) {
 
   auto output_tensor = bn.Forward(input_tensor);
 
-  auto output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.debug_gtest_cpu_data();
 
   for (int i = 0; i < test_result::bn_3_f_t_f_result.size(); ++i) {
     EXPECT_NEAR(output_data.get()[i], test_result::bn_3_f_t_f_result[i], 1e-3);
@@ -857,7 +857,7 @@ TYPED_TEST(BNTestGPU, test_bn_3_f_t_f_GPU) {
 
   auto output_tensor = bn.Forward(input_tensor);
 
-  auto output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.debug_gtest_cpu_data();
 
   for (int i = 0; i < test_result::bn_3_f_t_f_result.size(); ++i) {
     EXPECT_NEAR(output_data.get()[i], test_result::bn_3_f_t_f_result[i], 1e-3);
@@ -885,7 +885,7 @@ TYPED_TEST(BNTestCPU, test_bn_3_f_t_t_CPU) {
 
   auto output_tensor = bn.Forward(input_tensor);
 
-  auto output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.debug_gtest_cpu_data();
 
   for (int i = 0; i < test_result::bn_3_f_t_t_result.size(); ++i) {
     EXPECT_NEAR(output_data.get()[i], test_result::bn_3_f_t_t_result[i], 1e-3);
@@ -913,7 +913,7 @@ TYPED_TEST(BNTestGPU, test_bn_3_f_t_t_GPU) {
 
   auto output_tensor = bn.Forward(input_tensor);
 
-  auto output_data = output_tensor.cpu_data_gtest();
+  auto output_data = output_tensor.debug_gtest_cpu_data();
 
   for (int i = 0; i < test_result::bn_3_f_t_t_result.size(); ++i) {
     EXPECT_NEAR(output_data.get()[i], test_result::bn_3_f_t_t_result[i], 1e-3);

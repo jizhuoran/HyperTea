@@ -330,13 +330,13 @@ void GRUCell_GPU<Dtype>::Forward(
 ) {
 
 
-    this->intermediate_i.copy_data(this->__bias_ih_);
-    this->intermediate_h.copy_data(this->__bias_hh_);
+    this->intermediate_i.copy_data(this->bias_ih_);
+    this->intermediate_h.copy_data(this->bias_hh_);
 
     hypertea_gpu_gemv<Dtype>(CblasNoTrans, 3 * this->hidden_dim_,
-        this->input_dim_, 1, this->__weight_ih_, input, 1, this->intermediate_i);
+        this->input_dim_, 1, this->weight_ih_, input, 1, this->intermediate_i);
     hypertea_gpu_gemv<Dtype>(CblasNoTrans, 3 * this->hidden_dim_,
-        this->hidden_dim_, 1, this->__weight_hh_, hidden, 1, this->intermediate_h);
+        this->hidden_dim_, 1, this->weight_hh_, hidden, 1, this->intermediate_h);
 
     auto igates = this->intermediate_i.chunked_tensors(3);
     auto hgates = this->intermediate_h.chunked_tensors(3);
@@ -359,13 +359,13 @@ void LSTMCell_GPU<Dtype>::Forward(
     TensorGPU<Dtype> & output
 ) {
 
-    this->intermediate_i.copy_data(this->__bias_ih_);
-    this->intermediate_h.copy_data(this->__bias_hh_);
+    this->intermediate_i.copy_data(this->bias_ih_);
+    this->intermediate_h.copy_data(this->bias_hh_);
 
     hypertea_gpu_gemv<Dtype>(CblasNoTrans, 4 * this->hidden_dim_,
-        this->input_dim_, 1, this->__weight_ih_, input, 1, this->intermediate_i);
+        this->input_dim_, 1, this->weight_ih_, input, 1, this->intermediate_i);
     hypertea_gpu_gemv<Dtype>(CblasNoTrans, 4 * this->hidden_dim_,
-        this->hidden_dim_, 1, this->__weight_hh_, hidden, 1, this->intermediate_h);
+        this->hidden_dim_, 1, this->weight_hh_, hidden, 1, this->intermediate_h);
 
 
     this->intermediate_i += this->intermediate_h;

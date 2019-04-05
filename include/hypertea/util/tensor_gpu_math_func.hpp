@@ -1,5 +1,5 @@
-#ifndef HYPERTEA_UTIL_TENSOR_MATH_FUNCTIONS_H_
-#define HYPERTEA_UTIL_TENSOR_MATH_FUNCTIONS_H_
+#ifndef HYPERTEA_UTIL_TENSOR_GPU_MATH_FUNC_H_
+#define HYPERTEA_UTIL_TENSOR_GPU_MATH_FUNC_H_
 
 #include <stdint.h>
 #include <cmath>  // for std::fabs and std::signbit
@@ -431,12 +431,12 @@ void gpu_channeled_avg(
   const TensorGPU<Dtype>& x, 
   TensorGPU<Dtype>& mean,
   TensorGPU<Dtype>& var,
-  int channels,
-  int inner_dim
+  int batch_size,
+  int spatial_dim
  );
 
 
-
+ 
 template<typename Dtype> 
 TensorGPU<Dtype> operator+ (const TensorGPU<Dtype>& lhs, const TensorGPU<Dtype>& rhs) {return gpu_add(lhs ,rhs); }
 template<typename Dtype>
@@ -486,4 +486,4 @@ TensorGPU<Dtype> operator/ (const TensorGPU<Dtype>& lhs, const float rhs) {retur
 
 }  // namespace hypertea
 
-#endif  // HYPERTEA_UTIL_TENSOR_MATH_FUNCTIONS_H_
+#endif  // HYPERTEA_UTIL_TENSOR_GPU_MATH_FUNC_H_

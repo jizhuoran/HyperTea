@@ -291,18 +291,31 @@ src/hypertea/CMakeFiles/hypertea.dir/util/opencl_util.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/hypertea.dir/util/opencl_util.cpp.s"
 	cd /home/zrji/hypertea/build/src/hypertea && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/zrji/hypertea/src/hypertea/util/opencl_util.cpp -o CMakeFiles/hypertea.dir/util/opencl_util.cpp.s
 
-src/hypertea/CMakeFiles/hypertea.dir/util/tensor_math_functions.cpp.o: src/hypertea/CMakeFiles/hypertea.dir/flags.make
-src/hypertea/CMakeFiles/hypertea.dir/util/tensor_math_functions.cpp.o: ../src/hypertea/util/tensor_math_functions.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/zrji/hypertea/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building CXX object src/hypertea/CMakeFiles/hypertea.dir/util/tensor_math_functions.cpp.o"
-	cd /home/zrji/hypertea/build/src/hypertea && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/hypertea.dir/util/tensor_math_functions.cpp.o -c /home/zrji/hypertea/src/hypertea/util/tensor_math_functions.cpp
+src/hypertea/CMakeFiles/hypertea.dir/util/tensor_cpu_math_func.cpp.o: src/hypertea/CMakeFiles/hypertea.dir/flags.make
+src/hypertea/CMakeFiles/hypertea.dir/util/tensor_cpu_math_func.cpp.o: ../src/hypertea/util/tensor_cpu_math_func.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/zrji/hypertea/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building CXX object src/hypertea/CMakeFiles/hypertea.dir/util/tensor_cpu_math_func.cpp.o"
+	cd /home/zrji/hypertea/build/src/hypertea && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/hypertea.dir/util/tensor_cpu_math_func.cpp.o -c /home/zrji/hypertea/src/hypertea/util/tensor_cpu_math_func.cpp
 
-src/hypertea/CMakeFiles/hypertea.dir/util/tensor_math_functions.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/hypertea.dir/util/tensor_math_functions.cpp.i"
-	cd /home/zrji/hypertea/build/src/hypertea && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/zrji/hypertea/src/hypertea/util/tensor_math_functions.cpp > CMakeFiles/hypertea.dir/util/tensor_math_functions.cpp.i
+src/hypertea/CMakeFiles/hypertea.dir/util/tensor_cpu_math_func.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/hypertea.dir/util/tensor_cpu_math_func.cpp.i"
+	cd /home/zrji/hypertea/build/src/hypertea && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/zrji/hypertea/src/hypertea/util/tensor_cpu_math_func.cpp > CMakeFiles/hypertea.dir/util/tensor_cpu_math_func.cpp.i
 
-src/hypertea/CMakeFiles/hypertea.dir/util/tensor_math_functions.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/hypertea.dir/util/tensor_math_functions.cpp.s"
-	cd /home/zrji/hypertea/build/src/hypertea && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/zrji/hypertea/src/hypertea/util/tensor_math_functions.cpp -o CMakeFiles/hypertea.dir/util/tensor_math_functions.cpp.s
+src/hypertea/CMakeFiles/hypertea.dir/util/tensor_cpu_math_func.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/hypertea.dir/util/tensor_cpu_math_func.cpp.s"
+	cd /home/zrji/hypertea/build/src/hypertea && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/zrji/hypertea/src/hypertea/util/tensor_cpu_math_func.cpp -o CMakeFiles/hypertea.dir/util/tensor_cpu_math_func.cpp.s
+
+src/hypertea/CMakeFiles/hypertea.dir/util/tensor_gpu_math_func.cpp.o: src/hypertea/CMakeFiles/hypertea.dir/flags.make
+src/hypertea/CMakeFiles/hypertea.dir/util/tensor_gpu_math_func.cpp.o: ../src/hypertea/util/tensor_gpu_math_func.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/zrji/hypertea/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Building CXX object src/hypertea/CMakeFiles/hypertea.dir/util/tensor_gpu_math_func.cpp.o"
+	cd /home/zrji/hypertea/build/src/hypertea && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/hypertea.dir/util/tensor_gpu_math_func.cpp.o -c /home/zrji/hypertea/src/hypertea/util/tensor_gpu_math_func.cpp
+
+src/hypertea/CMakeFiles/hypertea.dir/util/tensor_gpu_math_func.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/hypertea.dir/util/tensor_gpu_math_func.cpp.i"
+	cd /home/zrji/hypertea/build/src/hypertea && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/zrji/hypertea/src/hypertea/util/tensor_gpu_math_func.cpp > CMakeFiles/hypertea.dir/util/tensor_gpu_math_func.cpp.i
+
+src/hypertea/CMakeFiles/hypertea.dir/util/tensor_gpu_math_func.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/hypertea.dir/util/tensor_gpu_math_func.cpp.s"
+	cd /home/zrji/hypertea/build/src/hypertea && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/zrji/hypertea/src/hypertea/util/tensor_gpu_math_func.cpp -o CMakeFiles/hypertea.dir/util/tensor_gpu_math_func.cpp.s
 
 # Object files for target hypertea
 hypertea_OBJECTS = \
@@ -324,7 +337,8 @@ hypertea_OBJECTS = \
 "CMakeFiles/hypertea.dir/util/math_functions.cpp.o" \
 "CMakeFiles/hypertea.dir/util/math_functions_cl.cpp.o" \
 "CMakeFiles/hypertea.dir/util/opencl_util.cpp.o" \
-"CMakeFiles/hypertea.dir/util/tensor_math_functions.cpp.o"
+"CMakeFiles/hypertea.dir/util/tensor_cpu_math_func.cpp.o" \
+"CMakeFiles/hypertea.dir/util/tensor_gpu_math_func.cpp.o"
 
 # External object files for target hypertea
 hypertea_EXTERNAL_OBJECTS =
@@ -347,10 +361,11 @@ lib/libhypertea.a: src/hypertea/CMakeFiles/hypertea.dir/util/im2col.cpp.o
 lib/libhypertea.a: src/hypertea/CMakeFiles/hypertea.dir/util/math_functions.cpp.o
 lib/libhypertea.a: src/hypertea/CMakeFiles/hypertea.dir/util/math_functions_cl.cpp.o
 lib/libhypertea.a: src/hypertea/CMakeFiles/hypertea.dir/util/opencl_util.cpp.o
-lib/libhypertea.a: src/hypertea/CMakeFiles/hypertea.dir/util/tensor_math_functions.cpp.o
+lib/libhypertea.a: src/hypertea/CMakeFiles/hypertea.dir/util/tensor_cpu_math_func.cpp.o
+lib/libhypertea.a: src/hypertea/CMakeFiles/hypertea.dir/util/tensor_gpu_math_func.cpp.o
 lib/libhypertea.a: src/hypertea/CMakeFiles/hypertea.dir/build.make
 lib/libhypertea.a: src/hypertea/CMakeFiles/hypertea.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/zrji/hypertea/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Linking CXX static library ../../lib/libhypertea.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/zrji/hypertea/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_21) "Linking CXX static library ../../lib/libhypertea.a"
 	cd /home/zrji/hypertea/build/src/hypertea && $(CMAKE_COMMAND) -P CMakeFiles/hypertea.dir/cmake_clean_target.cmake
 	cd /home/zrji/hypertea/build/src/hypertea && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/hypertea.dir/link.txt --verbose=$(VERBOSE)
 

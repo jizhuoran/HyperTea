@@ -1140,7 +1140,8 @@ std::string OpenCLHandler::opencl_math_code(bool is_half) {
     __global Dtype* __restrict mean_out,
     __global Dtype* __restrict var_out,
     const int spatial_dim,
-    const int input_size,
+    const int cspatial_dim,
+    const int nspatial_dim,
     Dtype alpha) {
 
 
@@ -1153,22 +1154,16 @@ std::string OpenCLHandler::opencl_math_code(bool is_half) {
     uint nidx  = 0;
     uint hwidx = 0;
     
-    Dtype4 read4;
-    for(unsigned int k = lid << 2; k < spatial_dim; k += BUFFER_SIZE * 4) {
-        nidx  = k / spatial_dim;
-        hwidx = k - (nidx * spatial_dim);
+    Dtype read;
+    for(unsigned int k = lid; k < nspatial_dim; k += BUFFER_SIZE) {
+      
+      nidx  = k / spatial_dim;
+      hwidx = k - (nidx * spatial_dim);
+      index = nidx * cspatial_dim + chwid + hwidx;
 
-        index = nidx * input_size + chwid + hwidx;
-        
-        read4 = *((const global Dtype4*)(in + index));
-        mean += (Dtype)read4.x;
-        mean += (Dtype)read4.y;
-        mean += (Dtype)read4.z;
-        mean += (Dtype)read4.w;
-        variance = mad((Dtype)read4.x, (Dtype)read4.x, variance);
-        variance = mad((Dtype)read4.y, (Dtype)read4.y, variance);
-        variance = mad((Dtype)read4.z, (Dtype)read4.z, variance);
-        variance = mad((Dtype)read4.w, (Dtype)read4.w, variance);
+      read = in[index];
+      mean += read;
+      variance = mad((Dtype)read, (Dtype)read, variance);
     }
      
 

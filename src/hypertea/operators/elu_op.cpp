@@ -28,12 +28,7 @@ TensorCPU<float> ELUOp_CPU<float>::Forward(TensorCPU<float> &input_tensor) {
 template <typename Dtype>
 TensorGPU<Dtype> ELUOp_GPU<Dtype>::Forward(TensorGPU<Dtype> input_tensor){
 
-  if(inplace_) {
-   input_tensor.elu(alpha_);
-   return input_tensor;
-  } {
-    return gpu_elu(input_tensor, alpha_);
-  }
+  return inplace_? TensorGPU<Dtype>(input_tensor.elu(alpha_)) : gpu_elu(input_tensor, alpha_);
 
 }
 #endif //USE_OPENCL
