@@ -206,10 +206,10 @@ int main(int argc, char** argv) {
   bn2_bias.copy_data(bn1_bias);
 
   
-  auto bn1 = hypertea::BatchNormOp_GPU<float> (
-    8388608, 1, 32, 1e-05, 1, false, NULL, NULL, 
-    bn1_weight, bn1_bias
-  );
+  // auto bn1 = hypertea::BatchNormOp_GPU<float> (
+  //   8388608, 1, 32, 1e-05, 1, false, NULL, NULL, 
+  //   bn1_weight, bn1_bias
+  // );
 
 
 

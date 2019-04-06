@@ -11,14 +11,15 @@ namespace hypertea {
 template <>
 TensorCPU<float> TanHOp_CPU<float>::Forward(TensorCPU<float> &input_tensor) {
   
-  const float* input_data = input_tensor.immutable_data();
-  float* output_data = inplace_? input_tensor.mutable_data() : new float[input_tensor.size()];
+  return inplace_? TensorCPU<float>(input_tensor.tanh()) : cpu_tanh(input_tensor);
+  // const float* input_data = input_tensor.immutable_data();
+  // float* output_data = inplace_? input_tensor.mutable_data() : new float[input_tensor.size()];
 
-  for (int i = 0; i < input_tensor.size(); ++i) {
-      output_data[i] = tanh(input_data[i]);
-  }
+  // for (int i = 0; i < input_tensor.size(); ++i) {
+  //     output_data[i] = tanh(input_data[i]);
+  // }
 
-  return inplace_? input_tensor:TensorCPU<float>(output_data, input_tensor.size());  
+  // return inplace_? input_tensor:TensorCPU<float>(output_data, input_tensor.size());  
 
 }
 

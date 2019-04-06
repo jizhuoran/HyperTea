@@ -39,27 +39,28 @@ TYPED_TEST_CASE(RNNTestCPU, TestDtypesCPU);
 TYPED_TEST_CASE(RNNTestGPU, TestDtypesGPU);
 
 
+
  
 TYPED_TEST(RNNTestCPU, test_uni_single_gru_CPU) {
   typedef typename TypeParam::Dtype Dtype;
   
   fake_random_number random_generator;
 
-  auto _w_ih0 = hypertea::TensorCPU<Dtype>(random_generator.generate_random_vector(3*32*64));
-  auto _w_hh0 = hypertea::TensorCPU<Dtype>(random_generator.generate_random_vector(3*32*32));
-  auto _b_ih0 = hypertea::TensorCPU<Dtype>(random_generator.generate_random_vector(3*32));
-  auto _b_hh0 = hypertea::TensorCPU<Dtype>(random_generator.generate_random_vector(3*32));
+  auto _w_ih0 = hypertea::TensorCPU<Dtype>(hypertea::TensorCPU<float>(random_generator.generate_random_vector(3*32*64)));
+  auto _w_hh0 = hypertea::TensorCPU<Dtype>(hypertea::TensorCPU<float>(random_generator.generate_random_vector(3*32*32)));
+  auto _b_ih0 = hypertea::TensorCPU<Dtype>(hypertea::TensorCPU<float>(random_generator.generate_random_vector(3*32)));
+  auto _b_hh0 = hypertea::TensorCPU<Dtype>(hypertea::TensorCPU<float>(random_generator.generate_random_vector(3*32)));
 
 
-  auto input_tensor = hypertea::TensorCPU<Dtype>(random_generator.generate_random_vector(5*64));
-  auto hidden_tensor = hypertea::TensorCPU<Dtype>(random_generator.generate_random_vector(1*32));
+  auto input_tensor = hypertea::TensorCPU<Dtype>(hypertea::TensorCPU<float>(random_generator.generate_random_vector(5*64)));
+  auto hidden_tensor = hypertea::TensorCPU<Dtype>(hypertea::TensorCPU<float>(random_generator.generate_random_vector(1*32)));
   auto output_tensor = hypertea::TensorCPU<Dtype>(32);
 
   hypertea::StackedRNN_CPU<Dtype> gru( std::vector<hypertea::RNNOp_CPU<Dtype>* >{
       new hypertea::UnidirectionalRNN_CPU<Dtype> (
         64, 32, 
-        _w_ih0.mutable_data(), _w_hh0.mutable_data(), 
-        _b_ih0.mutable_data(), _b_hh0.mutable_data(), 
+        _w_ih0, _w_hh0, 
+        _b_ih0, _b_hh0, 
         hypertea::RNN_CELL_TYPE::GRU_CELL
       )
     }
@@ -84,27 +85,27 @@ TYPED_TEST(RNNTestCPU, test_bi_single_gru_CPU) {
     
   fake_random_number random_generator;
 
-  auto _w_ih0 = random_generator.generate_random_vector(3*32*64);
-  auto _w_hh0 = random_generator.generate_random_vector(3*32*32);
-  auto _b_ih0 = random_generator.generate_random_vector(3*32);
-  auto _b_hh0 = random_generator.generate_random_vector(3*32);
+  auto _w_ih0 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(3*32*64));
+  auto _w_hh0 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(3*32*32));
+  auto _b_ih0 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(3*32));
+  auto _b_hh0 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(3*32));
 
-  auto r_w_ih0 = random_generator.generate_random_vector(3*32*64);
-  auto r_w_hh0 = random_generator.generate_random_vector(3*32*32);
-  auto r_b_ih0 = random_generator.generate_random_vector(3*32);
-  auto r_b_hh0 = random_generator.generate_random_vector(3*32);
+  auto r_w_ih0 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(3*32*64));
+  auto r_w_hh0 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(3*32*32));
+  auto r_b_ih0 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(3*32));
+  auto r_b_hh0 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(3*32));
 
-  auto input_tensor = hypertea::TensorCPU<float>(random_generator.generate_random_vector(5*64));
-  auto hidden_tensor = hypertea::TensorCPU<float>(random_generator.generate_random_vector(2*32));
+  auto input_tensor = hypertea::TensorCPU<float>(hypertea::TensorCPU<float>(random_generator.generate_random_vector(5*64)));
+  auto hidden_tensor = hypertea::TensorCPU<float>(hypertea::TensorCPU<float>(random_generator.generate_random_vector(2*32)));
   auto output_tensor = hypertea::TensorCPU<float>(32);
 
   hypertea::StackedRNN_CPU<float> gru( std::vector<hypertea::RNNOp_CPU<float>* >{
       new hypertea::BidirectionalRNN_CPU<float> (
         64, 32, 
-        _w_ih0.data(), r_w_ih0.data(), 
-        _w_hh0.data(), r_w_hh0.data(), 
-        _b_ih0.data(), r_b_ih0.data(), 
-        _b_hh0.data(), r_b_hh0.data(), 
+        _w_ih0, r_w_ih0, 
+        _w_hh0, r_w_hh0, 
+        _b_ih0, r_b_ih0, 
+        _b_hh0, r_b_hh0, 
         hypertea::RNN_CELL_TYPE::GRU_CELL
       )
     }
@@ -131,47 +132,47 @@ TYPED_TEST(RNNTestCPU, test_uni_multi3_gru_CPU) {
     
   fake_random_number random_generator;
 
-  auto _w_ih0 = random_generator.generate_random_vector(3*32*64);
-  auto _w_hh0 = random_generator.generate_random_vector(3*32*32);
-  auto _b_ih0 = random_generator.generate_random_vector(3*32);
-  auto _b_hh0 = random_generator.generate_random_vector(3*32);
+  auto _w_ih0 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(3*32*64));
+  auto _w_hh0 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(3*32*32));
+  auto _b_ih0 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(3*32));
+  auto _b_hh0 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(3*32));
 
-  auto _w_ih1 = random_generator.generate_random_vector(3*32*32);
-  auto _w_hh1 = random_generator.generate_random_vector(3*32*32);
-  auto _b_ih1 = random_generator.generate_random_vector(3*32);
-  auto _b_hh1 = random_generator.generate_random_vector(3*32);
-
-
-  auto _w_ih2 = random_generator.generate_random_vector(3*32*32);
-  auto _w_hh2 = random_generator.generate_random_vector(3*32*32);
-  auto _b_ih2 = random_generator.generate_random_vector(3*32);
-  auto _b_hh2 = random_generator.generate_random_vector(3*32);
+  auto _w_ih1 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(3*32*32));
+  auto _w_hh1 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(3*32*32));
+  auto _b_ih1 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(3*32));
+  auto _b_hh1 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(3*32));
 
 
-  auto input_tensor = hypertea::TensorCPU<float>(random_generator.generate_random_vector(5*64));
-  auto hidden_tensor0 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(1*32));
-  auto hidden_tensor1 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(1*32));
-  auto hidden_tensor2 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(1*32));
+  auto _w_ih2 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(3*32*32));
+  auto _w_hh2 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(3*32*32));
+  auto _b_ih2 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(3*32));
+  auto _b_hh2 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(3*32));
+
+
+  auto input_tensor = hypertea::TensorCPU<float>(hypertea::TensorCPU<float>(random_generator.generate_random_vector(5*64)));
+  auto hidden_tensor0 = hypertea::TensorCPU<float>(hypertea::TensorCPU<float>(random_generator.generate_random_vector(1*32)));
+  auto hidden_tensor1 = hypertea::TensorCPU<float>(hypertea::TensorCPU<float>(random_generator.generate_random_vector(1*32)));
+  auto hidden_tensor2 = hypertea::TensorCPU<float>(hypertea::TensorCPU<float>(random_generator.generate_random_vector(1*32)));
   auto output_tensor = hypertea::TensorCPU<float>(32);
 
   hypertea::StackedRNN_CPU<float> gru( std::vector<hypertea::RNNOp_CPU<float>* >{
     new hypertea::UnidirectionalRNN_CPU<float> (
       64, 32, 
-      _w_ih0.data(), _w_hh0.data(), 
-      _b_ih0.data(), _b_hh0.data(), 
+      _w_ih0, _w_hh0, 
+      _b_ih0, _b_hh0, 
       hypertea::RNN_CELL_TYPE::GRU_CELL
     ),
 
     new hypertea::UnidirectionalRNN_CPU<float> (
       32, 32, 
-      _w_ih1.data(), _w_hh1.data(), 
-      _b_ih1.data(), _b_hh1.data(), 
+      _w_ih1, _w_hh1, 
+      _b_ih1, _b_hh1, 
       hypertea::RNN_CELL_TYPE::GRU_CELL
     ),
     new hypertea::UnidirectionalRNN_CPU<float> (
       32, 32, 
-      _w_ih2.data(), _w_hh2.data(), 
-      _b_ih2.data(), _b_hh2.data(), 
+      _w_ih2, _w_hh2, 
+      _b_ih2, _b_hh2, 
       hypertea::RNN_CELL_TYPE::GRU_CELL
     )
     }
@@ -198,67 +199,67 @@ TYPED_TEST(RNNTestCPU, test_bi_multi3_gru_CPU) {
 
   fake_random_number random_generator;
 
-  auto _w_ih0 = random_generator.generate_random_vector(3*32*64);
-  auto _w_hh0 = random_generator.generate_random_vector(3*32*32);
-  auto _b_ih0 = random_generator.generate_random_vector(3*32);
-  auto _b_hh0 = random_generator.generate_random_vector(3*32);
-  auto r_w_ih0 = random_generator.generate_random_vector(3*32*64);
-  auto r_w_hh0 = random_generator.generate_random_vector(3*32*32);
-  auto r_b_ih0 = random_generator.generate_random_vector(3*32);
-  auto r_b_hh0 = random_generator.generate_random_vector(3*32);
+  auto _w_ih0 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(3*32*64));
+  auto _w_hh0 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(3*32*32));
+  auto _b_ih0 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(3*32));
+  auto _b_hh0 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(3*32));
+  auto r_w_ih0 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(3*32*64));
+  auto r_w_hh0 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(3*32*32));
+  auto r_b_ih0 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(3*32));
+  auto r_b_hh0 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(3*32));
 
 
 
-  auto _w_ih1 = random_generator.generate_random_vector(3*32*64);
-  auto _w_hh1 = random_generator.generate_random_vector(3*32*32);
-  auto _b_ih1 = random_generator.generate_random_vector(3*32);
-  auto _b_hh1 = random_generator.generate_random_vector(3*32);
-  auto r_w_ih1 = random_generator.generate_random_vector(3*32*64);
-  auto r_w_hh1 = random_generator.generate_random_vector(3*32*32);
-  auto r_b_ih1 = random_generator.generate_random_vector(3*32);
-  auto r_b_hh1 = random_generator.generate_random_vector(3*32);
+  auto _w_ih1 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(3*32*64));
+  auto _w_hh1 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(3*32*32));
+  auto _b_ih1 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(3*32));
+  auto _b_hh1 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(3*32));
+  auto r_w_ih1 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(3*32*64));
+  auto r_w_hh1 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(3*32*32));
+  auto r_b_ih1 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(3*32));
+  auto r_b_hh1 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(3*32));
 
 
-  auto _w_ih2 = random_generator.generate_random_vector(3*32*64);
-  auto _w_hh2 = random_generator.generate_random_vector(3*32*32);
-  auto _b_ih2 = random_generator.generate_random_vector(3*32);
-  auto _b_hh2 = random_generator.generate_random_vector(3*32);
-  auto r_w_ih2 = random_generator.generate_random_vector(3*32*64);
-  auto r_w_hh2 = random_generator.generate_random_vector(3*32*32);
-  auto r_b_ih2 = random_generator.generate_random_vector(3*32);
-  auto r_b_hh2 = random_generator.generate_random_vector(3*32);
+  auto _w_ih2 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(3*32*64));
+  auto _w_hh2 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(3*32*32));
+  auto _b_ih2 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(3*32));
+  auto _b_hh2 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(3*32));
+  auto r_w_ih2 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(3*32*64));
+  auto r_w_hh2 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(3*32*32));
+  auto r_b_ih2 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(3*32));
+  auto r_b_hh2 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(3*32));
 
 
-  auto input_tensor = hypertea::TensorCPU<float>(random_generator.generate_random_vector(5*64));
-  auto hidden_tensor0 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(2*32));
-  auto hidden_tensor1 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(2*32));
-  auto hidden_tensor2 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(2*32));
+  auto input_tensor = hypertea::TensorCPU<float>(hypertea::TensorCPU<float>(random_generator.generate_random_vector(5*64)));
+  auto hidden_tensor0 = hypertea::TensorCPU<float>(hypertea::TensorCPU<float>(random_generator.generate_random_vector(2*32)));
+  auto hidden_tensor1 = hypertea::TensorCPU<float>(hypertea::TensorCPU<float>(random_generator.generate_random_vector(2*32)));
+  auto hidden_tensor2 = hypertea::TensorCPU<float>(hypertea::TensorCPU<float>(random_generator.generate_random_vector(2*32)));
   auto output_tensor = hypertea::TensorCPU<float>(32);
 
   hypertea::StackedRNN_CPU<float> gru( std::vector<hypertea::RNNOp_CPU<float>* >{
 
       new hypertea::BidirectionalRNN_CPU<float> (
         64, 32, 
-        _w_ih0.data(), r_w_ih0.data(), 
-        _w_hh0.data(), r_w_hh0.data(), 
-        _b_ih0.data(), r_b_ih0.data(), 
-        _b_hh0.data(), r_b_hh0.data(), 
+        _w_ih0, r_w_ih0, 
+        _w_hh0, r_w_hh0, 
+        _b_ih0, r_b_ih0, 
+        _b_hh0, r_b_hh0, 
         hypertea::RNN_CELL_TYPE::GRU_CELL
       ),
       new hypertea::BidirectionalRNN_CPU<float> (
         64, 32, 
-        _w_ih1.data(), r_w_ih1.data(), 
-        _w_hh1.data(), r_w_hh1.data(), 
-        _b_ih1.data(), r_b_ih1.data(), 
-        _b_hh1.data(), r_b_hh1.data(), 
+        _w_ih1, r_w_ih1, 
+        _w_hh1, r_w_hh1, 
+        _b_ih1, r_b_ih1, 
+        _b_hh1, r_b_hh1, 
         hypertea::RNN_CELL_TYPE::GRU_CELL
       ),      
       new hypertea::BidirectionalRNN_CPU<float> (
         64, 32, 
-        _w_ih2.data(), r_w_ih2.data(), 
-        _w_hh2.data(), r_w_hh2.data(), 
-        _b_ih2.data(), r_b_ih2.data(), 
-        _b_hh2.data(), r_b_hh2.data(), 
+        _w_ih2, r_w_ih2, 
+        _w_hh2, r_w_hh2, 
+        _b_ih2, r_b_ih2, 
+        _b_hh2, r_b_hh2, 
         hypertea::RNN_CELL_TYPE::GRU_CELL
       )
     }
@@ -287,21 +288,21 @@ TYPED_TEST(RNNTestCPU, test_uni_single_lstm_CPU) {
   
   fake_random_number random_generator;
 
-  auto _w_ih0 = random_generator.generate_random_vector(4*32*64);
-  auto _w_hh0 = random_generator.generate_random_vector(4*32*32);
-  auto _b_ih0 = random_generator.generate_random_vector(4*32);
-  auto _b_hh0 = random_generator.generate_random_vector(4*32);
+  auto _w_ih0 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(4*32*64));
+  auto _w_hh0 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(4*32*32));
+  auto _b_ih0 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(4*32));
+  auto _b_hh0 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(4*32));
 
 
-  auto input_tensor = hypertea::TensorCPU<float>(random_generator.generate_random_vector(5*64));
-  auto hidden_tensor = hypertea::TensorCPU<float>(random_generator.generate_random_vector(2*32));
+  auto input_tensor = hypertea::TensorCPU<float>(hypertea::TensorCPU<float>(random_generator.generate_random_vector(5*64)));
+  auto hidden_tensor = hypertea::TensorCPU<float>(hypertea::TensorCPU<float>(random_generator.generate_random_vector(2*32)));
   auto output_tensor = hypertea::TensorCPU<float>(32);
 
   hypertea::StackedRNN_CPU<float> lstm( std::vector<hypertea::RNNOp_CPU<float>* >{
       new hypertea::UnidirectionalRNN_CPU<float> (
         64, 32, 
-        _w_ih0.data(), _w_hh0.data(), 
-        _b_ih0.data(), _b_hh0.data(), 
+        _w_ih0, _w_hh0, 
+        _b_ih0, _b_hh0, 
         hypertea::RNN_CELL_TYPE::LSTM_CELL
       )
     }
@@ -327,27 +328,27 @@ TYPED_TEST(RNNTestCPU, test_bi_single_lstm_CPU) {
 
   fake_random_number random_generator;
 
-  auto _w_ih0 = random_generator.generate_random_vector(4*32*64);
-  auto _w_hh0 = random_generator.generate_random_vector(4*32*32);
-  auto _b_ih0 = random_generator.generate_random_vector(4*32);
-  auto _b_hh0 = random_generator.generate_random_vector(4*32);
+  auto _w_ih0 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(4*32*64));
+  auto _w_hh0 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(4*32*32));
+  auto _b_ih0 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(4*32));
+  auto _b_hh0 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(4*32));
 
-  auto r_w_ih0 = random_generator.generate_random_vector(4*32*64);
-  auto r_w_hh0 = random_generator.generate_random_vector(4*32*32);
-  auto r_b_ih0 = random_generator.generate_random_vector(4*32);
-  auto r_b_hh0 = random_generator.generate_random_vector(4*32);
+  auto r_w_ih0 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(4*32*64));
+  auto r_w_hh0 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(4*32*32));
+  auto r_b_ih0 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(4*32));
+  auto r_b_hh0 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(4*32));
 
-  auto input_tensor = hypertea::TensorCPU<float>(random_generator.generate_random_vector(5*64));
-  auto hidden_tensor = hypertea::TensorCPU<float>(random_generator.generate_random_vector(4*32));
+  auto input_tensor = hypertea::TensorCPU<float>(hypertea::TensorCPU<float>(random_generator.generate_random_vector(5*64)));
+  auto hidden_tensor = hypertea::TensorCPU<float>(hypertea::TensorCPU<float>(random_generator.generate_random_vector(4*32)));
   auto output_tensor = hypertea::TensorCPU<float>(32);
 
   hypertea::StackedRNN_CPU<float> lstm( std::vector<hypertea::RNNOp_CPU<float>* >{
       new hypertea::BidirectionalRNN_CPU<float> (
         64, 32, 
-        _w_ih0.data(), r_w_ih0.data(), 
-        _w_hh0.data(), r_w_hh0.data(), 
-        _b_ih0.data(), r_b_ih0.data(), 
-        _b_hh0.data(), r_b_hh0.data(), 
+        _w_ih0, r_w_ih0, 
+        _w_hh0, r_w_hh0, 
+        _b_ih0, r_b_ih0, 
+        _b_hh0, r_b_hh0, 
         hypertea::RNN_CELL_TYPE::LSTM_CELL
       )
     }
@@ -375,47 +376,47 @@ TYPED_TEST(RNNTestCPU, test_uni_multi3_lstm_CPU) {
 
   fake_random_number random_generator;
 
-  auto _w_ih0 = random_generator.generate_random_vector(4*32*64);
-  auto _w_hh0 = random_generator.generate_random_vector(4*32*32);
-  auto _b_ih0 = random_generator.generate_random_vector(4*32);
-  auto _b_hh0 = random_generator.generate_random_vector(4*32);
+  auto _w_ih0 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(4*32*64));
+  auto _w_hh0 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(4*32*32));
+  auto _b_ih0 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(4*32));
+  auto _b_hh0 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(4*32));
 
-  auto _w_ih1 = random_generator.generate_random_vector(4*32*32);
-  auto _w_hh1 = random_generator.generate_random_vector(4*32*32);
-  auto _b_ih1 = random_generator.generate_random_vector(4*32);
-  auto _b_hh1 = random_generator.generate_random_vector(4*32);
-
-
-  auto _w_ih2 = random_generator.generate_random_vector(4*32*32);
-  auto _w_hh2 = random_generator.generate_random_vector(4*32*32);
-  auto _b_ih2 = random_generator.generate_random_vector(4*32);
-  auto _b_hh2 = random_generator.generate_random_vector(4*32);
+  auto _w_ih1 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(4*32*32));
+  auto _w_hh1 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(4*32*32));
+  auto _b_ih1 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(4*32));
+  auto _b_hh1 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(4*32));
 
 
-  auto input_tensor = hypertea::TensorCPU<float>(random_generator.generate_random_vector(5*64));
-  auto hidden_tensor0 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(2*32));
-  auto hidden_tensor1 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(2*32));
-  auto hidden_tensor2 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(2*32));
+  auto _w_ih2 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(4*32*32));
+  auto _w_hh2 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(4*32*32));
+  auto _b_ih2 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(4*32));
+  auto _b_hh2 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(4*32));
+
+
+  auto input_tensor = hypertea::TensorCPU<float>(hypertea::TensorCPU<float>(random_generator.generate_random_vector(5*64)));
+  auto hidden_tensor0 = hypertea::TensorCPU<float>(hypertea::TensorCPU<float>(random_generator.generate_random_vector(2*32)));
+  auto hidden_tensor1 = hypertea::TensorCPU<float>(hypertea::TensorCPU<float>(random_generator.generate_random_vector(2*32)));
+  auto hidden_tensor2 = hypertea::TensorCPU<float>(hypertea::TensorCPU<float>(random_generator.generate_random_vector(2*32)));
   auto output_tensor = hypertea::TensorCPU<float>(32);
 
   hypertea::StackedRNN_CPU<float> lstm( std::vector<hypertea::RNNOp_CPU<float>* >{
       new hypertea::UnidirectionalRNN_CPU<float> (
         64, 32, 
-        _w_ih0.data(), _w_hh0.data(), 
-        _b_ih0.data(), _b_hh0.data(), 
+        _w_ih0, _w_hh0, 
+        _b_ih0, _b_hh0, 
         hypertea::RNN_CELL_TYPE::LSTM_CELL
       ),
 
       new hypertea::UnidirectionalRNN_CPU<float> (
         32, 32, 
-        _w_ih1.data(), _w_hh1.data(), 
-        _b_ih1.data(), _b_hh1.data(), 
+        _w_ih1, _w_hh1, 
+        _b_ih1, _b_hh1, 
         hypertea::RNN_CELL_TYPE::LSTM_CELL
       ),
       new hypertea::UnidirectionalRNN_CPU<float> (
         32, 32, 
-        _w_ih2.data(), _w_hh2.data(), 
-        _b_ih2.data(), _b_hh2.data(), 
+        _w_ih2, _w_hh2, 
+        _b_ih2, _b_hh2, 
         hypertea::RNN_CELL_TYPE::LSTM_CELL
       )
     }
@@ -443,66 +444,66 @@ TYPED_TEST(RNNTestCPU, test_bi_multi3_lstm_CPU) {
 
   fake_random_number random_generator;
 
-  auto _w_ih0 = random_generator.generate_random_vector(4*32*64);
-  auto _w_hh0 = random_generator.generate_random_vector(4*32*32);
-  auto _b_ih0 = random_generator.generate_random_vector(4*32);
-  auto _b_hh0 = random_generator.generate_random_vector(4*32);
-  auto r_w_ih0 = random_generator.generate_random_vector(4*32*64);
-  auto r_w_hh0 = random_generator.generate_random_vector(4*32*32);
-  auto r_b_ih0 = random_generator.generate_random_vector(4*32);
-  auto r_b_hh0 = random_generator.generate_random_vector(4*32);
+  auto _w_ih0 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(4*32*64));
+  auto _w_hh0 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(4*32*32));
+  auto _b_ih0 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(4*32));
+  auto _b_hh0 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(4*32));
+  auto r_w_ih0 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(4*32*64));
+  auto r_w_hh0 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(4*32*32));
+  auto r_b_ih0 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(4*32));
+  auto r_b_hh0 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(4*32));
 
 
 
-  auto _w_ih1 = random_generator.generate_random_vector(4*32*64);
-  auto _w_hh1 = random_generator.generate_random_vector(4*32*32);
-  auto _b_ih1 = random_generator.generate_random_vector(4*32);
-  auto _b_hh1 = random_generator.generate_random_vector(4*32);
-  auto r_w_ih1 = random_generator.generate_random_vector(4*32*64);
-  auto r_w_hh1 = random_generator.generate_random_vector(4*32*32);
-  auto r_b_ih1 = random_generator.generate_random_vector(4*32);
-  auto r_b_hh1 = random_generator.generate_random_vector(4*32);
+  auto _w_ih1 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(4*32*64));
+  auto _w_hh1 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(4*32*32));
+  auto _b_ih1 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(4*32));
+  auto _b_hh1 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(4*32));
+  auto r_w_ih1 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(4*32*64));
+  auto r_w_hh1 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(4*32*32));
+  auto r_b_ih1 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(4*32));
+  auto r_b_hh1 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(4*32));
 
 
-  auto _w_ih2 = random_generator.generate_random_vector(4*32*64);
-  auto _w_hh2 = random_generator.generate_random_vector(4*32*32);
-  auto _b_ih2 = random_generator.generate_random_vector(4*32);
-  auto _b_hh2 = random_generator.generate_random_vector(4*32);
-  auto r_w_ih2 = random_generator.generate_random_vector(4*32*64);
-  auto r_w_hh2 = random_generator.generate_random_vector(4*32*32);
-  auto r_b_ih2 = random_generator.generate_random_vector(4*32);
-  auto r_b_hh2 = random_generator.generate_random_vector(4*32);
+  auto _w_ih2 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(4*32*64));
+  auto _w_hh2 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(4*32*32));
+  auto _b_ih2 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(4*32));
+  auto _b_hh2 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(4*32));
+  auto r_w_ih2 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(4*32*64));
+  auto r_w_hh2 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(4*32*32));
+  auto r_b_ih2 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(4*32));
+  auto r_b_hh2 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(4*32));
 
 
-  auto input_tensor = hypertea::TensorCPU<float>(random_generator.generate_random_vector(5*64));
-  auto hidden_tensor0 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(4*32));
-  auto hidden_tensor1 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(4*32));
-  auto hidden_tensor2 = hypertea::TensorCPU<float>(random_generator.generate_random_vector(4*32));
+  auto input_tensor = hypertea::TensorCPU<float>(hypertea::TensorCPU<float>(random_generator.generate_random_vector(5*64)));
+  auto hidden_tensor0 = hypertea::TensorCPU<float>(hypertea::TensorCPU<float>(random_generator.generate_random_vector(4*32)));
+  auto hidden_tensor1 = hypertea::TensorCPU<float>(hypertea::TensorCPU<float>(random_generator.generate_random_vector(4*32)));
+  auto hidden_tensor2 = hypertea::TensorCPU<float>(hypertea::TensorCPU<float>(random_generator.generate_random_vector(4*32)));
   auto output_tensor = hypertea::TensorCPU<float>(32);
 
   hypertea::StackedRNN_CPU<float> lstm( std::vector<hypertea::RNNOp_CPU<float>* >{
       new hypertea::BidirectionalRNN_CPU<float> (
         64, 32, 
-        _w_ih0.data(), r_w_ih0.data(), 
-        _w_hh0.data(), r_w_hh0.data(), 
-        _b_ih0.data(), r_b_ih0.data(), 
-        _b_hh0.data(), r_b_hh0.data(), 
+        _w_ih0, r_w_ih0, 
+        _w_hh0, r_w_hh0, 
+        _b_ih0, r_b_ih0, 
+        _b_hh0, r_b_hh0, 
         hypertea::RNN_CELL_TYPE::LSTM_CELL
       ),
       new hypertea::BidirectionalRNN_CPU<float> (
         64, 32, 
-        _w_ih1.data(), r_w_ih1.data(), 
-        _w_hh1.data(), r_w_hh1.data(), 
-        _b_ih1.data(), r_b_ih1.data(), 
-        _b_hh1.data(), r_b_hh1.data(), 
+        _w_ih1, r_w_ih1, 
+        _w_hh1, r_w_hh1, 
+        _b_ih1, r_b_ih1, 
+        _b_hh1, r_b_hh1, 
         hypertea::RNN_CELL_TYPE::LSTM_CELL
       ),      
       new hypertea::BidirectionalRNN_CPU<float> (
         64, 32, 
-        _w_ih2.data(), r_w_ih2.data(), 
-        _w_hh2.data(), r_w_hh2.data(), 
-        _b_ih2.data(), r_b_ih2.data(), 
-        _b_hh2.data(), r_b_hh2.data(), 
+        _w_ih2, r_w_ih2, 
+        _w_hh2, r_w_hh2, 
+        _b_ih2, r_b_ih2, 
+        _b_hh2, r_b_hh2, 
         hypertea::RNN_CELL_TYPE::LSTM_CELL
       )
     }
@@ -520,6 +521,7 @@ TYPED_TEST(RNNTestCPU, test_bi_multi3_lstm_CPU) {
   }
 
 }
+
 
 
 

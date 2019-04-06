@@ -99,11 +99,11 @@ int main(int argc, char** argv) {
 
 
 
-  std::cin >> ia;
-  std::cout << a.debug_cpu_data()[ia];
+  // std::cin >> ia;
+  // std::cout << a.debug_cpu_data()[ia];
 
-  std::cin >> ib;
-  std::cout << b.debug_cpu_data()[ib];
+  // std::cin >> ib;
+  // std::cout << b.debug_cpu_data()[ib];
 
   // auto a1 = a.sub_view(79, 1024*1024*32);
   // auto b1 = b.sub_view(101, 1024*1024*32);

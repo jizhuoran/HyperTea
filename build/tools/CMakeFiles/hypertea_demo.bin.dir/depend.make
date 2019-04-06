@@ -24,6 +24,7 @@ tools/CMakeFiles/hypertea_demo.bin.dir/hypertea_demo.cpp.o: ../include/hypertea/
 tools/CMakeFiles/hypertea_demo.bin.dir/hypertea_demo.cpp.o: ../include/hypertea/util/math_functions.hpp
 tools/CMakeFiles/hypertea_demo.bin.dir/hypertea_demo.cpp.o: ../include/hypertea/util/mkl_alternate.hpp
 tools/CMakeFiles/hypertea_demo.bin.dir/hypertea_demo.cpp.o: ../include/hypertea/util/opencl_util.hpp
+tools/CMakeFiles/hypertea_demo.bin.dir/hypertea_demo.cpp.o: ../include/hypertea/util/tensor_cpu_math_func.hpp
 tools/CMakeFiles/hypertea_demo.bin.dir/hypertea_demo.cpp.o: ../include/hypertea/util/tensor_gpu_math_func.hpp
 tools/CMakeFiles/hypertea_demo.bin.dir/hypertea_demo.cpp.o: ../tools/bn_opencl.hpp
 tools/CMakeFiles/hypertea_demo.bin.dir/hypertea_demo.cpp.o: ../tools/conv_opencl.hpp

@@ -10,19 +10,6 @@
 
 namespace hypertea {
 
-template<typename Dtype> class Tensor;
-template<typename Dtype> class TensorCPU;
-template<typename Dtype> class TensorGPU;
-// template<typename Dtype> TensorCPU<Dtype> operator+ (const TensorCPU<Dtype>& lhs, const TensorCPU<Dtype>& rhs);
-// template<typename Dtype> TensorCPU<Dtype> operator+ (const TensorCPU<Dtype>& lhs, const float rhs);
-// template<typename Dtype> TensorCPU<Dtype> operator- (const TensorCPU<Dtype>& lhs, const TensorCPU<Dtype>& rhs);
-// template<typename Dtype> TensorCPU<Dtype> operator- (const TensorCPU<Dtype>& lhs, const float rhs);
-// template<typename Dtype> TensorCPU<Dtype> operator* (const TensorCPU<Dtype>& lhs, const TensorCPU<Dtype>& rhs);
-// template<typename Dtype> TensorCPU<Dtype> operator* (const TensorCPU<Dtype>& lhs, const float rhs);
-
-
-
-
 
 template <typename Dtype>
 class Tensor
@@ -106,42 +93,26 @@ class TensorCPU : public Tensor<Dtype>
 {
 public:
 
-	TensorCPU(int count) {
+	explicit TensorCPU(int count) {
 		data_.reset(new Dtype[count], std::default_delete<Dtype[]>() );
 		this->count_ = count;
 	}
 
-	TensorCPU(int count, Dtype value);
-
-	TensorCPU(std::vector<Dtype> data) {
-		data_.reset(new Dtype[data.size()], std::default_delete<Dtype[]>() );
-		memcpy(data_.get(), data.data(), data.size() * sizeof(Dtype));
-		this->count_ = data.size();
-	}
-	
-	TensorCPU(std::vector<int> shape) {
-		this->count_ = std::accumulate(shape.begin(), shape.end(), 1, std::multiplies<int>());
-		data_.reset(new Dtype[this->count_], std::default_delete<Dtype[]>() );
-	}
+	explicit TensorCPU(int count, Dtype value);
+	explicit TensorCPU(std::vector<Dtype> data);
+	explicit TensorCPU(Dtype* data_ptr, int count, bool shared = false);
 
 
-	
-
-	TensorCPU(Dtype* data_ptr, int count) {
-		data_.reset(data_ptr, std::default_delete<Dtype[]>() );
-		this->count_ = count;
-
-	}
-	TensorCPU(std::shared_ptr<Dtype> data_ptr, int count) {
-		data_ = data_ptr;
-		this->count_ = count;
-	}
 
 	TensorCPU& copy_data(const TensorCPU & other);
 	TensorCPU duplicate() const;
 
 
-	~TensorCPU() {}
+	virtual ~TensorCPU() {}
+
+
+	TensorCPU<Dtype> sub_view(unsigned int offset, unsigned int size);
+	std::vector<TensorCPU<Dtype> > chunked_tensors(int chunck_num);
 
 
 	Dtype* mutable_data() const {return data_.get();}
@@ -154,7 +125,7 @@ public:
 	}
 
 
-	TensorCPU add(TensorCPU & other, Dtype alpha=1);
+	// TensorCPU add(TensorCPU & other, Dtype alpha=1);
 
 	TensorCPU& operator+=(const TensorCPU & other) {return inplace_cpu_add(other, *this); }
 	TensorCPU& operator+=(const float other) {return inplace_cpu_add_scalar(*this, other); }
@@ -166,24 +137,25 @@ public:
 	TensorCPU& operator/=(const float other) {return inplace_cpu_div_scalar(*this, other); }
 
 
-	// TensorCPU& sigmoid() {return inplace_cpu_sigmoid(*this); }
-	// TensorCPU& tanh() {return inplace_cpu_tanh(*this); }
+	TensorCPU& sigmoid() {return inplace_cpu_sigmoid(*this); }
+	TensorCPU& tanh() {return inplace_cpu_tanh(*this); }
 	TensorCPU& abs() {return inplace_cpu_abs(*this); }
-	// TensorCPU& exp() {return inplace_cpu_exp(*this); }
+	TensorCPU& exp() {return inplace_cpu_exp(*this); }
 	TensorCPU& log() {return inplace_cpu_log(*this); }
-	// TensorCPU& sqr() {return inplace_cpu_sqr(*this); }
-	// TensorCPU& sqrt() {return inplace_cpu_sqrt(*this); }
+	TensorCPU& sqr() {return inplace_cpu_sqr(*this); }
+	TensorCPU& sqrt() {return inplace_cpu_sqrt(*this); }
 
-	// TensorCPU& set(const Dtype e) {return inplace_cpu_set(*this, e); }
-	// TensorCPU& powx(const float e) {return inplace_cpu_powx(*this, e); }
-	// TensorCPU& elu(const float e) {return inplace_cpu_elu(*this, e); }
-	// TensorCPU& relu(const float e) {return inplace_cpu_relu(*this, e); }
+	TensorCPU& set(const Dtype e) {return inplace_cpu_set(*this, e); }
+	TensorCPU& powx(const float e) {return inplace_cpu_powx(*this, e); }
+	TensorCPU& elu(const float e) {return inplace_cpu_elu(*this, e); }
+	TensorCPU& relu(const float e) {return inplace_cpu_relu(*this, e); }
 
 
 private:
-	std::shared_ptr<Dtype> data_;
 
 	TensorCPU();
+	std::shared_ptr<Dtype> data_;
+
 
 };
 

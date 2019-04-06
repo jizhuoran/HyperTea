@@ -7,14 +7,7 @@
 
 namespace hypertea {
 
-/**
- * @brief TanH hyperbolic tangent non-linearity @f$
- *         y = \frac{\exp(2x) - 1}{\exp(2x) + 1}
- *     @f$, popular in auto-encoders.
- *
- * Note that the gradient vanishes as the values move away from 0.
- * The ReLULayer is often a better choice for this reason.
- */
+
 template <typename Dtype>
 class TanHOp_CPU : public CPUFunctor<Dtype> {
  public:
