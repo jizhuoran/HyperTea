@@ -204,7 +204,7 @@ TYPED_TEST(BNTestGPU, test_bn_1_t_t_f_GPU) {
   }
 }
 
-    
+     
 
 
 TYPED_TEST(BNTestCPU, test_bn_1_t_t_t_CPU) {

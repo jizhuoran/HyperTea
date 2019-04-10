@@ -391,6 +391,32 @@ inline TensorGPU<Dtype> gpu_relu(const TensorGPU<Dtype>& x, const float a = .0) 
 
 
 template <typename Dtype>
+inline TensorGPU<Dtype>& inplace_inv(TensorGPU<Dtype>& x, const float eps = 1e-5) {
+	return unary_scalar_math_gpu_inplace(x, eps, "InvForward");
+}
+
+
+template <typename Dtype>
+inline TensorGPU<Dtype> outplace_tanh(const TensorGPU<Dtype>& x) {
+  return unary_math_gpu(x, "TanHForward");
+}
+
+template <typename Dtype>
+inline TensorGPU<Dtype> outplace_elu(const TensorGPU<Dtype>& x, const float a = 1.) {
+	return unary_scalar_math_gpu(x, a, "ELUForward");
+}
+
+template <typename Dtype>
+inline TensorGPU<Dtype> outplace_relu(const TensorGPU<Dtype>& x, const float a = .0) {
+	return unary_scalar_math_gpu(x, a, "ReLUForward");
+}
+
+
+template <typename Dtype>
+void mean_var(const TensorGPU<Dtype>& x, TensorGPU<Dtype>& mean, TensorGPU<Dtype>& var, int channels, int spatial_dim);
+
+
+template <typename Dtype>
 TensorGPU<Dtype>& inplace_channeled_scal(
 	TensorGPU<Dtype>& x, 
 	const TensorGPU<Dtype>& weight,

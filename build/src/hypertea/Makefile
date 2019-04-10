@@ -225,6 +225,33 @@ operators/MIOpen_batch_norm_op.cpp.s:
 	cd /home/zrji/hypertea/build && $(MAKE) -f src/hypertea/CMakeFiles/hypertea.dir/build.make src/hypertea/CMakeFiles/hypertea.dir/operators/MIOpen_batch_norm_op.cpp.s
 .PHONY : operators/MIOpen_batch_norm_op.cpp.s
 
+operators/activation.o: operators/activation.cpp.o
+
+.PHONY : operators/activation.o
+
+# target to build an object file
+operators/activation.cpp.o:
+	cd /home/zrji/hypertea/build && $(MAKE) -f src/hypertea/CMakeFiles/hypertea.dir/build.make src/hypertea/CMakeFiles/hypertea.dir/operators/activation.cpp.o
+.PHONY : operators/activation.cpp.o
+
+operators/activation.i: operators/activation.cpp.i
+
+.PHONY : operators/activation.i
+
+# target to preprocess a source file
+operators/activation.cpp.i:
+	cd /home/zrji/hypertea/build && $(MAKE) -f src/hypertea/CMakeFiles/hypertea.dir/build.make src/hypertea/CMakeFiles/hypertea.dir/operators/activation.cpp.i
+.PHONY : operators/activation.cpp.i
+
+operators/activation.s: operators/activation.cpp.s
+
+.PHONY : operators/activation.s
+
+# target to generate assembly for a file
+operators/activation.cpp.s:
+	cd /home/zrji/hypertea/build && $(MAKE) -f src/hypertea/CMakeFiles/hypertea.dir/build.make src/hypertea/CMakeFiles/hypertea.dir/operators/activation.cpp.s
+.PHONY : operators/activation.cpp.s
+
 operators/base_conv_op.o: operators/base_conv_op.cpp.o
 
 .PHONY : operators/base_conv_op.o
@@ -730,6 +757,9 @@ help:
 	@echo "... operators/MIOpen_batch_norm_op.o"
 	@echo "... operators/MIOpen_batch_norm_op.i"
 	@echo "... operators/MIOpen_batch_norm_op.s"
+	@echo "... operators/activation.o"
+	@echo "... operators/activation.i"
+	@echo "... operators/activation.s"
 	@echo "... operators/base_conv_op.o"
 	@echo "... operators/base_conv_op.i"
 	@echo "... operators/base_conv_op.s"

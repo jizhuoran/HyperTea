@@ -8,17 +8,17 @@ namespace hypertea {
 
 
 template <>
-TensorCPU<float> ReLUOp_CPU<float>::Forward(TensorCPU<float> &input_tensor) {
+TensorCPU<float> ReLUOp_CPU<float>::operator()(TensorCPU<float> &input) {
   
-  const float* input_data = input_tensor.immutable_data();
-  float* output_data = inplace_? input_tensor.mutable_data() : new float[input_tensor.size()];
+  const float* input_data = input.immutable_data();
+  float* output_data = inplace_? input.mutable_data() : new float[input.size()];
 
-  for (int i = 0; i < input_tensor.size(); ++i) {
+  for (int i = 0; i < input.size(); ++i) {
     output_data[i] = std::max(input_data[i], float(0))
         + negative_slope_ * std::min(input_data[i], float(0));
   }
 
-  return inplace_? input_tensor:TensorCPU<float>(output_data, input_tensor.size());  
+  return inplace_? input:TensorCPU<float>(output_data, input.size());  
 
 }
 
@@ -35,7 +35,7 @@ TensorGPU<Dtype> ReLUOp_GPU<Dtype>::Forward(TensorGPU<Dtype> input_tensor){
 
 #endif //USE_OPENCL
 
-INSTANTIATE_CLASS_CPU(ReLUOp_CPU);
+// INSTANTIATE_CLASS_CPU(ReLUOp_CPU);
 INSTANTIATE_CLASS_GPU(ReLUOp_GPU);
 
 }  // namespace hypertea

@@ -51,7 +51,7 @@ template TensorCPU<float>& TensorCPU<float>::copy_data(const TensorCPU<float> & 
 template <typename Dtype>
 TensorCPU<Dtype> TensorCPU<Dtype>::duplicate() const{
   TensorCPU temp = TensorCPU(this->count_);
-  temp.copy_data(*this);
+  hypertea_copy<Dtype>(this->count(), this->immutable_data(), temp.mutable_data());
   return temp;
 }
 template TensorCPU<float> TensorCPU<float>::duplicate() const;

@@ -517,6 +517,15 @@ std::string OpenCLHandler::opencl_math_code(bool is_half) {
 	}
 
 
+  __kernel void InvForward(__global Dtype *in,
+  __global Dtype *out,
+  Dtype eps,
+  int N) {
+  OPENCL_KERNEL_LOOP(index, N) {
+  out[index] = 1 / (in[index] + eps);
+  }
+  }
+
 
 	__kernel void ELUForward(__global Dtype *in,
 	__global Dtype *out,

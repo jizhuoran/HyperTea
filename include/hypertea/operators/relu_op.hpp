@@ -7,37 +7,27 @@
 
 namespace hypertea {
 
-/**
- * @brief Rectified Linear Unit non-linearity @f$ y = \max(0, x) @f$.
- *        The simple max is fast to compute, and the function does not saturate.
- */
+
+
 template <typename Dtype>
-class ReLUOp_CPU : public CPUFunctor<Dtype> {
+class ReLUOp_CPU {
  public:
-  /**
-   * @param param provides ReLUParameter relu_param,
-   *     with ReLULayer options:
-   *   - negative_slope (\b optional, default 0).
-   *     the value @f$ \nu @f$ by which negative values are multiplied.
-   */
+
   explicit ReLUOp_CPU(float negative_slope, bool inplace = false)
-      : CPUFunctor<Dtype>(), negative_slope_(negative_slope), inplace_(inplace) {}
+      : negative_slope_(negative_slope), inplace_(inplace) {}
 
-  virtual inline const char* type() const { return "ReLU"; }
+  inline const char* type() const { return "ReLU"; }
 
-  // virtual void Forward(const std::vector<Dtype*> bottom_datas,
-  //     const std::vector<Dtype*> top_datas);
+  TensorCPU<Dtype> operator()(TensorCPU<Dtype> &input);
 
-  // virtual std::vector<Tensor<Dtype> *> Forward(const std::vector<Tensor<Dtype> *> inputs);
-  virtual TensorCPU<Dtype> Forward(TensorCPU<Dtype> &input_tensor);
-  
 
   private:
-    // int data_count_;
+
     float negative_slope_;
     bool inplace_;
 
 };
+
 
 #ifdef USE_OPENCL
 

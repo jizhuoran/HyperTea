@@ -44,6 +44,28 @@ src/hypertea/CMakeFiles/hypertea.dir/operators/MIOpen_batch_norm_op.cpp.o: /usr/
 src/hypertea/CMakeFiles/hypertea.dir/operators/MIOpen_batch_norm_op.cpp.o: /usr/local/cuda/include/CL/opencl.h
 src/hypertea/CMakeFiles/hypertea.dir/operators/MIOpen_batch_norm_op.cpp.o: /usr/local/include/clblast.h
 
+src/hypertea/CMakeFiles/hypertea.dir/operators/activation.cpp.o: ../include/hypertea/common.hpp
+src/hypertea/CMakeFiles/hypertea.dir/operators/activation.cpp.o: ../include/hypertea/glog_wrapper.hpp
+src/hypertea/CMakeFiles/hypertea.dir/operators/activation.cpp.o: ../include/hypertea/operator.hpp
+src/hypertea/CMakeFiles/hypertea.dir/operators/activation.cpp.o: ../include/hypertea/operators/activation.hpp
+src/hypertea/CMakeFiles/hypertea.dir/operators/activation.cpp.o: ../include/hypertea/tensor.hpp
+src/hypertea/CMakeFiles/hypertea.dir/operators/activation.cpp.o: ../include/hypertea/util/benchmark.hpp
+src/hypertea/CMakeFiles/hypertea.dir/operators/activation.cpp.o: ../include/hypertea/util/device_alternate.hpp
+src/hypertea/CMakeFiles/hypertea.dir/operators/activation.cpp.o: ../include/hypertea/util/half.hpp
+src/hypertea/CMakeFiles/hypertea.dir/operators/activation.cpp.o: ../include/hypertea/util/math_functions.hpp
+src/hypertea/CMakeFiles/hypertea.dir/operators/activation.cpp.o: ../include/hypertea/util/mkl_alternate.hpp
+src/hypertea/CMakeFiles/hypertea.dir/operators/activation.cpp.o: ../include/hypertea/util/opencl_util.hpp
+src/hypertea/CMakeFiles/hypertea.dir/operators/activation.cpp.o: ../include/hypertea/util/tensor_cpu_math_func.hpp
+src/hypertea/CMakeFiles/hypertea.dir/operators/activation.cpp.o: ../include/hypertea/util/tensor_gpu_math_func.hpp
+src/hypertea/CMakeFiles/hypertea.dir/operators/activation.cpp.o: ../src/hypertea/operators/activation.cpp
+src/hypertea/CMakeFiles/hypertea.dir/operators/activation.cpp.o: /usr/local/cuda/include/CL/cl.h
+src/hypertea/CMakeFiles/hypertea.dir/operators/activation.cpp.o: /usr/local/cuda/include/CL/cl_ext.h
+src/hypertea/CMakeFiles/hypertea.dir/operators/activation.cpp.o: /usr/local/cuda/include/CL/cl_gl.h
+src/hypertea/CMakeFiles/hypertea.dir/operators/activation.cpp.o: /usr/local/cuda/include/CL/cl_gl_ext.h
+src/hypertea/CMakeFiles/hypertea.dir/operators/activation.cpp.o: /usr/local/cuda/include/CL/cl_platform.h
+src/hypertea/CMakeFiles/hypertea.dir/operators/activation.cpp.o: /usr/local/cuda/include/CL/opencl.h
+src/hypertea/CMakeFiles/hypertea.dir/operators/activation.cpp.o: /usr/local/include/clblast.h
+
 src/hypertea/CMakeFiles/hypertea.dir/operators/base_conv_op.cpp.o: ../include/hypertea/common.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/base_conv_op.cpp.o: ../include/hypertea/glog_wrapper.hpp
 src/hypertea/CMakeFiles/hypertea.dir/operators/base_conv_op.cpp.o: ../include/hypertea/operator.hpp

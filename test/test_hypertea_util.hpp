@@ -39,6 +39,9 @@ typedef ::testing::Types<Device<float> > TestDtypesCPU;
 typedef ::testing::Types<Device<float> > TestDtypesGPU;
 
 
+typedef ::testing::Types<TensorCPU<float>,  TensorGPU<float>> TestDtypes;
+
+
 class fake_random_number {
 public:
   fake_random_number() {
