@@ -148,6 +148,87 @@ TensorGPU<Dtype>& inplace_gpu_gemv(
 
 
 template <typename Dtype>
+TensorGPU<Dtype>& inplace_gemm(
+	const CBLAS_TRANSPOSE TransA,
+	const CBLAS_TRANSPOSE TransB,
+	const int M, const int N, const int K,
+    const float alpha, 
+    const TensorGPU<Dtype>& A, 
+    const TensorGPU<Dtype>& B, 
+    const float beta,
+    TensorGPU<Dtype>& C) {
+
+	size_t lda = (TransA == CblasNoTrans) ? K : M;
+  	size_t ldb = (TransB == CblasNoTrans) ? N : K;
+  	size_t ldc = N;
+
+	Dtype alpha_(to_dtype<Dtype>(alpha));
+  	Dtype beta_(to_dtype<Dtype>(beta));
+
+	auto A_data = A.immutable_data();
+  	auto B_data = B.immutable_data();
+  	auto C_data = C.immutable_data();
+
+	auto blastTransA =
+      (TransA == CblasNoTrans) ? clblast::Transpose::kNo : clblast::Transpose::kYes;
+  	auto blastTransB =
+      (TransB == CblasNoTrans) ? clblast::Transpose::kNo : clblast::Transpose::kYes;
+
+	CLBLAST_CPP_CHECK(clblast::Gemm<Dtype>(
+    clblast::Layout::kRowMajor,
+    blastTransA, blastTransB,
+    M, N, K,
+    alpha_,
+    (cl_mem) A_data, 0, lda,
+    (cl_mem) B_data, 0, ldb,
+    beta_,
+    (cl_mem) C_data, 0, ldc,
+    &OpenCLHandler::Get().commandQueue, NULL)
+  );
+
+	return C;
+}
+
+
+
+template <typename Dtype>
+TensorGPU<Dtype>& inplace_gemv(
+	const CBLAS_TRANSPOSE TransA, 
+	const int M, const int N,
+    const float alpha, 
+    const TensorGPU<Dtype>& A, 
+    const TensorGPU<Dtype>& x, 
+    const float beta,
+    TensorGPU<Dtype>& y) {
+
+	Dtype alpha_(to_dtype<Dtype>(alpha));
+  	Dtype beta_(to_dtype<Dtype>(beta));
+
+	auto A_data = A.immutable_data();
+  	auto x_data = x.immutable_data();
+  	auto y_data = y.immutable_data();
+
+
+	auto blastTransA =
+	(TransA != CblasNoTrans) ? clblast::Transpose::kNo : clblast::Transpose::kYes;
+
+	CLBLAST_CPP_CHECK(clblast::Gemv<Dtype>(
+		clblast::Layout::kColMajor,
+		blastTransA, 
+		N, M,
+		alpha_,
+		A_data, 0, N,
+		x_data, 0, 1,
+		beta_,
+		y_data, 0, 1,
+		&OpenCLHandler::Get().commandQueue, NULL)
+	);
+
+	return y;
+}
+
+
+template <typename Dtype>
 inline TensorGPU<Dtype>& inplace_gpu_set(TensorGPU<Dtype> &x, const Dtype alpha) {
 	size_t x_size = x.count() * sizeof(Dtype);
 	auto x_data = x.mutable_data();
@@ -294,6 +375,17 @@ inline TensorGPU<Dtype>& inplace_gpu_tanh(TensorGPU<Dtype>& x) {
   return unary_math_gpu_inplace(x, "TanHForward");
 }
 
+
+template <typename Dtype>
+inline TensorGPU<Dtype>& inplace_sigmoid(TensorGPU<Dtype>& x) {
+  return unary_math_gpu_inplace(x, "SigmoidForward");
+}
+
+template <typename Dtype>
+inline TensorGPU<Dtype>& inplace_tanh(TensorGPU<Dtype>& x) {
+  return unary_math_gpu_inplace(x, "TanHForward");
+}
+
 template <typename Dtype>
 inline TensorGPU<Dtype>& inplace_gpu_abs(TensorGPU<Dtype>& x) {
 	return unary_math_gpu_inplace(x, "abs_kernel");
@@ -413,7 +505,7 @@ inline TensorGPU<Dtype> outplace_relu(const TensorGPU<Dtype>& x, const float a =
 
 
 template <typename Dtype>
-void mean_var(const TensorGPU<Dtype>& x, TensorGPU<Dtype>& mean, TensorGPU<Dtype>& var, int channels, int spatial_dim);
+void mean_var(const TensorGPU<Dtype>& x, TensorGPU<Dtype>& mean, TensorGPU<Dtype>& var, int channels, int spatial_dim, float eps);
 
 
 template <typename Dtype>

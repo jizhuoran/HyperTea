@@ -23,6 +23,9 @@ namespace hypertea {
  *   be filtered. col2im restores the output spatial structure by rolling up
  *   the output channel N' columns of the output matrix.
  */
+
+
+
 template <typename Dtype>
 class ConvolutionOp_CPU : public BaseConvolutionOp_CPU<Dtype> {
  public:

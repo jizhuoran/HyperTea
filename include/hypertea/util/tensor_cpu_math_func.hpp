@@ -65,6 +65,51 @@ TensorCPU<Dtype>& inplace_cpu_gemv(
 
 
 template <typename Dtype>
+TensorCPU<Dtype>& inplace_gemv(
+	const CBLAS_TRANSPOSE TransA, 
+	const int M, const int N,
+    const float alpha, 
+    const TensorCPU<Dtype>& A, 
+    const TensorCPU<Dtype>& x, 
+    const float beta,
+    TensorCPU<Dtype>& y) {
+
+	auto A_data = A.immutable_data();
+  	auto x_data = x.immutable_data();
+  	auto y_data = y.mutable_data();
+
+  	cblas_sgemv(CblasRowMajor, TransA, M, N, alpha, A_data, N, x_data, 1, beta, y_data, 1);
+
+	return y;
+}
+
+
+template <typename Dtype>
+TensorCPU<Dtype>& inplace_gemm(
+	const CBLAS_TRANSPOSE TransA,
+	const CBLAS_TRANSPOSE TransB,
+	const int M, const int N, const int K,
+    const float alpha, 
+    const TensorCPU<Dtype>& A, 
+    const TensorCPU<Dtype>& B, 
+    const float beta,
+    TensorCPU<Dtype>& C) {
+
+	auto A_data = A.immutable_data();
+  	auto B_data = B.immutable_data();
+  	auto C_data = C.mutable_data();
+
+
+  	int lda = (TransA == CblasNoTrans) ? K : M;
+  	int ldb = (TransB == CblasNoTrans) ? N : K;
+  	cblas_sgemm(CblasRowMajor, TransA, TransB, M, N, K, alpha, A_data, lda, B_data,
+      ldb, beta, C_data, N);
+
+	return C;
+}
+
+
+template <typename Dtype>
 inline TensorCPU<Dtype>& inplace_cpu_set(TensorCPU<Dtype> &x, const Dtype alpha) {
 	
     if (alpha == 0) {
@@ -154,7 +199,28 @@ inline TensorCPU<Dtype>& inplace_cpu_sigmoid(TensorCPU<Dtype>& x) {
 }
 
 template <typename Dtype>
+inline TensorCPU<Dtype>& inplace_sigmoid(TensorCPU<Dtype>& x) {
+    
+    Dtype* data = x.mutable_data();
+	for (int i = 0; i < x.size(); ++i) {
+		data[i] = 0.5 * tanh(0.5 * data[i]) + 0.5;
+	}
+	return x;
+}
+
+template <typename Dtype>
 inline TensorCPU<Dtype>& inplace_cpu_tanh(TensorCPU<Dtype>& x) {
+  
+    Dtype* data = x.mutable_data();
+	for (int i = 0; i < x.size(); ++i) {
+		data[i] = tanh(data[i]);
+	}
+	return x;
+}
+
+
+template <typename Dtype>
+inline TensorCPU<Dtype>& inplace_tanh(TensorCPU<Dtype>& x) {
   
     Dtype* data = x.mutable_data();
 	for (int i = 0; i < x.size(); ++i) {
@@ -232,26 +298,30 @@ inline TensorCPU<Dtype>& inplace_cpu_relu(TensorCPU<Dtype>& x, const float a = .
 
 
 template <typename Dtype>
-void mean_var(TensorCPU<Dtype>& x, TensorCPU<Dtype>& mean, TensorCPU<Dtype>& var, int channels, int batch_size) {
+void mean_var(TensorCPU<Dtype>& x, TensorCPU<Dtype>& mean, TensorCPU<Dtype>& var, int channels, int spatial_dim, float eps) {
 	
 	auto x_data = x.mutable_data();
 	auto mean_data = mean.mutable_data();
-	auto var_data = mean.mutable_data();
+	auto var_data = var.mutable_data();
 	
-	auto spatial_dim = x.count() / (channels * batch_size);
 
-	auto p = 0;
+	int nspatial_dim = x.count() / channels;
+
+	Dtype p = 0;
 
 	for (int c = 0; c < channels; ++c) {
-		for (int bs = 0; bs < batch_size; ++bs) {
+		mean_data[c] = 0;
+		var_data[c] = 0;
+		for (int bs = 0; bs < (nspatial_dim / spatial_dim); ++bs) {
 			for (int i = 0; i < spatial_dim; ++i) {
 				p = x_data[bs * channels * spatial_dim + c * spatial_dim + i];
 				mean_data[c] += p;
 				var_data[c] += p*p;
 			}
 		}
-		mean_data[c] /= (spatial_dim * batch_size);
-		var_data[c] = var_data[c] / (spatial_dim * batch_size) - mean_data[c];
+		mean_data[c] /= nspatial_dim;
+		var_data[c] /= nspatial_dim;
+		var_data[c] = sqrt(var_data[c] - mean_data[c]*mean_data[c] + eps);
 	}
 }
 
@@ -262,8 +332,10 @@ TensorCPU<Dtype>& inplace_channeled_scal(
 	TensorCPU<Dtype>& x, 
 	const TensorCPU<Dtype>& weight,
 	int channels,
-	int num
+	int spatial_dim
 ) {
+
+	int num = x.count() / (channels * spatial_dim);
 
 	auto data = x.mutable_data();
 	auto weight_data = weight.immutable_data();
@@ -284,8 +356,10 @@ TensorCPU<Dtype>& inplace_channeled_add(
 	TensorCPU<Dtype>& x, 
 	const TensorCPU<Dtype>& bias,
 	int channels,
-	int num
+	int spatial_dim
 ) {
+
+	int num = x.count() / (channels * spatial_dim);
 
 	auto data = x.mutable_data();
 	auto bias_data = bias.immutable_data();
@@ -306,8 +380,10 @@ TensorCPU<Dtype>& inplace_channeled_sub(
 	TensorCPU<Dtype>& x, 
 	const TensorCPU<Dtype>& bias,
 	int channels,
-	int num
+	int spatial_dim
 ) {
+
+	int num = x.count() / (channels * spatial_dim);
 
 	auto data = x.mutable_data();
 	auto bias_data = bias.immutable_data();
@@ -329,8 +405,9 @@ TensorCPU<Dtype>& inplace_channeled_scaladd(
 	const TensorCPU<Dtype>& weight,
 	const TensorCPU<Dtype>& bias,
 	int channels,
-	int num
+	int spatial_dim
 ) {
+	int num = x.count() / (channels * spatial_dim);
 
 	auto data = x.mutable_data();
 	auto weight_data = weight.immutable_data();

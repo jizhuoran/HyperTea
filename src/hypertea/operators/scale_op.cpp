@@ -5,6 +5,23 @@
 
 namespace hypertea {
 
+template<typename DeviceTensor>
+DeviceTensor ScaleOp<DeviceTensor>::operator()(DeviceTensor& input) {
+
+  DeviceTensor output = inplace_? input : input.duplicate();
+
+  if (has_bias_) {
+      inplace_channeled_scaladd(output, *weight_, *bias_, channels_, spatial_dim_);
+  } else {
+      inplace_channeled_scal(output, *weight_, channels_, spatial_dim_);
+  }
+
+  return output;
+}
+DEFINE_FORWARD_FUNC(ScaleOp);
+
+
+
 template <>
 TensorCPU<float> ScaleOp_CPU<float>::Forward(TensorCPU<float> &input_tensor) {
 

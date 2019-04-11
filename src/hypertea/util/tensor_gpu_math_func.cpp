@@ -596,6 +596,7 @@ void gpu_channeled_avg(
   auto var_ = var.mutable_data();
 
   Dtype alpha_ = to_dtype<Dtype>(1. / nspatial_dim);
+  Dtype eps_ = to_dtype<Dtype>(1e-5);
 
   opencl_launch_wrapper(
     OpenCLHandler::Get().math_program,
@@ -608,6 +609,7 @@ void gpu_channeled_avg(
       std::make_pair(sizeof(cl_int), (void *)&cspatial_dim),
       std::make_pair(sizeof(cl_int), (void *)&nspatial_dim),
       std::make_pair(sizeof(Dtype), (void *)&alpha_),
+      std::make_pair(sizeof(Dtype), (void *)&eps_)
 
     },
     std::vector<size_t> {128, channels, 1},
@@ -643,7 +645,8 @@ void mean_var(
   TensorGPU<Dtype>& mean,
   TensorGPU<Dtype>& var,
   int channels,
-  int spatial_dim){
+  int spatial_dim,
+  float eps){
   
   int nspatial_dim = x.count() / channels;
   int cspatial_dim = spatial_dim * channels;
@@ -653,6 +656,7 @@ void mean_var(
   auto var_ = var.mutable_data();
 
   Dtype alpha_ = to_dtype<Dtype>(1. / nspatial_dim);
+  Dtype eps_ = to_dtype<Dtype>(eps);
 
   opencl_launch_wrapper(
     OpenCLHandler::Get().math_program,
@@ -665,6 +669,7 @@ void mean_var(
       std::make_pair(sizeof(cl_int), (void *)&cspatial_dim),
       std::make_pair(sizeof(cl_int), (void *)&nspatial_dim),
       std::make_pair(sizeof(Dtype), (void *)&alpha_),
+      std::make_pair(sizeof(Dtype), (void *)&eps_)
 
     },
     std::vector<size_t> {128, channels, 1},
@@ -679,7 +684,8 @@ template void mean_var(
   TensorGPU<float>& mean,
   TensorGPU<float>& var,
   int channels,
-  int spatial_dim
+  int spatial_dim,
+  float eps
 );
 
 
@@ -688,7 +694,8 @@ template void mean_var(
   TensorGPU<half>& mean,
   TensorGPU<half>& var,
   int channels,
-  int spatial_dim
+  int spatial_dim,
+  float eps
 );
 
 }  // namespace hypertea

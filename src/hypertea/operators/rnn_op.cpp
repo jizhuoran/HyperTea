@@ -150,7 +150,7 @@ TensorCPU<Dtype> StackedRNN_CPU<Dtype>::Forward(
 
 }
 
-
+ 
 
 template <typename Dtype>
 void GRUCell_GPU<Dtype>::Forward(

@@ -1,5 +1,5 @@
-#ifndef HYPERTEA_BASE_CONVOLUTION_LAYER_HPP_
-#define HYPERTEA_BASE_CONVOLUTION_LAYER_HPP_
+#ifndef HYPERTEA_BASE_CONVOLUTION_OP_HPP_
+#define HYPERTEA_BASE_CONVOLUTION_OP_HPP_
 
 #include <vector>
 #include <iomanip>
@@ -9,35 +9,32 @@
 
 namespace hypertea {
 
-/**
- * @brief Abstract base class that factors out the BLAS code common to
- *        ConvolutionLayer and DeconvolutionLayer.
- */
-template <typename Dtype>
-class BaseConvolutionOp_CPU : public CPUFunctor<Dtype> {
+
+template <typename DeviceTensor>
+class BaseConvolutionOp {
  public:
 
     
 
-explicit BaseConvolutionOp_CPU(const Dtype* weight, const Dtype* bias,
-              int group, bool is_1x1,
-              std::vector<int> kernel_shape,
-              std::vector<int> stride,
-              std::vector<int> pad,
-              std::vector<int> dilation,
-              std::vector<int> input_shape,
-              std::vector<int> output_shape,
-              bool force_nd_im2col,
-              bool is_transposed) 
-    : CPUFunctor<Dtype>(),
-      weight_(weight), bias_(bias),
+  explicit BaseConvolutionOp(
+    DeviceTensor* weight, 
+    DeviceTensor* bias,
+    int group, bool is_1x1,
+    std::vector<int> kernel_shape,
+    std::vector<int> stride,
+    std::vector<int> pad,
+    std::vector<int> dilation,
+    std::vector<int> input_shape,
+    std::vector<int> output_shape,
+    bool is_transposed) 
+    : weight_(weight), 
+      bias_(bias),
       group_(group),
       is_1x1_(is_1x1),
       kernel_shape_(kernel_shape),
       stride_(stride),
       pad_(pad),
-      dilation_(dilation),
-      force_nd_im2col_(force_nd_im2col) {
+      dilation_(dilation) {
 
 
           num_ = input_shape[0];
@@ -97,25 +94,26 @@ explicit BaseConvolutionOp_CPU(const Dtype* weight, const Dtype* bias,
 
           // << num_spatial_axes_ << std::endl;
 
+          if(!is_1x1) {
+            col_buffer_ = new DeviceTensor(col_offset_);
+          }
 
 
-
-          bias_multiplier_ = new Dtype[out_spatial_dim_];
-          hypertea_set(out_spatial_dim_, Dtype(1), bias_multiplier_);
-          col_buffer_ = new Dtype[col_offset_];
-          hypertea_set(col_offset_, Dtype(1), col_buffer_);
+          
       }
 
 
-  ~BaseConvolutionOp_CPU() {
-    delete [] bias_multiplier_;
-    delete [] col_buffer_;
+  ~BaseConvolutionOp() {
+    if(!is_1x1_) {
+      delete col_buffer_;
+    }
   }
 
 
 
-  const Dtype* weight_;
-  const Dtype* bias_;
+  DeviceTensor* weight_;
+  DeviceTensor* bias_;
+
   int bottom_dim_ = -1;
   int top_dim_ = -1;
   int num_ = -1;
@@ -142,44 +140,31 @@ explicit BaseConvolutionOp_CPU(const Dtype* weight, const Dtype* bias,
 
 
 protected:
-  void forward_cpu_gemm(const Dtype* input, const Dtype* weights,
-      Dtype* output, bool skip_im2col = false);
-  void forward_cpu_bias(Dtype* output, const Dtype* bias);
-  void backward_cpu_gemm(const Dtype* input, const Dtype* weights,
-      Dtype* output);
+  // void forward_cpu_gemm(const Dtype* input, const Dtype* weights,
+  //     Dtype* output, bool skip_im2col = false);
+  // void forward_cpu_bias(Dtype* output, const Dtype* bias);
+  // void backward_cpu_gemm(const Dtype* input, const Dtype* weights,
+  //     Dtype* output);
 
-private:
-  // wrap im2col/col2im so we don't have to remember the (long) argument lists
-  inline void conv_im2col_cpu(const Dtype* data, Dtype* col_buff) {
-    if (!force_nd_im2col_ && num_spatial_axes_ == 2) {
-      im2col_cpu(data, conv_in_channels_,
+  // // wrap im2col/col2im so we don't have to remember the (long) argument lists
+  inline void conv_im2col(const DeviceTensor& data, DeviceTensor& col_buff) {
+      im2col(data, conv_in_channels_,
           conv_input_shape_[1], conv_input_shape_[2],
           kernel_shape_[0], kernel_shape_[1],
           pad_[0], pad_[1],
           stride_[0], stride_[1],
           dilation_[0], dilation_[1], col_buff);
-    } else {
-      im2col_nd_cpu(data, num_spatial_axes_, conv_input_shape_.data(),
-          col_buffer_shape_.data(), kernel_shape_.data(),
-          pad_.data(), stride_.data(), dilation_.data(), col_buff);
-    }
   }
 
 
 
-  inline void conv_col2im_cpu(const Dtype* col_buff, Dtype* data) {
-    if (!force_nd_im2col_ && num_spatial_axes_ == 2) {
-      col2im_cpu(col_buff, conv_in_channels_,
+  inline void conv_col2im(const DeviceTensor& col_buff, DeviceTensor& data) {
+      col2im(col_buff, conv_in_channels_,
           conv_input_shape_[1], conv_input_shape_[2],
           kernel_shape_[0], kernel_shape_[1],
           pad_[0], pad_[1],
           stride_[0], stride_[1],
           dilation_[0], dilation_[1], data);
-    } else {
-      col2im_nd_cpu(col_buff, num_spatial_axes_, conv_input_shape_.data(),
-          col_buffer_shape_.data(), kernel_shape_.data(),
-          pad_.data(), stride_.data(), dilation_.data(), data);
-    }
   }
 
 
@@ -191,64 +176,13 @@ private:
   int col_offset_;
   int output_offset_;
 
-  Dtype* col_buffer_;
-  Dtype* bias_multiplier_;
+  DeviceTensor* col_buffer_;
 //CPU NEEDED DATA END
 
 
 };
 
-#ifdef USE_OPENCL
-
-template <typename Dtype>
-class BaseConvolutionOp_GPU : public GPUFunctor<Dtype> {
-
-public:
-  explicit BaseConvolutionOp_GPU(
-    std::string kernel_name,
-    int top_count,
-    const TensorGPU<float>& weight, 
-    const TensorGPU<float>& bias,
-    std::vector<int> local,
-    std::vector<int> global)
-
-      : GPUFunctor<Dtype>(), 
-      kernel_name_(kernel_name),
-      top_count_(top_count), 
-      weight_(weight), bias_(bias),
-      weight_data_(weight.immutable_data()) {
-
-          bias_data_ = bias.count() != 0 ? bias.immutable_data(): nullptr;
-
-          local_size_.push_back(local[0]);
-          local_size_.push_back(local[1]);
-          local_size_.push_back(local[2]);
-
-          global_size_.push_back(global[0]);
-          global_size_.push_back(global[1]);
-          global_size_.push_back(global[2]);
-
-        }
-
-
-protected:
-
-  int top_count_;
-  std::string kernel_name_;
-
-  TensorGPU<float> weight_;
-  TensorGPU<float> bias_;
-
-  cl_mem weight_data_;
-  cl_mem bias_data_;
-
-  std::vector<size_t> local_size_;
-  std::vector<size_t> global_size_;
-
-};
-
-#endif //USE_OPENCL
  
 }  // namespace hypertea
 
-#endif  // HYPERTEA_BASE_CONVOLUTION_LAYER_HPP_
+#endif  // HYPERTEA_BASE_CONVOLUTION_OP_HPP_

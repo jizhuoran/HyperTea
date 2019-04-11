@@ -14,7 +14,7 @@ DeviceTensor BatchNormOp<DeviceTensor>::operator()(DeviceTensor& input) {
   DeviceTensor output = inplace_? input : input.duplicate();
 
   if (!use_global_stats_) {
-    mean_var(input, *mean_, *variance_, channels_, spatial_dim_);
+    mean_var(input, *mean_, *variance_, channels_, spatial_dim_, eps_);
   }
 
 
@@ -29,7 +29,7 @@ DeviceTensor BatchNormOp<DeviceTensor>::operator()(DeviceTensor& input) {
       inplace_channeled_scal(output, weight_with_var, channels_, spatial_dim_);
     }
   } else {
-    inplace_inv(*variance_, eps_);
+    inplace_inv(*variance_, 0);
     inplace_channeled_scal(output, *variance_, channels_, spatial_dim_);
   }
 

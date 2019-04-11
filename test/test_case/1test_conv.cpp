@@ -23,7 +23,7 @@ class CONVTestCPU : public ::testing::Test {
  protected:
   CONVTestCPU() {}
   virtual ~CONVTestCPU() {}
-};
+}; 
 
 template <typename TypeParam>
 class CONVTestGPU : public ::testing::Test {

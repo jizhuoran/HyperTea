@@ -20,7 +20,7 @@ void ConvolutionOp_CPU<float>::Forward(const std::vector<float*> bottom_datas,
 
 }
 
-
+ 
 
 template <>
 TensorCPU<float> ConvolutionOp_CPU<float>::Forward(TensorCPU<float> &input_tensor) {

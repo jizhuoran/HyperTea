@@ -251,7 +251,7 @@ private:
 template <typename Dtype>
 class StackedRNN_CPU : public CPUFunctor<Dtype> {
 
-public:
+public: 
   StackedRNN_CPU(
     std::vector<RNNOp_CPU<Dtype>* > rnn_layers) 
       : rnn_layers_(rnn_layers) {}

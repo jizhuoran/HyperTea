@@ -122,9 +122,22 @@ src/hypertea/CMakeFiles/hypertea.dir/operators/batch_norm_op.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/hypertea.dir/operators/batch_norm_op.cpp.s"
 	cd /home/zrji/hypertea/build/src/hypertea && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/zrji/hypertea/src/hypertea/operators/batch_norm_op.cpp -o CMakeFiles/hypertea.dir/operators/batch_norm_op.cpp.s
 
+src/hypertea/CMakeFiles/hypertea.dir/operators/conv.cpp.o: src/hypertea/CMakeFiles/hypertea.dir/flags.make
+src/hypertea/CMakeFiles/hypertea.dir/operators/conv.cpp.o: ../src/hypertea/operators/conv.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/zrji/hypertea/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object src/hypertea/CMakeFiles/hypertea.dir/operators/conv.cpp.o"
+	cd /home/zrji/hypertea/build/src/hypertea && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/hypertea.dir/operators/conv.cpp.o -c /home/zrji/hypertea/src/hypertea/operators/conv.cpp
+
+src/hypertea/CMakeFiles/hypertea.dir/operators/conv.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/hypertea.dir/operators/conv.cpp.i"
+	cd /home/zrji/hypertea/build/src/hypertea && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/zrji/hypertea/src/hypertea/operators/conv.cpp > CMakeFiles/hypertea.dir/operators/conv.cpp.i
+
+src/hypertea/CMakeFiles/hypertea.dir/operators/conv.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/hypertea.dir/operators/conv.cpp.s"
+	cd /home/zrji/hypertea/build/src/hypertea && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/zrji/hypertea/src/hypertea/operators/conv.cpp -o CMakeFiles/hypertea.dir/operators/conv.cpp.s
+
 src/hypertea/CMakeFiles/hypertea.dir/operators/conv_op.cpp.o: src/hypertea/CMakeFiles/hypertea.dir/flags.make
 src/hypertea/CMakeFiles/hypertea.dir/operators/conv_op.cpp.o: ../src/hypertea/operators/conv_op.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/zrji/hypertea/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object src/hypertea/CMakeFiles/hypertea.dir/operators/conv_op.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/zrji/hypertea/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object src/hypertea/CMakeFiles/hypertea.dir/operators/conv_op.cpp.o"
 	cd /home/zrji/hypertea/build/src/hypertea && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/hypertea.dir/operators/conv_op.cpp.o -c /home/zrji/hypertea/src/hypertea/operators/conv_op.cpp
 
 src/hypertea/CMakeFiles/hypertea.dir/operators/conv_op.cpp.i: cmake_force
@@ -135,9 +148,22 @@ src/hypertea/CMakeFiles/hypertea.dir/operators/conv_op.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/hypertea.dir/operators/conv_op.cpp.s"
 	cd /home/zrji/hypertea/build/src/hypertea && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/zrji/hypertea/src/hypertea/operators/conv_op.cpp -o CMakeFiles/hypertea.dir/operators/conv_op.cpp.s
 
+src/hypertea/CMakeFiles/hypertea.dir/operators/deconv.cpp.o: src/hypertea/CMakeFiles/hypertea.dir/flags.make
+src/hypertea/CMakeFiles/hypertea.dir/operators/deconv.cpp.o: ../src/hypertea/operators/deconv.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/zrji/hypertea/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object src/hypertea/CMakeFiles/hypertea.dir/operators/deconv.cpp.o"
+	cd /home/zrji/hypertea/build/src/hypertea && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/hypertea.dir/operators/deconv.cpp.o -c /home/zrji/hypertea/src/hypertea/operators/deconv.cpp
+
+src/hypertea/CMakeFiles/hypertea.dir/operators/deconv.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/hypertea.dir/operators/deconv.cpp.i"
+	cd /home/zrji/hypertea/build/src/hypertea && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/zrji/hypertea/src/hypertea/operators/deconv.cpp > CMakeFiles/hypertea.dir/operators/deconv.cpp.i
+
+src/hypertea/CMakeFiles/hypertea.dir/operators/deconv.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/hypertea.dir/operators/deconv.cpp.s"
+	cd /home/zrji/hypertea/build/src/hypertea && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/zrji/hypertea/src/hypertea/operators/deconv.cpp -o CMakeFiles/hypertea.dir/operators/deconv.cpp.s
+
 src/hypertea/CMakeFiles/hypertea.dir/operators/deconv_op.cpp.o: src/hypertea/CMakeFiles/hypertea.dir/flags.make
 src/hypertea/CMakeFiles/hypertea.dir/operators/deconv_op.cpp.o: ../src/hypertea/operators/deconv_op.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/zrji/hypertea/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object src/hypertea/CMakeFiles/hypertea.dir/operators/deconv_op.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/zrji/hypertea/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object src/hypertea/CMakeFiles/hypertea.dir/operators/deconv_op.cpp.o"
 	cd /home/zrji/hypertea/build/src/hypertea && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/hypertea.dir/operators/deconv_op.cpp.o -c /home/zrji/hypertea/src/hypertea/operators/deconv_op.cpp
 
 src/hypertea/CMakeFiles/hypertea.dir/operators/deconv_op.cpp.i: cmake_force
@@ -150,7 +176,7 @@ src/hypertea/CMakeFiles/hypertea.dir/operators/deconv_op.cpp.s: cmake_force
 
 src/hypertea/CMakeFiles/hypertea.dir/operators/elu_op.cpp.o: src/hypertea/CMakeFiles/hypertea.dir/flags.make
 src/hypertea/CMakeFiles/hypertea.dir/operators/elu_op.cpp.o: ../src/hypertea/operators/elu_op.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/zrji/hypertea/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object src/hypertea/CMakeFiles/hypertea.dir/operators/elu_op.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/zrji/hypertea/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object src/hypertea/CMakeFiles/hypertea.dir/operators/elu_op.cpp.o"
 	cd /home/zrji/hypertea/build/src/hypertea && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/hypertea.dir/operators/elu_op.cpp.o -c /home/zrji/hypertea/src/hypertea/operators/elu_op.cpp
 
 src/hypertea/CMakeFiles/hypertea.dir/operators/elu_op.cpp.i: cmake_force
@@ -161,9 +187,22 @@ src/hypertea/CMakeFiles/hypertea.dir/operators/elu_op.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/hypertea.dir/operators/elu_op.cpp.s"
 	cd /home/zrji/hypertea/build/src/hypertea && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/zrji/hypertea/src/hypertea/operators/elu_op.cpp -o CMakeFiles/hypertea.dir/operators/elu_op.cpp.s
 
+src/hypertea/CMakeFiles/hypertea.dir/operators/hrnn_op.cpp.o: src/hypertea/CMakeFiles/hypertea.dir/flags.make
+src/hypertea/CMakeFiles/hypertea.dir/operators/hrnn_op.cpp.o: ../src/hypertea/operators/hrnn_op.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/zrji/hypertea/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object src/hypertea/CMakeFiles/hypertea.dir/operators/hrnn_op.cpp.o"
+	cd /home/zrji/hypertea/build/src/hypertea && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/hypertea.dir/operators/hrnn_op.cpp.o -c /home/zrji/hypertea/src/hypertea/operators/hrnn_op.cpp
+
+src/hypertea/CMakeFiles/hypertea.dir/operators/hrnn_op.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/hypertea.dir/operators/hrnn_op.cpp.i"
+	cd /home/zrji/hypertea/build/src/hypertea && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/zrji/hypertea/src/hypertea/operators/hrnn_op.cpp > CMakeFiles/hypertea.dir/operators/hrnn_op.cpp.i
+
+src/hypertea/CMakeFiles/hypertea.dir/operators/hrnn_op.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/hypertea.dir/operators/hrnn_op.cpp.s"
+	cd /home/zrji/hypertea/build/src/hypertea && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/zrji/hypertea/src/hypertea/operators/hrnn_op.cpp -o CMakeFiles/hypertea.dir/operators/hrnn_op.cpp.s
+
 src/hypertea/CMakeFiles/hypertea.dir/operators/native_deconv_op.cpp.o: src/hypertea/CMakeFiles/hypertea.dir/flags.make
 src/hypertea/CMakeFiles/hypertea.dir/operators/native_deconv_op.cpp.o: ../src/hypertea/operators/native_deconv_op.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/zrji/hypertea/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object src/hypertea/CMakeFiles/hypertea.dir/operators/native_deconv_op.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/zrji/hypertea/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object src/hypertea/CMakeFiles/hypertea.dir/operators/native_deconv_op.cpp.o"
 	cd /home/zrji/hypertea/build/src/hypertea && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/hypertea.dir/operators/native_deconv_op.cpp.o -c /home/zrji/hypertea/src/hypertea/operators/native_deconv_op.cpp
 
 src/hypertea/CMakeFiles/hypertea.dir/operators/native_deconv_op.cpp.i: cmake_force
@@ -176,7 +215,7 @@ src/hypertea/CMakeFiles/hypertea.dir/operators/native_deconv_op.cpp.s: cmake_for
 
 src/hypertea/CMakeFiles/hypertea.dir/operators/relu_op.cpp.o: src/hypertea/CMakeFiles/hypertea.dir/flags.make
 src/hypertea/CMakeFiles/hypertea.dir/operators/relu_op.cpp.o: ../src/hypertea/operators/relu_op.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/zrji/hypertea/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object src/hypertea/CMakeFiles/hypertea.dir/operators/relu_op.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/zrji/hypertea/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object src/hypertea/CMakeFiles/hypertea.dir/operators/relu_op.cpp.o"
 	cd /home/zrji/hypertea/build/src/hypertea && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/hypertea.dir/operators/relu_op.cpp.o -c /home/zrji/hypertea/src/hypertea/operators/relu_op.cpp
 
 src/hypertea/CMakeFiles/hypertea.dir/operators/relu_op.cpp.i: cmake_force
@@ -189,7 +228,7 @@ src/hypertea/CMakeFiles/hypertea.dir/operators/relu_op.cpp.s: cmake_force
 
 src/hypertea/CMakeFiles/hypertea.dir/operators/rnn_op.cpp.o: src/hypertea/CMakeFiles/hypertea.dir/flags.make
 src/hypertea/CMakeFiles/hypertea.dir/operators/rnn_op.cpp.o: ../src/hypertea/operators/rnn_op.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/zrji/hypertea/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object src/hypertea/CMakeFiles/hypertea.dir/operators/rnn_op.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/zrji/hypertea/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object src/hypertea/CMakeFiles/hypertea.dir/operators/rnn_op.cpp.o"
 	cd /home/zrji/hypertea/build/src/hypertea && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/hypertea.dir/operators/rnn_op.cpp.o -c /home/zrji/hypertea/src/hypertea/operators/rnn_op.cpp
 
 src/hypertea/CMakeFiles/hypertea.dir/operators/rnn_op.cpp.i: cmake_force
@@ -202,7 +241,7 @@ src/hypertea/CMakeFiles/hypertea.dir/operators/rnn_op.cpp.s: cmake_force
 
 src/hypertea/CMakeFiles/hypertea.dir/operators/scale_op.cpp.o: src/hypertea/CMakeFiles/hypertea.dir/flags.make
 src/hypertea/CMakeFiles/hypertea.dir/operators/scale_op.cpp.o: ../src/hypertea/operators/scale_op.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/zrji/hypertea/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object src/hypertea/CMakeFiles/hypertea.dir/operators/scale_op.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/zrji/hypertea/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object src/hypertea/CMakeFiles/hypertea.dir/operators/scale_op.cpp.o"
 	cd /home/zrji/hypertea/build/src/hypertea && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/hypertea.dir/operators/scale_op.cpp.o -c /home/zrji/hypertea/src/hypertea/operators/scale_op.cpp
 
 src/hypertea/CMakeFiles/hypertea.dir/operators/scale_op.cpp.i: cmake_force
@@ -215,7 +254,7 @@ src/hypertea/CMakeFiles/hypertea.dir/operators/scale_op.cpp.s: cmake_force
 
 src/hypertea/CMakeFiles/hypertea.dir/operators/tanh_op.cpp.o: src/hypertea/CMakeFiles/hypertea.dir/flags.make
 src/hypertea/CMakeFiles/hypertea.dir/operators/tanh_op.cpp.o: ../src/hypertea/operators/tanh_op.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/zrji/hypertea/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object src/hypertea/CMakeFiles/hypertea.dir/operators/tanh_op.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/zrji/hypertea/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object src/hypertea/CMakeFiles/hypertea.dir/operators/tanh_op.cpp.o"
 	cd /home/zrji/hypertea/build/src/hypertea && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/hypertea.dir/operators/tanh_op.cpp.o -c /home/zrji/hypertea/src/hypertea/operators/tanh_op.cpp
 
 src/hypertea/CMakeFiles/hypertea.dir/operators/tanh_op.cpp.i: cmake_force
@@ -228,7 +267,7 @@ src/hypertea/CMakeFiles/hypertea.dir/operators/tanh_op.cpp.s: cmake_force
 
 src/hypertea/CMakeFiles/hypertea.dir/tensor.cpp.o: src/hypertea/CMakeFiles/hypertea.dir/flags.make
 src/hypertea/CMakeFiles/hypertea.dir/tensor.cpp.o: ../src/hypertea/tensor.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/zrji/hypertea/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object src/hypertea/CMakeFiles/hypertea.dir/tensor.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/zrji/hypertea/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building CXX object src/hypertea/CMakeFiles/hypertea.dir/tensor.cpp.o"
 	cd /home/zrji/hypertea/build/src/hypertea && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/hypertea.dir/tensor.cpp.o -c /home/zrji/hypertea/src/hypertea/tensor.cpp
 
 src/hypertea/CMakeFiles/hypertea.dir/tensor.cpp.i: cmake_force
@@ -241,7 +280,7 @@ src/hypertea/CMakeFiles/hypertea.dir/tensor.cpp.s: cmake_force
 
 src/hypertea/CMakeFiles/hypertea.dir/util/benchmark.cpp.o: src/hypertea/CMakeFiles/hypertea.dir/flags.make
 src/hypertea/CMakeFiles/hypertea.dir/util/benchmark.cpp.o: ../src/hypertea/util/benchmark.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/zrji/hypertea/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object src/hypertea/CMakeFiles/hypertea.dir/util/benchmark.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/zrji/hypertea/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building CXX object src/hypertea/CMakeFiles/hypertea.dir/util/benchmark.cpp.o"
 	cd /home/zrji/hypertea/build/src/hypertea && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/hypertea.dir/util/benchmark.cpp.o -c /home/zrji/hypertea/src/hypertea/util/benchmark.cpp
 
 src/hypertea/CMakeFiles/hypertea.dir/util/benchmark.cpp.i: cmake_force
@@ -254,7 +293,7 @@ src/hypertea/CMakeFiles/hypertea.dir/util/benchmark.cpp.s: cmake_force
 
 src/hypertea/CMakeFiles/hypertea.dir/util/im2col.cpp.o: src/hypertea/CMakeFiles/hypertea.dir/flags.make
 src/hypertea/CMakeFiles/hypertea.dir/util/im2col.cpp.o: ../src/hypertea/util/im2col.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/zrji/hypertea/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object src/hypertea/CMakeFiles/hypertea.dir/util/im2col.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/zrji/hypertea/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building CXX object src/hypertea/CMakeFiles/hypertea.dir/util/im2col.cpp.o"
 	cd /home/zrji/hypertea/build/src/hypertea && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/hypertea.dir/util/im2col.cpp.o -c /home/zrji/hypertea/src/hypertea/util/im2col.cpp
 
 src/hypertea/CMakeFiles/hypertea.dir/util/im2col.cpp.i: cmake_force
@@ -267,7 +306,7 @@ src/hypertea/CMakeFiles/hypertea.dir/util/im2col.cpp.s: cmake_force
 
 src/hypertea/CMakeFiles/hypertea.dir/util/math_functions.cpp.o: src/hypertea/CMakeFiles/hypertea.dir/flags.make
 src/hypertea/CMakeFiles/hypertea.dir/util/math_functions.cpp.o: ../src/hypertea/util/math_functions.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/zrji/hypertea/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building CXX object src/hypertea/CMakeFiles/hypertea.dir/util/math_functions.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/zrji/hypertea/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Building CXX object src/hypertea/CMakeFiles/hypertea.dir/util/math_functions.cpp.o"
 	cd /home/zrji/hypertea/build/src/hypertea && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/hypertea.dir/util/math_functions.cpp.o -c /home/zrji/hypertea/src/hypertea/util/math_functions.cpp
 
 src/hypertea/CMakeFiles/hypertea.dir/util/math_functions.cpp.i: cmake_force
@@ -280,7 +319,7 @@ src/hypertea/CMakeFiles/hypertea.dir/util/math_functions.cpp.s: cmake_force
 
 src/hypertea/CMakeFiles/hypertea.dir/util/math_functions_cl.cpp.o: src/hypertea/CMakeFiles/hypertea.dir/flags.make
 src/hypertea/CMakeFiles/hypertea.dir/util/math_functions_cl.cpp.o: ../src/hypertea/util/math_functions_cl.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/zrji/hypertea/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building CXX object src/hypertea/CMakeFiles/hypertea.dir/util/math_functions_cl.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/zrji/hypertea/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_21) "Building CXX object src/hypertea/CMakeFiles/hypertea.dir/util/math_functions_cl.cpp.o"
 	cd /home/zrji/hypertea/build/src/hypertea && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/hypertea.dir/util/math_functions_cl.cpp.o -c /home/zrji/hypertea/src/hypertea/util/math_functions_cl.cpp
 
 src/hypertea/CMakeFiles/hypertea.dir/util/math_functions_cl.cpp.i: cmake_force
@@ -293,7 +332,7 @@ src/hypertea/CMakeFiles/hypertea.dir/util/math_functions_cl.cpp.s: cmake_force
 
 src/hypertea/CMakeFiles/hypertea.dir/util/opencl_util.cpp.o: src/hypertea/CMakeFiles/hypertea.dir/flags.make
 src/hypertea/CMakeFiles/hypertea.dir/util/opencl_util.cpp.o: ../src/hypertea/util/opencl_util.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/zrji/hypertea/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building CXX object src/hypertea/CMakeFiles/hypertea.dir/util/opencl_util.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/zrji/hypertea/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_22) "Building CXX object src/hypertea/CMakeFiles/hypertea.dir/util/opencl_util.cpp.o"
 	cd /home/zrji/hypertea/build/src/hypertea && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/hypertea.dir/util/opencl_util.cpp.o -c /home/zrji/hypertea/src/hypertea/util/opencl_util.cpp
 
 src/hypertea/CMakeFiles/hypertea.dir/util/opencl_util.cpp.i: cmake_force
@@ -306,7 +345,7 @@ src/hypertea/CMakeFiles/hypertea.dir/util/opencl_util.cpp.s: cmake_force
 
 src/hypertea/CMakeFiles/hypertea.dir/util/tensor_cpu_math_func.cpp.o: src/hypertea/CMakeFiles/hypertea.dir/flags.make
 src/hypertea/CMakeFiles/hypertea.dir/util/tensor_cpu_math_func.cpp.o: ../src/hypertea/util/tensor_cpu_math_func.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/zrji/hypertea/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Building CXX object src/hypertea/CMakeFiles/hypertea.dir/util/tensor_cpu_math_func.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/zrji/hypertea/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_23) "Building CXX object src/hypertea/CMakeFiles/hypertea.dir/util/tensor_cpu_math_func.cpp.o"
 	cd /home/zrji/hypertea/build/src/hypertea && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/hypertea.dir/util/tensor_cpu_math_func.cpp.o -c /home/zrji/hypertea/src/hypertea/util/tensor_cpu_math_func.cpp
 
 src/hypertea/CMakeFiles/hypertea.dir/util/tensor_cpu_math_func.cpp.i: cmake_force
@@ -319,7 +358,7 @@ src/hypertea/CMakeFiles/hypertea.dir/util/tensor_cpu_math_func.cpp.s: cmake_forc
 
 src/hypertea/CMakeFiles/hypertea.dir/util/tensor_gpu_math_func.cpp.o: src/hypertea/CMakeFiles/hypertea.dir/flags.make
 src/hypertea/CMakeFiles/hypertea.dir/util/tensor_gpu_math_func.cpp.o: ../src/hypertea/util/tensor_gpu_math_func.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/zrji/hypertea/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_21) "Building CXX object src/hypertea/CMakeFiles/hypertea.dir/util/tensor_gpu_math_func.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/zrji/hypertea/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_24) "Building CXX object src/hypertea/CMakeFiles/hypertea.dir/util/tensor_gpu_math_func.cpp.o"
 	cd /home/zrji/hypertea/build/src/hypertea && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/hypertea.dir/util/tensor_gpu_math_func.cpp.o -c /home/zrji/hypertea/src/hypertea/util/tensor_gpu_math_func.cpp
 
 src/hypertea/CMakeFiles/hypertea.dir/util/tensor_gpu_math_func.cpp.i: cmake_force
@@ -337,9 +376,12 @@ hypertea_OBJECTS = \
 "CMakeFiles/hypertea.dir/operators/activation.cpp.o" \
 "CMakeFiles/hypertea.dir/operators/base_conv_op.cpp.o" \
 "CMakeFiles/hypertea.dir/operators/batch_norm_op.cpp.o" \
+"CMakeFiles/hypertea.dir/operators/conv.cpp.o" \
 "CMakeFiles/hypertea.dir/operators/conv_op.cpp.o" \
+"CMakeFiles/hypertea.dir/operators/deconv.cpp.o" \
 "CMakeFiles/hypertea.dir/operators/deconv_op.cpp.o" \
 "CMakeFiles/hypertea.dir/operators/elu_op.cpp.o" \
+"CMakeFiles/hypertea.dir/operators/hrnn_op.cpp.o" \
 "CMakeFiles/hypertea.dir/operators/native_deconv_op.cpp.o" \
 "CMakeFiles/hypertea.dir/operators/relu_op.cpp.o" \
 "CMakeFiles/hypertea.dir/operators/rnn_op.cpp.o" \
@@ -362,9 +404,12 @@ lib/libhypertea.a: src/hypertea/CMakeFiles/hypertea.dir/operators/MIOpen_batch_n
 lib/libhypertea.a: src/hypertea/CMakeFiles/hypertea.dir/operators/activation.cpp.o
 lib/libhypertea.a: src/hypertea/CMakeFiles/hypertea.dir/operators/base_conv_op.cpp.o
 lib/libhypertea.a: src/hypertea/CMakeFiles/hypertea.dir/operators/batch_norm_op.cpp.o
+lib/libhypertea.a: src/hypertea/CMakeFiles/hypertea.dir/operators/conv.cpp.o
 lib/libhypertea.a: src/hypertea/CMakeFiles/hypertea.dir/operators/conv_op.cpp.o
+lib/libhypertea.a: src/hypertea/CMakeFiles/hypertea.dir/operators/deconv.cpp.o
 lib/libhypertea.a: src/hypertea/CMakeFiles/hypertea.dir/operators/deconv_op.cpp.o
 lib/libhypertea.a: src/hypertea/CMakeFiles/hypertea.dir/operators/elu_op.cpp.o
+lib/libhypertea.a: src/hypertea/CMakeFiles/hypertea.dir/operators/hrnn_op.cpp.o
 lib/libhypertea.a: src/hypertea/CMakeFiles/hypertea.dir/operators/native_deconv_op.cpp.o
 lib/libhypertea.a: src/hypertea/CMakeFiles/hypertea.dir/operators/relu_op.cpp.o
 lib/libhypertea.a: src/hypertea/CMakeFiles/hypertea.dir/operators/rnn_op.cpp.o
@@ -380,7 +425,7 @@ lib/libhypertea.a: src/hypertea/CMakeFiles/hypertea.dir/util/tensor_cpu_math_fun
 lib/libhypertea.a: src/hypertea/CMakeFiles/hypertea.dir/util/tensor_gpu_math_func.cpp.o
 lib/libhypertea.a: src/hypertea/CMakeFiles/hypertea.dir/build.make
 lib/libhypertea.a: src/hypertea/CMakeFiles/hypertea.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/zrji/hypertea/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_22) "Linking CXX static library ../../lib/libhypertea.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/zrji/hypertea/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_25) "Linking CXX static library ../../lib/libhypertea.a"
 	cd /home/zrji/hypertea/build/src/hypertea && $(CMAKE_COMMAND) -P CMakeFiles/hypertea.dir/cmake_clean_target.cmake
 	cd /home/zrji/hypertea/build/src/hypertea && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/hypertea.dir/link.txt --verbose=$(VERBOSE)
 

@@ -22,7 +22,7 @@ class RNNTestCPU : public ::testing::Test {
   RNNTestCPU() {}
   virtual ~RNNTestCPU() {}
 };
-
+ 
 template <typename TypeParam>
 class RNNTestGPU : public ::testing::Test {
  public:

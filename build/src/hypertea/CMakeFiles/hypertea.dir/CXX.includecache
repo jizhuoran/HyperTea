@@ -52,30 +52,6 @@ android/log.h
 iostream
 -
 
-../include/hypertea/operator.hpp
-algorithm
--
-string
--
-vector
--
-numeric
--
-hypertea/common.hpp
-../include/hypertea/hypertea/common.hpp
-hypertea/util/math_functions.hpp
-../include/hypertea/hypertea/util/math_functions.hpp
-hypertea/util/benchmark.hpp
-../include/hypertea/hypertea/util/benchmark.hpp
-hypertea/util/tensor_gpu_math_func.hpp
-../include/hypertea/hypertea/util/tensor_gpu_math_func.hpp
-
-../include/hypertea/operators/batch_norm_op.hpp
-vector
--
-hypertea/operator.hpp
-../include/hypertea/operators/hypertea/operator.hpp
-
 ../include/hypertea/tensor.hpp
 vector
 -
@@ -89,12 +65,6 @@ hypertea/util/tensor_gpu_math_func.hpp
 ../include/hypertea/hypertea/util/tensor_gpu_math_func.hpp
 hypertea/util/tensor_cpu_math_func.hpp
 ../include/hypertea/hypertea/util/tensor_cpu_math_func.hpp
-
-../include/hypertea/util/benchmark.hpp
-sys/time.h
--
-hypertea/util/opencl_util.hpp
-../include/hypertea/util/hypertea/util/opencl_util.hpp
 
 ../include/hypertea/util/device_alternate.hpp
 cxxabi.h
@@ -115,6 +85,10 @@ cmath
 -
 cstring
 -
+
+../include/hypertea/util/im2col.hpp
+hypertea/tensor.hpp
+../include/hypertea/util/hypertea/tensor.hpp
 
 ../include/hypertea/util/math_functions.hpp
 stdint.h
@@ -172,17 +146,21 @@ hypertea/util/device_alternate.hpp
 hypertea/util/mkl_alternate.hpp
 ../include/hypertea/util/hypertea/util/mkl_alternate.hpp
 
-/home/zrji/hypertea/src/hypertea/operators/batch_norm_op.cpp
-algorithm
--
+/home/zrji/hypertea/src/hypertea/util/im2col.cpp
 vector
 -
-math.h
--
-hypertea/operators/batch_norm_op.hpp
-/home/zrji/hypertea/src/hypertea/operators/hypertea/operators/batch_norm_op.hpp
+hypertea/util/im2col.hpp
+/home/zrji/hypertea/src/hypertea/util/hypertea/util/im2col.hpp
 hypertea/util/math_functions.hpp
-/home/zrji/hypertea/src/hypertea/operators/hypertea/util/math_functions.hpp
+/home/zrji/hypertea/src/hypertea/util/hypertea/util/math_functions.hpp
+
+/home/zrji/hypertea/src/hypertea/util/opencl_util.cpp
+hypertea/util/opencl_util.hpp
+/home/zrji/hypertea/src/hypertea/util/hypertea/util/opencl_util.hpp
+hypertea/common.hpp
+/home/zrji/hypertea/src/hypertea/util/hypertea/common.hpp
+fstream
+-
 
 /usr/local/cuda/include/CL/cl.h
 OpenCL/cl_platform.h

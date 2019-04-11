@@ -306,6 +306,33 @@ operators/batch_norm_op.cpp.s:
 	cd /home/zrji/hypertea/build && $(MAKE) -f src/hypertea/CMakeFiles/hypertea.dir/build.make src/hypertea/CMakeFiles/hypertea.dir/operators/batch_norm_op.cpp.s
 .PHONY : operators/batch_norm_op.cpp.s
 
+operators/conv.o: operators/conv.cpp.o
+
+.PHONY : operators/conv.o
+
+# target to build an object file
+operators/conv.cpp.o:
+	cd /home/zrji/hypertea/build && $(MAKE) -f src/hypertea/CMakeFiles/hypertea.dir/build.make src/hypertea/CMakeFiles/hypertea.dir/operators/conv.cpp.o
+.PHONY : operators/conv.cpp.o
+
+operators/conv.i: operators/conv.cpp.i
+
+.PHONY : operators/conv.i
+
+# target to preprocess a source file
+operators/conv.cpp.i:
+	cd /home/zrji/hypertea/build && $(MAKE) -f src/hypertea/CMakeFiles/hypertea.dir/build.make src/hypertea/CMakeFiles/hypertea.dir/operators/conv.cpp.i
+.PHONY : operators/conv.cpp.i
+
+operators/conv.s: operators/conv.cpp.s
+
+.PHONY : operators/conv.s
+
+# target to generate assembly for a file
+operators/conv.cpp.s:
+	cd /home/zrji/hypertea/build && $(MAKE) -f src/hypertea/CMakeFiles/hypertea.dir/build.make src/hypertea/CMakeFiles/hypertea.dir/operators/conv.cpp.s
+.PHONY : operators/conv.cpp.s
+
 operators/conv_op.o: operators/conv_op.cpp.o
 
 .PHONY : operators/conv_op.o
@@ -332,6 +359,33 @@ operators/conv_op.s: operators/conv_op.cpp.s
 operators/conv_op.cpp.s:
 	cd /home/zrji/hypertea/build && $(MAKE) -f src/hypertea/CMakeFiles/hypertea.dir/build.make src/hypertea/CMakeFiles/hypertea.dir/operators/conv_op.cpp.s
 .PHONY : operators/conv_op.cpp.s
+
+operators/deconv.o: operators/deconv.cpp.o
+
+.PHONY : operators/deconv.o
+
+# target to build an object file
+operators/deconv.cpp.o:
+	cd /home/zrji/hypertea/build && $(MAKE) -f src/hypertea/CMakeFiles/hypertea.dir/build.make src/hypertea/CMakeFiles/hypertea.dir/operators/deconv.cpp.o
+.PHONY : operators/deconv.cpp.o
+
+operators/deconv.i: operators/deconv.cpp.i
+
+.PHONY : operators/deconv.i
+
+# target to preprocess a source file
+operators/deconv.cpp.i:
+	cd /home/zrji/hypertea/build && $(MAKE) -f src/hypertea/CMakeFiles/hypertea.dir/build.make src/hypertea/CMakeFiles/hypertea.dir/operators/deconv.cpp.i
+.PHONY : operators/deconv.cpp.i
+
+operators/deconv.s: operators/deconv.cpp.s
+
+.PHONY : operators/deconv.s
+
+# target to generate assembly for a file
+operators/deconv.cpp.s:
+	cd /home/zrji/hypertea/build && $(MAKE) -f src/hypertea/CMakeFiles/hypertea.dir/build.make src/hypertea/CMakeFiles/hypertea.dir/operators/deconv.cpp.s
+.PHONY : operators/deconv.cpp.s
 
 operators/deconv_op.o: operators/deconv_op.cpp.o
 
@@ -386,6 +440,33 @@ operators/elu_op.s: operators/elu_op.cpp.s
 operators/elu_op.cpp.s:
 	cd /home/zrji/hypertea/build && $(MAKE) -f src/hypertea/CMakeFiles/hypertea.dir/build.make src/hypertea/CMakeFiles/hypertea.dir/operators/elu_op.cpp.s
 .PHONY : operators/elu_op.cpp.s
+
+operators/hrnn_op.o: operators/hrnn_op.cpp.o
+
+.PHONY : operators/hrnn_op.o
+
+# target to build an object file
+operators/hrnn_op.cpp.o:
+	cd /home/zrji/hypertea/build && $(MAKE) -f src/hypertea/CMakeFiles/hypertea.dir/build.make src/hypertea/CMakeFiles/hypertea.dir/operators/hrnn_op.cpp.o
+.PHONY : operators/hrnn_op.cpp.o
+
+operators/hrnn_op.i: operators/hrnn_op.cpp.i
+
+.PHONY : operators/hrnn_op.i
+
+# target to preprocess a source file
+operators/hrnn_op.cpp.i:
+	cd /home/zrji/hypertea/build && $(MAKE) -f src/hypertea/CMakeFiles/hypertea.dir/build.make src/hypertea/CMakeFiles/hypertea.dir/operators/hrnn_op.cpp.i
+.PHONY : operators/hrnn_op.cpp.i
+
+operators/hrnn_op.s: operators/hrnn_op.cpp.s
+
+.PHONY : operators/hrnn_op.s
+
+# target to generate assembly for a file
+operators/hrnn_op.cpp.s:
+	cd /home/zrji/hypertea/build && $(MAKE) -f src/hypertea/CMakeFiles/hypertea.dir/build.make src/hypertea/CMakeFiles/hypertea.dir/operators/hrnn_op.cpp.s
+.PHONY : operators/hrnn_op.cpp.s
 
 operators/native_deconv_op.o: operators/native_deconv_op.cpp.o
 
@@ -766,15 +847,24 @@ help:
 	@echo "... operators/batch_norm_op.o"
 	@echo "... operators/batch_norm_op.i"
 	@echo "... operators/batch_norm_op.s"
+	@echo "... operators/conv.o"
+	@echo "... operators/conv.i"
+	@echo "... operators/conv.s"
 	@echo "... operators/conv_op.o"
 	@echo "... operators/conv_op.i"
 	@echo "... operators/conv_op.s"
+	@echo "... operators/deconv.o"
+	@echo "... operators/deconv.i"
+	@echo "... operators/deconv.s"
 	@echo "... operators/deconv_op.o"
 	@echo "... operators/deconv_op.i"
 	@echo "... operators/deconv_op.s"
 	@echo "... operators/elu_op.o"
 	@echo "... operators/elu_op.i"
 	@echo "... operators/elu_op.s"
+	@echo "... operators/hrnn_op.o"
+	@echo "... operators/hrnn_op.i"
+	@echo "... operators/hrnn_op.s"
 	@echo "... operators/native_deconv_op.o"
 	@echo "... operators/native_deconv_op.i"
 	@echo "... operators/native_deconv_op.s"
