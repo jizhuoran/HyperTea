@@ -7,9 +7,8 @@
 #include "hypertea/common.hpp"
 
 #include "test_hypertea_util.hpp"
-#include "hypertea/operators/conv.hpp"
-#include "hypertea/operators/deconv.hpp"
-// #include "hypertea/operators/conv_op.hpp"
+#include "hypertea/operators/conv_op.hpp"
+#include "hypertea/operators/deconv_op.hpp"
 
 #include "test_result/conv_result.hpp"
 #include "test_result/deconv_result.hpp"

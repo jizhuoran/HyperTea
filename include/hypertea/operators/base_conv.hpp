@@ -123,7 +123,6 @@ class BaseConvolutionOp {
   int out_spatial_dim_ = -1;
   int top_count_ = -1;
   bool is_1x1_;
-  bool force_nd_im2col_;
 
 
 
@@ -140,13 +139,7 @@ class BaseConvolutionOp {
 
 
 protected:
-  // void forward_cpu_gemm(const Dtype* input, const Dtype* weights,
-  //     Dtype* output, bool skip_im2col = false);
-  // void forward_cpu_bias(Dtype* output, const Dtype* bias);
-  // void backward_cpu_gemm(const Dtype* input, const Dtype* weights,
-  //     Dtype* output);
 
-  // // wrap im2col/col2im so we don't have to remember the (long) argument lists
   inline void conv_im2col(const DeviceTensor& data, DeviceTensor& col_buff) {
       im2col(data, conv_in_channels_,
           conv_input_shape_[1], conv_input_shape_[2],
@@ -168,7 +161,6 @@ protected:
   }
 
 
-//CPU NEEDED DATA
   int conv_out_channels_;
   int conv_in_channels_;
   int conv_out_spatial_dim_;
@@ -177,7 +169,6 @@ protected:
   int output_offset_;
 
   DeviceTensor* col_buffer_;
-//CPU NEEDED DATA END
 
 
 };

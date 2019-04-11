@@ -4,91 +4,48 @@
 
 namespace hypertea {
 
-template <>
-void DeconvolutionOp_CPU<float>::Forward(const std::vector<float*> bottom_datas,
-      const std::vector<float*> top_datas) {
 
-  for (int i = 0; i < bottom_datas.size(); ++i) {
 
-    for (int n = 0; n < this->num_; ++n) {
-      this->backward_cpu_gemm(bottom_datas[i] + n * this->bottom_dim_, weight_,
-          top_datas[i] + n * this->top_dim_);
-      if (this->bias_) {
-        this->forward_cpu_bias(top_datas[i] + n * this->top_dim_, bias_);
-      }
+template<typename DeviceTensor>
+DeviceTensor DeconvolutionOp<DeviceTensor>::operator()(DeviceTensor& input) {
+
+
+  auto output = DeviceTensor(this->top_count_);
+  output.set(0);
+
+
+  auto inputs_tensors  = input.chunked_tensors(this->num_);
+  auto outputs_tensors = output.chunked_tensors(this->num_);
+
+  for (int i = 0; i < this->num_; ++i) {
+
+    if (this->is_1x1_) {
+      this->col_buffer_ = &outputs_tensors[i];
     }
-  }
-}
 
+    inplace_gemm(
+      CblasTrans, CblasNoTrans, 
+      this->kernel_dim_, this->conv_out_spatial_dim_, this->conv_out_channels_,
+      (float)1., *this->weight_, inputs_tensors[i],
+      (float)0., *this->col_buffer_
+    );
 
+    if (!this->is_1x1_) {
+      this->conv_col2im(*this->col_buffer_, outputs_tensors[i]);
+    }
 
-
-template <>
-TensorCPU<float> DeconvolutionOp_CPU<float>::Forward(TensorCPU<float> &input_tensor) {
-
-  const float* input_data = input_tensor.immutable_data();
-  float* output_data = new float[this->top_count_];
-
-  for (int n = 0; n < this->num_; ++n) {
-    this->backward_cpu_gemm(input_data + n * this->bottom_dim_, weight_,
-        output_data + n * this->top_dim_);
     if (this->bias_) {
-      this->forward_cpu_bias(output_data + n * this->top_dim_, bias_);
+      inplace_channeled_add(outputs_tensors[i], *this->bias_, this->num_output_, this->out_spatial_dim_);
     }
+
   }
-  return TensorCPU<float>(output_data, top_count_);
+
+  return output;
 
 }
 
 
+DEFINE_FORWARD_FUNC(DeconvolutionOp);
 
-
-
-#ifdef USE_OPENCL
-
-template <typename Dtype>
-TensorGPU<Dtype> DeconvolutionOp_GPU<Dtype>::Forward(TensorGPU<Dtype> input_tensor){
-
-  const cl_mem input_data = input_tensor.immutable_data();
-  TensorGPU<Dtype> output_tensor(this->top_count_);
-  cl_mem output_data = output_tensor.mutable_data();
-
-
-  std::vector<std::pair<size_t, const void *> > arg_list {
-    std::make_pair(sizeof(cl_mem), (void *)&input_data),
-    std::make_pair(sizeof(cl_mem), (void *)&this->weight_data_),
-    std::make_pair(sizeof(cl_mem), (void *)&output_data)
-  };
-
-  if (this->bias_.count() != 0) {
-    arg_list.push_back(std::make_pair(sizeof(cl_mem), (void *)&this->bias_data_));
-  }
-
-
-  opencl_launch_wrapper(
-    OpenCLHandler::Get().conv_program,
-    this->kernel_name_,
-    arg_list,
-    this->global_size_,
-    this->local_size_
-  );
-  
-  return output_tensor;
-
-}
-
-
-#endif //USE_OPENCL
-
-
-
-
-// #ifdef CPU_ONLY
-// STUB_GPU(DeconvolutionOp_CPU);
-// #endif
-
-INSTANTIATE_CLASS_CPU(DeconvolutionOp_CPU);
-INSTANTIATE_CLASS_GPU(DeconvolutionOp_GPU);
-// REGISTER_LAYER_CLASS(Deconvolution);
 
 }  // namespace hypertea

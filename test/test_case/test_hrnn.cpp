@@ -7,7 +7,7 @@
 #include "hypertea/common.hpp"
 
 #include "test_hypertea_util.hpp"
-#include "hypertea/operators/hrnn_op.hpp"
+#include "hypertea/operators/rnn_op.hpp"
 
 #include "test_result/rnn_result.hpp"
 
@@ -52,7 +52,7 @@ TYPED_TEST(RNN_Test, test_uni_single_gru) {
         64, 32, 
         _w_ih0, _w_hh0, 
         _b_ih0, _b_hh0, 
-        hypertea::HRNN_CELL_TYPE::GRU_CELL
+        hypertea::RNN_CELL_TYPE::GRU_CELL
       )
     }
   );
@@ -97,7 +97,7 @@ TYPED_TEST(RNN_Test, test_bi_single_gru) {
         _w_hh0, r_w_hh0, 
         _b_ih0, r_b_ih0, 
         _b_hh0, r_b_hh0, 
-        hypertea::HRNN_CELL_TYPE::GRU_CELL
+        hypertea::RNN_CELL_TYPE::GRU_CELL
       )
     }
   );
@@ -151,20 +151,20 @@ TYPED_TEST(RNN_Test, test_uni_multi3_gru) {
       64, 32, 
       _w_ih0, _w_hh0, 
       _b_ih0, _b_hh0, 
-      hypertea::HRNN_CELL_TYPE::GRU_CELL
+      hypertea::RNN_CELL_TYPE::GRU_CELL
     ),
 
     new hypertea::UnidirectionalRNN<DeviceTensor> (
       32, 32, 
       _w_ih1, _w_hh1, 
       _b_ih1, _b_hh1, 
-      hypertea::HRNN_CELL_TYPE::GRU_CELL
+      hypertea::RNN_CELL_TYPE::GRU_CELL
     ),
     new hypertea::UnidirectionalRNN<DeviceTensor> (
       32, 32, 
       _w_ih2, _w_hh2, 
       _b_ih2, _b_hh2, 
-      hypertea::HRNN_CELL_TYPE::GRU_CELL
+      hypertea::RNN_CELL_TYPE::GRU_CELL
     )
     }
   );
@@ -235,7 +235,7 @@ TYPED_TEST(RNN_Test, test_bi_multi3_gru) {
         _w_hh0, r_w_hh0, 
         _b_ih0, r_b_ih0, 
         _b_hh0, r_b_hh0, 
-        hypertea::HRNN_CELL_TYPE::GRU_CELL
+        hypertea::RNN_CELL_TYPE::GRU_CELL
       ),
       new hypertea::BidirectionalRNN<DeviceTensor> (
         64, 32, 
@@ -243,7 +243,7 @@ TYPED_TEST(RNN_Test, test_bi_multi3_gru) {
         _w_hh1, r_w_hh1, 
         _b_ih1, r_b_ih1, 
         _b_hh1, r_b_hh1, 
-        hypertea::HRNN_CELL_TYPE::GRU_CELL
+        hypertea::RNN_CELL_TYPE::GRU_CELL
       ),      
       new hypertea::BidirectionalRNN<DeviceTensor> (
         64, 32, 
@@ -251,7 +251,7 @@ TYPED_TEST(RNN_Test, test_bi_multi3_gru) {
         _w_hh2, r_w_hh2, 
         _b_ih2, r_b_ih2, 
         _b_hh2, r_b_hh2, 
-        hypertea::HRNN_CELL_TYPE::GRU_CELL
+        hypertea::RNN_CELL_TYPE::GRU_CELL
       )
     }
   );
@@ -294,7 +294,7 @@ TYPED_TEST(RNN_Test, test_uni_single_lstm) {
         64, 32, 
         _w_ih0, _w_hh0, 
         _b_ih0, _b_hh0, 
-        hypertea::HRNN_CELL_TYPE::LSTM_CELL
+        hypertea::RNN_CELL_TYPE::LSTM_CELL
       )
     }
   );
@@ -340,7 +340,7 @@ TYPED_TEST(RNN_Test, test_bi_single_lstm) {
         _w_hh0, r_w_hh0, 
         _b_ih0, r_b_ih0, 
         _b_hh0, r_b_hh0, 
-        hypertea::HRNN_CELL_TYPE::LSTM_CELL
+        hypertea::RNN_CELL_TYPE::LSTM_CELL
       )
     }
   );
@@ -395,20 +395,20 @@ TYPED_TEST(RNN_Test, test_uni_multi3_lstm) {
         64, 32, 
         _w_ih0, _w_hh0, 
         _b_ih0, _b_hh0, 
-        hypertea::HRNN_CELL_TYPE::LSTM_CELL
+        hypertea::RNN_CELL_TYPE::LSTM_CELL
       ),
 
       new hypertea::UnidirectionalRNN<DeviceTensor> (
         32, 32, 
         _w_ih1, _w_hh1, 
         _b_ih1, _b_hh1, 
-        hypertea::HRNN_CELL_TYPE::LSTM_CELL
+        hypertea::RNN_CELL_TYPE::LSTM_CELL
       ),
       new hypertea::UnidirectionalRNN<DeviceTensor> (
         32, 32, 
         _w_ih2, _w_hh2, 
         _b_ih2, _b_hh2, 
-        hypertea::HRNN_CELL_TYPE::LSTM_CELL
+        hypertea::RNN_CELL_TYPE::LSTM_CELL
       )
     }
   );
@@ -479,7 +479,7 @@ TYPED_TEST(RNN_Test, test_bi_multi3_lstm) {
         _w_hh0, r_w_hh0, 
         _b_ih0, r_b_ih0, 
         _b_hh0, r_b_hh0, 
-        hypertea::HRNN_CELL_TYPE::LSTM_CELL
+        hypertea::RNN_CELL_TYPE::LSTM_CELL
       ),
       new hypertea::BidirectionalRNN<DeviceTensor> (
         64, 32, 
@@ -487,7 +487,7 @@ TYPED_TEST(RNN_Test, test_bi_multi3_lstm) {
         _w_hh1, r_w_hh1, 
         _b_ih1, r_b_ih1, 
         _b_hh1, r_b_hh1, 
-        hypertea::HRNN_CELL_TYPE::LSTM_CELL
+        hypertea::RNN_CELL_TYPE::LSTM_CELL
       ),      
       new hypertea::BidirectionalRNN<DeviceTensor> (
         64, 32, 
@@ -495,7 +495,7 @@ TYPED_TEST(RNN_Test, test_bi_multi3_lstm) {
         _w_hh2, r_w_hh2, 
         _b_ih2, r_b_ih2, 
         _b_hh2, r_b_hh2, 
-        hypertea::HRNN_CELL_TYPE::LSTM_CELL
+        hypertea::RNN_CELL_TYPE::LSTM_CELL
       )
     }
   );
