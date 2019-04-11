@@ -44,45 +44,24 @@ template<typename Dtype> class TensorCPU;
 
 
 
-template <typename Dtype>
-TensorCPU<Dtype>& inplace_cpu_gemv(
-	const CBLAS_TRANSPOSE TransA, 
-	const int M, const int N,
-    const float alpha, 
-    const TensorCPU<Dtype>& A, 
-    const TensorCPU<Dtype>& x, 
-    const float beta,
-    TensorCPU<Dtype>& y) {
+// template <typename Dtype>
+// TensorCPU<Dtype>& inplace_gemv(
+// 	const CBLAS_TRANSPOSE TransA, 
+// 	const int M, const int N,
+//     const float alpha, 
+//     const TensorCPU<Dtype>& A, 
+//     const TensorCPU<Dtype>& x, 
+//     const float beta,
+//     TensorCPU<Dtype>& y) {
 
-	auto A_data = A.immutable_data();
-  	auto x_data = x.immutable_data();
-  	auto y_data = y.mutable_data();
+// 	auto A_data = A.immutable_data();
+//   	auto x_data = x.immutable_data();
+//   	auto y_data = y.mutable_data();
 
-  	cblas_sgemv(CblasRowMajor, TransA, M, N, alpha, A_data, N, x_data, 1, beta, y_data, 1);
+//   	cblas_sgemv(CblasRowMajor, TransA, M, N, alpha, A_data, N, x_data, 1, beta, y_data, 1);
 
-	return y;
-}
-
-
-template <typename Dtype>
-TensorCPU<Dtype>& inplace_gemv(
-	const CBLAS_TRANSPOSE TransA, 
-	const int M, const int N,
-    const float alpha, 
-    const TensorCPU<Dtype>& A, 
-    const TensorCPU<Dtype>& x, 
-    const float beta,
-    TensorCPU<Dtype>& y) {
-
-	auto A_data = A.immutable_data();
-  	auto x_data = x.immutable_data();
-  	auto y_data = y.mutable_data();
-
-  	cblas_sgemv(CblasRowMajor, TransA, M, N, alpha, A_data, N, x_data, 1, beta, y_data, 1);
-
-	return y;
-}
-
+// 	return y;
+// }
 
 template <typename Dtype>
 TensorCPU<Dtype>& inplace_gemm(
@@ -108,9 +87,31 @@ TensorCPU<Dtype>& inplace_gemm(
 	return C;
 }
 
+template <typename Dtype>
+TensorCPU<Dtype>& inplace_gemv(
+	const CBLAS_TRANSPOSE TransA, 
+	const int M, const int N,
+    const float alpha, 
+    const TensorCPU<Dtype>& A, 
+    const TensorCPU<Dtype>& x, 
+    const float beta,
+    TensorCPU<Dtype>& y) {
+
+	auto A_data = A.immutable_data();
+  	auto x_data = x.immutable_data();
+  	auto y_data = y.mutable_data();
+
+  	cblas_sgemv(CblasRowMajor, TransA, M, N, alpha, A_data, N, x_data, 1, beta, y_data, 1);
+
+	return y;
+}
+
+
+
+
 
 template <typename Dtype>
-inline TensorCPU<Dtype>& inplace_cpu_set(TensorCPU<Dtype> &x, const Dtype alpha) {
+inline TensorCPU<Dtype>& inplace_set(TensorCPU<Dtype> &x, const Dtype alpha) {
 	
     if (alpha == 0) {
     	memset(x.mutable_data(), alpha, sizeof(Dtype) * x.count());
@@ -125,31 +126,31 @@ inline TensorCPU<Dtype>& inplace_cpu_set(TensorCPU<Dtype> &x, const Dtype alpha)
 
 
 template <typename Dtype>
-inline TensorCPU<Dtype>& inplace_cpu_add(const TensorCPU<Dtype>& x, TensorCPU<Dtype> &y) {
+inline TensorCPU<Dtype>& inplace_add(const TensorCPU<Dtype>& x, TensorCPU<Dtype> &y) {
 	vsAdd(y.count(), y.immutable_data(), x.immutable_data(), y.mutable_data());
 	return y;
 }
 
 template <typename Dtype>
-inline TensorCPU<Dtype>& inplace_cpu_sub(const TensorCPU<Dtype>& x, TensorCPU<Dtype> &y) {
+inline TensorCPU<Dtype>& inplace_sub(const TensorCPU<Dtype>& x, TensorCPU<Dtype> &y) {
 	vsSub(y.count(), y.immutable_data(), x.immutable_data(), y.mutable_data());
 	return y;
 }
 
 template <typename Dtype>
-inline TensorCPU<Dtype>& inplace_cpu_mul(const TensorCPU<Dtype>& x, TensorCPU<Dtype> &y) {
+inline TensorCPU<Dtype>& inplace_mul(const TensorCPU<Dtype>& x, TensorCPU<Dtype> &y) {
 	vsMul(y.count(), y.immutable_data(), x.immutable_data(), y.mutable_data());
 	return y;
 }
 
 template <typename Dtype>
-inline TensorCPU<Dtype>& inplace_cpu_div(const TensorCPU<Dtype>& x, TensorCPU<Dtype> &y) {
+inline TensorCPU<Dtype>& inplace_div(const TensorCPU<Dtype>& x, TensorCPU<Dtype> &y) {
 	vsDiv(y.count(), y.immutable_data(), x.immutable_data(), y.mutable_data());
 	return y;
 }
 
 template <typename Dtype>
-inline TensorCPU<Dtype>& inplace_cpu_add_scalar(TensorCPU<Dtype> &y, const float a) {
+inline TensorCPU<Dtype>& inplace_add_scalar(TensorCPU<Dtype> &y, const float a) {
 	Dtype* y_data = y.mutable_data();
 	for (int i = 0; i < y.count(); ++i) {
     	y_data[i] += a;
@@ -158,7 +159,7 @@ inline TensorCPU<Dtype>& inplace_cpu_add_scalar(TensorCPU<Dtype> &y, const float
 }
 
 template <typename Dtype>
-inline TensorCPU<Dtype>& inplace_cpu_sub_scalar(TensorCPU<Dtype> &y, const float a) {
+inline TensorCPU<Dtype>& inplace_sub_scalar(TensorCPU<Dtype> &y, const float a) {
 	Dtype* y_data = y.mutable_data();
 	for (int i = 0; i < y.count(); ++i) {
     	y_data[i] -= a;
@@ -167,7 +168,7 @@ inline TensorCPU<Dtype>& inplace_cpu_sub_scalar(TensorCPU<Dtype> &y, const float
 }
 
 template <typename Dtype>
-inline TensorCPU<Dtype>& inplace_cpu_mul_scalar(TensorCPU<Dtype> &y, const float a) {
+inline TensorCPU<Dtype>& inplace_mul_scalar(TensorCPU<Dtype> &y, const float a) {
 	Dtype* y_data = y.mutable_data();
 	for (int i = 0; i < y.count(); ++i) {
     	y_data[i] *= a;
@@ -176,7 +177,7 @@ inline TensorCPU<Dtype>& inplace_cpu_mul_scalar(TensorCPU<Dtype> &y, const float
 }
 
 template <typename Dtype>
-inline TensorCPU<Dtype>& inplace_cpu_div_scalar(TensorCPU<Dtype> &y, const float a) {
+inline TensorCPU<Dtype>& inplace_div_scalar(TensorCPU<Dtype> &y, const float a) {
 	
 	const float a_ = 1/a;
 
@@ -189,31 +190,11 @@ inline TensorCPU<Dtype>& inplace_cpu_div_scalar(TensorCPU<Dtype> &y, const float
 
 
 template <typename Dtype>
-inline TensorCPU<Dtype>& inplace_cpu_sigmoid(TensorCPU<Dtype>& x) {
-    
-    Dtype* data = x.mutable_data();
-	for (int i = 0; i < x.size(); ++i) {
-		data[i] = 0.5 * tanh(0.5 * data[i]) + 0.5;
-	}
-	return x;
-}
-
-template <typename Dtype>
 inline TensorCPU<Dtype>& inplace_sigmoid(TensorCPU<Dtype>& x) {
     
     Dtype* data = x.mutable_data();
 	for (int i = 0; i < x.size(); ++i) {
 		data[i] = 0.5 * tanh(0.5 * data[i]) + 0.5;
-	}
-	return x;
-}
-
-template <typename Dtype>
-inline TensorCPU<Dtype>& inplace_cpu_tanh(TensorCPU<Dtype>& x) {
-  
-    Dtype* data = x.mutable_data();
-	for (int i = 0; i < x.size(); ++i) {
-		data[i] = tanh(data[i]);
 	}
 	return x;
 }
@@ -229,32 +210,34 @@ inline TensorCPU<Dtype>& inplace_tanh(TensorCPU<Dtype>& x) {
 	return x;
 }
 
+
+
 template <typename Dtype>
-inline TensorCPU<Dtype>& inplace_cpu_abs(TensorCPU<Dtype>& x) {
+inline TensorCPU<Dtype>& inplace_abs(TensorCPU<Dtype>& x) {
 	vsAbs(x.count(), x.immutable_data(), x.mutable_data());
 	return x;
 }
 
 template <typename Dtype>
-inline TensorCPU<Dtype>& inplace_cpu_exp(TensorCPU<Dtype>& x) {
+inline TensorCPU<Dtype>& inplace_exp(TensorCPU<Dtype>& x) {
 	vsExp(x.count(), x.immutable_data(), x.mutable_data());
 	return x;
 }
 
 template <typename Dtype>
-inline TensorCPU<Dtype>& inplace_cpu_log(TensorCPU<Dtype>& x) {
+inline TensorCPU<Dtype>& inplace_log(TensorCPU<Dtype>& x) {
 	vsLn(x.count(), x.immutable_data(), x.mutable_data());
 	return x;
 }
 
 template <typename Dtype>
-inline TensorCPU<Dtype>& inplace_cpu_sqr(TensorCPU<Dtype>& x) {
+inline TensorCPU<Dtype>& inplace_sqr(TensorCPU<Dtype>& x) {
 	vsSqr(x.count(), x.immutable_data(), x.mutable_data());
 	return x;
 }
 
 template <typename Dtype>
-inline TensorCPU<Dtype>& inplace_cpu_sqrt(TensorCPU<Dtype>& x) {
+inline TensorCPU<Dtype>& inplace_sqrt(TensorCPU<Dtype>& x) {
 	vsSqrt(x.count(), x.immutable_data(), x.mutable_data());
 	return x;
 }
@@ -264,20 +247,20 @@ template <typename Dtype>
 inline TensorCPU<Dtype>& inplace_inv(TensorCPU<Dtype>& x, const float eps = 1e-5) {
 	Dtype* data = x.mutable_data();
 	for (int i = 0; i < x.count(); ++i) {
-		data[i] = 1 / (data[i] + eps);
+		data[i] = 1 / data[i];
 	}
 	return x;
 }
 
 
 template <typename Dtype>
-inline TensorCPU<Dtype>& inplace_cpu_powx(TensorCPU<Dtype>& x, const float a) {
+inline TensorCPU<Dtype>& inplace_powx(TensorCPU<Dtype>& x, const float a) {
 	vsPowx(x.count(), x.immutable_data(), a, x.mutable_data());
 	return x;
 }
 
 template <typename Dtype>
-inline TensorCPU<Dtype>& inplace_cpu_elu(TensorCPU<Dtype>& x, const float a = 1.) {
+inline TensorCPU<Dtype>& inplace_elu(TensorCPU<Dtype>& x, const float a = 1.) {
 
 	Dtype* data = x.mutable_data();
 	for (int i = 0; i < x.count(); ++i) {
@@ -287,7 +270,7 @@ inline TensorCPU<Dtype>& inplace_cpu_elu(TensorCPU<Dtype>& x, const float a = 1.
 }
 
 template <typename Dtype>
-inline TensorCPU<Dtype>& inplace_cpu_relu(TensorCPU<Dtype>& x, const float a = .0) {
+inline TensorCPU<Dtype>& inplace_relu(TensorCPU<Dtype>& x, const float a = .0) {
 	
 	Dtype* data = x.mutable_data();
 	for (int i = 0; i < x.count(); ++i) {
@@ -297,33 +280,6 @@ inline TensorCPU<Dtype>& inplace_cpu_relu(TensorCPU<Dtype>& x, const float a = .
 }
 
 
-template <typename Dtype>
-void mean_var(TensorCPU<Dtype>& x, TensorCPU<Dtype>& mean, TensorCPU<Dtype>& var, int channels, int spatial_dim, float eps) {
-	
-	auto x_data = x.mutable_data();
-	auto mean_data = mean.mutable_data();
-	auto var_data = var.mutable_data();
-	
-
-	int nspatial_dim = x.count() / channels;
-
-	Dtype p = 0;
-
-	for (int c = 0; c < channels; ++c) {
-		mean_data[c] = 0;
-		var_data[c] = 0;
-		for (int bs = 0; bs < (nspatial_dim / spatial_dim); ++bs) {
-			for (int i = 0; i < spatial_dim; ++i) {
-				p = x_data[bs * channels * spatial_dim + c * spatial_dim + i];
-				mean_data[c] += p;
-				var_data[c] += p*p;
-			}
-		}
-		mean_data[c] /= nspatial_dim;
-		var_data[c] /= nspatial_dim;
-		var_data[c] = sqrt(var_data[c] - mean_data[c]*mean_data[c] + eps);
-	}
-}
 
 
 
@@ -427,7 +383,7 @@ TensorCPU<Dtype>& inplace_channeled_scaladd(
 
 
 template <typename Dtype>
-TensorCPU<Dtype> cpu_gemv(
+TensorCPU<Dtype> outplace_gemv(
 	const CBLAS_TRANSPOSE TransA, 
 	const int M, const int N,
     const float alpha, 
@@ -449,146 +405,122 @@ TensorCPU<Dtype> cpu_gemv(
 }
 
 template <typename Dtype>
-inline TensorCPU<Dtype> cpu_add(const TensorCPU<Dtype>& x, const TensorCPU<Dtype> &y) {
+inline TensorCPU<Dtype> outplace_add(const TensorCPU<Dtype>& x, const TensorCPU<Dtype> &y) {
 	auto z = x.duplicate();
-	inplace_cpu_add(y, z);
+	inplace_add(y, z);
 	return z;
 }
 
 template <typename Dtype>
-inline TensorCPU<Dtype> cpu_sub(const TensorCPU<Dtype>& x, const TensorCPU<Dtype> &y) {
+inline TensorCPU<Dtype> outplace_sub(const TensorCPU<Dtype>& x, const TensorCPU<Dtype> &y) {
 	auto z = x.duplicate();
-	inplace_cpu_sub(y, z);
+	inplace_sub(y, z);
 	return z;
 }
 
 template <typename Dtype>
-inline TensorCPU<Dtype> cpu_mul(const TensorCPU<Dtype>& x, const TensorCPU<Dtype> &y) {
+inline TensorCPU<Dtype> outplace_mul(const TensorCPU<Dtype>& x, const TensorCPU<Dtype> &y) {
 	auto z = x.duplicate();
-	inplace_cpu_mul(y, z);
+	inplace_mul(y, z);
 	return z;
 }
 
 template <typename Dtype>
-inline TensorCPU<Dtype> cpu_div(const TensorCPU<Dtype>& x, const TensorCPU<Dtype> &y) {
+inline TensorCPU<Dtype> outplace_div(const TensorCPU<Dtype>& x, const TensorCPU<Dtype> &y) {
 	auto z = x.duplicate();
-	inplace_cpu_div(y, z);
+	inplace_div(y, z);
 	return z;
 }
 
 template <typename Dtype>
-inline TensorCPU<Dtype> cpu_add_scalar(const TensorCPU<Dtype> &y, const float a) {
+inline TensorCPU<Dtype> outplace_add_scalar(const TensorCPU<Dtype> &y, const float a) {
 	auto z = y.duplicate();
-	inplace_cpu_add_scalar(z, a);
+	inplace_add_scalar(z, a);
 	return z;
 }
 
 template <typename Dtype>
-inline TensorCPU<Dtype> cpu_sub_scalar(const TensorCPU<Dtype> &y, const float a) {
+inline TensorCPU<Dtype> outplace_sub_scalar(const TensorCPU<Dtype> &y, const float a) {
 	auto z = y.duplicate();
-	inplace_cpu_sub_scalar(z, a);
+	inplace_sub_scalar(z, a);
 	return z;
 }
 
 template <typename Dtype>
-inline TensorCPU<Dtype> cpu_mul_scalar(const TensorCPU<Dtype> &y, const float a) {
+inline TensorCPU<Dtype> outplace_mul_scalar(const TensorCPU<Dtype> &y, const float a) {
 	auto z = y.duplicate();
-	inplace_cpu_mul_scalar(z, a);
+	inplace_mul_scalar(z, a);
 	return z;
 }
 
 template <typename Dtype>
-inline TensorCPU<Dtype> cpu_div_scalar(const TensorCPU<Dtype> &y, const float a) {
+inline TensorCPU<Dtype> outplace_div_scalar(const TensorCPU<Dtype> &y, const float a) {
 	auto z = y.duplicate();
-	inplace_cpu_div_scalar(z, a);
+	inplace_div_scalar(z, a);
 	return z;
 }
 
 
 template <typename Dtype>
-inline TensorCPU<Dtype> cpu_sigmoid(const TensorCPU<Dtype>& x) {
+inline TensorCPU<Dtype> outplace_sigmoid(const TensorCPU<Dtype>& x) {
   	auto y = x.duplicate();
-	inplace_cpu_sigmoid(y);
+	inplace_sigmoid(y);
 	return y;
 }
-
-template <typename Dtype>
-inline TensorCPU<Dtype> cpu_tanh(const TensorCPU<Dtype>& x) {
-  	auto y = x.duplicate();
-	inplace_cpu_tanh(y);
-	return y;
-}
-
-template <typename Dtype>
-inline TensorCPU<Dtype> cpu_abs(const TensorCPU<Dtype>& x) {
-	auto y = x.duplicate();
-	inplace_cpu_abs(y);
-	return y;
-}
-
-template <typename Dtype>
-inline TensorCPU<Dtype> cpu_exp(const TensorCPU<Dtype>& x) {
-	auto y = x.duplicate();
-	inplace_cpu_exp(y);
-	return y;
-}
-
-template <typename Dtype>
-inline TensorCPU<Dtype> cpu_log(const TensorCPU<Dtype>& x) {
-	auto y = x.duplicate();
-	inplace_cpu_log(y);
-	return y;
-}
-
-template <typename Dtype>
-inline TensorCPU<Dtype> cpu_sqr(const TensorCPU<Dtype>& x) {
-	auto y = x.duplicate();
-	inplace_cpu_sqr(y);
-	return y;
-}
-
-template <typename Dtype>
-inline TensorCPU<Dtype> cpu_sqrt(const TensorCPU<Dtype>& x) {
-	auto y = x.duplicate();
-	inplace_cpu_sqrt(y);
-	return y;
-}
-
-template <typename Dtype>
-inline TensorCPU<Dtype> cpu_powx(const TensorCPU<Dtype>& x, const float a) {
-	auto y = x.duplicate();
-	inplace_cpu_powx(y, a);
-	return y;
-}
-
-template <typename Dtype>
-inline TensorCPU<Dtype> cpu_elu(const TensorCPU<Dtype>& x, const float a = 1.) {
-	auto y = x.duplicate();
-	inplace_cpu_elu(y, a);
-	return y;
-}
-
-
-template <typename Dtype>
-inline TensorCPU<Dtype> cpu_relu(const TensorCPU<Dtype>& x, const float a = .0) {
-	auto y = x.duplicate();
-	inplace_cpu_relu(y, a);
-	return y;
-}
-
-
 
 template <typename Dtype>
 inline TensorCPU<Dtype> outplace_tanh(const TensorCPU<Dtype>& x) {
   	auto y = x.duplicate();
-	inplace_cpu_tanh(y);
+	inplace_tanh(y);
+	return y;
+}
+
+template <typename Dtype>
+inline TensorCPU<Dtype> outplace_abs(const TensorCPU<Dtype>& x) {
+	auto y = x.duplicate();
+	inplace_abs(y);
+	return y;
+}
+
+template <typename Dtype>
+inline TensorCPU<Dtype> outplace_exp(const TensorCPU<Dtype>& x) {
+	auto y = x.duplicate();
+	inplace_exp(y);
+	return y;
+}
+
+template <typename Dtype>
+inline TensorCPU<Dtype> outplace_log(const TensorCPU<Dtype>& x) {
+	auto y = x.duplicate();
+	inplace_log(y);
+	return y;
+}
+
+template <typename Dtype>
+inline TensorCPU<Dtype> outplace_sqr(const TensorCPU<Dtype>& x) {
+	auto y = x.duplicate();
+	inplace_sqr(y);
+	return y;
+}
+
+template <typename Dtype>
+inline TensorCPU<Dtype> outplace_sqrt(const TensorCPU<Dtype>& x) {
+	auto y = x.duplicate();
+	inplace_sqrt(y);
+	return y;
+}
+
+template <typename Dtype>
+inline TensorCPU<Dtype> outplace_powx(const TensorCPU<Dtype>& x, const float a) {
+	auto y = x.duplicate();
+	inplace_powx(y, a);
 	return y;
 }
 
 template <typename Dtype>
 inline TensorCPU<Dtype> outplace_elu(const TensorCPU<Dtype>& x, const float a = 1.) {
 	auto y = x.duplicate();
-	inplace_cpu_elu(y, a);
+	inplace_elu(y, a);
 	return y;
 }
 
@@ -596,11 +528,43 @@ inline TensorCPU<Dtype> outplace_elu(const TensorCPU<Dtype>& x, const float a = 
 template <typename Dtype>
 inline TensorCPU<Dtype> outplace_relu(const TensorCPU<Dtype>& x, const float a = .0) {
 	auto y = x.duplicate();
-	inplace_cpu_relu(y, a);
+	inplace_relu(y, a);
 	return y;
 }
 
 
+
+
+template <typename Dtype>
+void mean_var(
+	TensorCPU<Dtype>& x, 
+	TensorCPU<Dtype>& mean, TensorCPU<Dtype>& var, 
+	int channels, int spatial_dim, float eps) {
+	
+	auto x_data = x.mutable_data();
+	auto mean_data = mean.mutable_data();
+	auto var_data = var.mutable_data();
+	
+
+	int nspatial_dim = x.count() / channels;
+
+	Dtype p = 0;
+
+	for (int c = 0; c < channels; ++c) {
+		mean_data[c] = 0;
+		var_data[c] = 0;
+		for (int bs = 0; bs < (nspatial_dim / spatial_dim); ++bs) {
+			for (int i = 0; i < spatial_dim; ++i) {
+				p = x_data[bs * channels * spatial_dim + c * spatial_dim + i];
+				mean_data[c] += p;
+				var_data[c] += p*p;
+			}
+		}
+		mean_data[c] /= nspatial_dim;
+		var_data[c] /= nspatial_dim;
+		var_data[c] = sqrt(var_data[c] - mean_data[c]*mean_data[c] + eps);
+	}
+}
 
 // template <typename Dtype>
 // TensorCPU<Dtype>& inplace_channeled_scal(
@@ -650,24 +614,24 @@ inline TensorCPU<Dtype> outplace_relu(const TensorCPU<Dtype>& x, const float a =
 
  
 template<typename Dtype> 
-TensorCPU<Dtype> operator+ (const TensorCPU<Dtype>& lhs, const TensorCPU<Dtype>& rhs) {return cpu_add(lhs ,rhs); }
+TensorCPU<Dtype> operator+ (const TensorCPU<Dtype>& lhs, const TensorCPU<Dtype>& rhs) {return outplace_add(lhs ,rhs); }
 template<typename Dtype>
-TensorCPU<Dtype> operator+ (const TensorCPU<Dtype>& lhs, const float rhs) {return cpu_add_scalar(lhs, rhs); }
+TensorCPU<Dtype> operator+ (const TensorCPU<Dtype>& lhs, const float rhs) {return outplace_add_scalar(lhs, rhs); }
 
 template<typename Dtype>
-TensorCPU<Dtype> operator- (const TensorCPU<Dtype>& lhs, const TensorCPU<Dtype>& rhs) {return cpu_sub(lhs ,rhs); }
+TensorCPU<Dtype> operator- (const TensorCPU<Dtype>& lhs, const TensorCPU<Dtype>& rhs) {return outplace_sub(lhs ,rhs); }
 template<typename Dtype>
-TensorCPU<Dtype> operator- (const TensorCPU<Dtype>& lhs, const float rhs) {return cpu_sub_scalar(lhs, rhs); }
+TensorCPU<Dtype> operator- (const TensorCPU<Dtype>& lhs, const float rhs) {return outplace_sub_scalar(lhs, rhs); }
 
 template<typename Dtype>
-TensorCPU<Dtype> operator* (const TensorCPU<Dtype>& lhs, const TensorCPU<Dtype>& rhs) {return cpu_mul(lhs ,rhs); }
+TensorCPU<Dtype> operator* (const TensorCPU<Dtype>& lhs, const TensorCPU<Dtype>& rhs) {return outplace_mul(lhs ,rhs); }
 template<typename Dtype>
-TensorCPU<Dtype> operator* (const TensorCPU<Dtype>& lhs, const float rhs) {return cpu_mul_scalar(lhs, rhs); }
+TensorCPU<Dtype> operator* (const TensorCPU<Dtype>& lhs, const float rhs) {return outplace_mul_scalar(lhs, rhs); }
 
 template<typename Dtype>
-TensorCPU<Dtype> operator/ (const TensorCPU<Dtype>& lhs, const TensorCPU<Dtype>& rhs) {return cpu_div(lhs ,rhs); }
+TensorCPU<Dtype> operator/ (const TensorCPU<Dtype>& lhs, const TensorCPU<Dtype>& rhs) {return outplace_div(lhs ,rhs); }
 template<typename Dtype> 
-TensorCPU<Dtype> operator/ (const TensorCPU<Dtype>& lhs, const float rhs) {return cpu_div_scalar(lhs, rhs); }
+TensorCPU<Dtype> operator/ (const TensorCPU<Dtype>& lhs, const float rhs) {return outplace_div_scalar(lhs, rhs); }
 
 
 

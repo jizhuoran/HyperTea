@@ -39,31 +39,37 @@ namespace hypertea {
 
 
 template <typename Dtype>
-class MIOpenBatchNormOp_GPU : public GPUFunctor<Dtype> {
+class MIOpenBatchNormOp_GPU {
  public:
 
   explicit MIOpenBatchNormOp_GPU(
     std::string kernel_name,
-    cl_mem mean, cl_mem variance,
-    cl_mem weight, cl_mem bias,
+    TensorGPU<Dtype>* mean, TensorGPU<Dtype>* variance,
+    TensorGPU<Dtype>* weight, TensorGPU<Dtype>* bias,
     std::vector<size_t> local,
     std::vector<size_t> global,
     int channels,
     bool inplace = false)
-      : GPUFunctor<Dtype>(), kernel_name_(kernel_name),
+      : kernel_name_(kernel_name),
         mean_(mean), variance_(variance),
         weight_(weight), bias_(bias),
         local_size_(local), global_size_(global),
         inplace_(inplace) {
 
-          if(weight_ == NULL) {
-            weight_ = clCreateBuffer(OpenCLHandler::Get().context, CL_MEM_READ_WRITE, sizeof(Dtype) * channels, NULL, NULL);
-            hypertea_gpu_set<float>(channels, float(1.), weight_);
+          if(weight == NULL) {
+            weight_ = new TensorGPU<Dtype>(channels);
+            weight_->set(1);
+
+            // clCreateBuffer(OpenCLHandler::Get().context, CL_MEM_READ_WRITE, sizeof(Dtype) * channels, NULL, NULL);
+            // hypertea_gpu_set<float>(channels, float(1.), weight_);
           }
 
-          if(bias_ == NULL) {
-            bias_ = clCreateBuffer(OpenCLHandler::Get().context, CL_MEM_READ_WRITE, sizeof(Dtype) * channels, NULL, NULL);
-            hypertea_gpu_set<float>(channels, float(0.), bias_);
+          if(bias == NULL) {
+            bias_ = new TensorGPU<Dtype>(channels);
+            bias_->set(0);
+
+            // bias_ = clCreateBuffer(OpenCLHandler::Get().context, CL_MEM_READ_WRITE, sizeof(Dtype) * channels, NULL, NULL);
+            // hypertea_gpu_set<float>(channels, float(0.), bias_);
           }
 
 
@@ -85,10 +91,10 @@ class MIOpenBatchNormOp_GPU : public GPUFunctor<Dtype> {
   //     const std::vector<cl_mem> top_datas);
   virtual TensorGPU<Dtype> Forward(TensorGPU<Dtype> input_tensor);
 
-  cl_mem mean_ = NULL;
-  cl_mem variance_ = NULL;
-  cl_mem weight_ = NULL;
-  cl_mem bias_ = NULL;
+  TensorGPU<Dtype>* mean_ = NULL;
+  TensorGPU<Dtype>* variance_ = NULL;
+  TensorGPU<Dtype>* weight_ = NULL;
+  TensorGPU<Dtype>* bias_ = NULL;
   
   bool inplace_;
 };

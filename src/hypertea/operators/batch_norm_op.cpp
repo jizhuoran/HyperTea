@@ -7,7 +7,7 @@
 
 namespace hypertea {
 
-
+ 
 template<typename DeviceTensor>
 DeviceTensor BatchNormOp<DeviceTensor>::operator()(DeviceTensor& input) {
 
@@ -15,6 +15,9 @@ DeviceTensor BatchNormOp<DeviceTensor>::operator()(DeviceTensor& input) {
 
   if (!use_global_stats_) {
     mean_var(input, *mean_, *variance_, channels_, spatial_dim_, eps_);
+  } else {
+    *variance_ += eps_;
+    inplace_sqrt(*variance_);
   }
 
 

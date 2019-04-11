@@ -51,7 +51,7 @@ TYPED_TEST(BNTest, test_bn_1_t_f_f) {
   }
 }
 
-    /*
+    
 
 
 
@@ -67,10 +67,10 @@ TYPED_TEST(BNTest, test_bn_1_t_f_t) {
 
   auto input_tensor = DeviceTensor(random_generator.generate_random_vector(32));
   
-  auto bn = BatchNormOp<DeviceTensor>(32, 2, 1, 1e-05, 1, false, TensorGPU<float>(0), TensorGPU<float>(0), &weight, &bias, IN_PLACE);
+  auto bn = BatchNormOp<DeviceTensor>(1, 32, 1e-05, nullptr, nullptr, &weight, &bias, IN_PLACE);
 
 
-  auto output_tensor = bn.Forward(input_tensor);
+  auto output_tensor = bn(input_tensor);
 
   auto output_data = output_tensor.debug_gtest_cpu_data();
 
@@ -88,16 +88,17 @@ TYPED_TEST(BNTest, test_bn_1_t_t_f) {
 
   auto mean = DeviceTensor(random_generator.generate_random_vector(1));
   auto var = DeviceTensor(random_generator.generate_random_vector(1));
-  hypertea_abs(var.count(), &var, &var);
+  inplace_abs(var);
+  // hypertea_abs(var.count(), &var, &var);
   auto weight = DeviceTensor(random_generator.generate_random_vector(1));
   auto bias = DeviceTensor(random_generator.generate_random_vector(1));
 
   auto input_tensor = DeviceTensor(random_generator.generate_random_vector(32));
   
-  auto bn = BatchNormOp<DeviceTensor>(32, 2, 1, 1e-05, 1, true, &mean, &var, &weight, &bias, NOT_IN_PLACE);
+  auto bn = BatchNormOp<DeviceTensor>(1, 32, 1e-05, &mean, &var, &weight, &bias, NOT_IN_PLACE);
 
 
-  auto output_tensor = bn.Forward(input_tensor);
+  auto output_tensor = bn(input_tensor);
 
   auto output_data = output_tensor.debug_gtest_cpu_data();
 
@@ -118,16 +119,17 @@ TYPED_TEST(BNTest, test_bn_1_t_t_t) {
 
   auto mean = DeviceTensor(random_generator.generate_random_vector(1));
   auto var = DeviceTensor(random_generator.generate_random_vector(1));
-  hypertea_abs(var.count(), &var, &var);
+  inplace_abs(var);
+  // hypertea_abs(var.count(), &var, &var);
   auto weight = DeviceTensor(random_generator.generate_random_vector(1));
   auto bias = DeviceTensor(random_generator.generate_random_vector(1));
 
   auto input_tensor = DeviceTensor(random_generator.generate_random_vector(32));
   
-  auto bn = BatchNormOp<DeviceTensor>(32, 2, 1, 1e-05, 1, true, &mean, &var, &weight, &bias, IN_PLACE);
+  auto bn = BatchNormOp<DeviceTensor>(1, 32, 1e-05, &mean, &var, &weight, &bias, IN_PLACE);
 
 
-  auto output_tensor = bn.Forward(input_tensor);
+  auto output_tensor = bn(input_tensor);
 
   auto output_data = output_tensor.debug_gtest_cpu_data();
 
@@ -150,10 +152,10 @@ TYPED_TEST(BNTest, test_bn_1_f_f_f) {
 
   auto input_tensor = DeviceTensor(random_generator.generate_random_vector(32));
   
-  auto bn = BatchNormOp<DeviceTensor>(32, 2, 1, 1e-05, 1, false, TensorGPU<float>(0), TensorGPU<float>(0), TensorGPU<float>(0), TensorGPU<float>(0), NOT_IN_PLACE);
+  auto bn = BatchNormOp<DeviceTensor>(1, 32, 1e-05, nullptr, nullptr, nullptr, nullptr, NOT_IN_PLACE);
 
 
-  auto output_tensor = bn.Forward(input_tensor);
+  auto output_tensor = bn(input_tensor);
 
   auto output_data = output_tensor.debug_gtest_cpu_data();
 
@@ -178,10 +180,10 @@ TYPED_TEST(BNTest, test_bn_1_f_f_t) {
 
   auto input_tensor = DeviceTensor(random_generator.generate_random_vector(32));
   
-  auto bn = BatchNormOp<DeviceTensor>(32, 2, 1, 1e-05, 1, false, TensorGPU<float>(0), TensorGPU<float>(0), TensorGPU<float>(0), TensorGPU<float>(0), IN_PLACE);
+  auto bn = BatchNormOp<DeviceTensor>(1, 32, 1e-05, nullptr, nullptr, nullptr, nullptr, IN_PLACE);
 
 
-  auto output_tensor = bn.Forward(input_tensor);
+  auto output_tensor = bn(input_tensor);
 
   auto output_data = output_tensor.debug_gtest_cpu_data();
 
@@ -200,16 +202,17 @@ TYPED_TEST(BNTest, test_bn_1_f_t_f) {
 
   auto mean = DeviceTensor(random_generator.generate_random_vector(1));
   auto var = DeviceTensor(random_generator.generate_random_vector(1));
-  hypertea_abs(var.count(), &var, &var);
+  inplace_abs(var);
+  // hypertea_abs(var.count(), &var, &var);
   
   
 
   auto input_tensor = DeviceTensor(random_generator.generate_random_vector(32));
   
-  auto bn = BatchNormOp<DeviceTensor>(32, 2, 1, 1e-05, 1, true, &mean, &var, TensorGPU<float>(0), TensorGPU<float>(0), NOT_IN_PLACE);
+  auto bn = BatchNormOp<DeviceTensor>(1, 32, 1e-05, &mean, &var, nullptr, nullptr, NOT_IN_PLACE);
 
 
-  auto output_tensor = bn.Forward(input_tensor);
+  auto output_tensor = bn(input_tensor);
 
   auto output_data = output_tensor.debug_gtest_cpu_data();
 
@@ -228,16 +231,17 @@ TYPED_TEST(BNTest, test_bn_1_f_t_t) {
 
   auto mean = DeviceTensor(random_generator.generate_random_vector(1));
   auto var = DeviceTensor(random_generator.generate_random_vector(1));
-  hypertea_abs(var.count(), &var, &var);
+  inplace_abs(var);
+  // hypertea_abs(var.count(), &var, &var);
   
   
 
   auto input_tensor = DeviceTensor(random_generator.generate_random_vector(32));
   
-  auto bn = BatchNormOp<DeviceTensor>(32, 2, 1, 1e-05, 1, true, &mean, &var, TensorGPU<float>(0), TensorGPU<float>(0), IN_PLACE);
+  auto bn = BatchNormOp<DeviceTensor>(1, 32, 1e-05, &mean, &var, nullptr, nullptr, IN_PLACE);
 
 
-  auto output_tensor = bn.Forward(input_tensor);
+  auto output_tensor = bn(input_tensor);
 
   auto output_data = output_tensor.debug_gtest_cpu_data();
 
@@ -248,7 +252,7 @@ TYPED_TEST(BNTest, test_bn_1_f_t_t) {
 
     
   
-
+/*
 
 TYPED_TEST(BNTest, test_bn_3_t_f_f) {
   typedef TypeParam DeviceTensor;
@@ -262,10 +266,10 @@ TYPED_TEST(BNTest, test_bn_3_t_f_f) {
 
   auto input_tensor = DeviceTensor(random_generator.generate_random_vector(96));
   
-  auto bn = BatchNormOp<DeviceTensor>(96, 2, 3, 1e-05, 1, false, TensorGPU<float>(0), TensorGPU<float>(0), &weight, &bias, NOT_IN_PLACE);
+  auto bn = BatchNormOp<DeviceTensor>(3, 32, 1e-05, nullptr, nullptr, &weight, &bias, NOT_IN_PLACE);
 
 
-  auto output_tensor = bn.Forward(input_tensor);
+  auto output_tensor = bn(input_tensor);
 
   auto output_data = output_tensor.debug_gtest_cpu_data();
 
@@ -290,10 +294,10 @@ TYPED_TEST(BNTest, test_bn_3_t_f_t) {
 
   auto input_tensor = DeviceTensor(random_generator.generate_random_vector(96));
   
-  auto bn = BatchNormOp<DeviceTensor>(96, 2, 3, 1e-05, 1, false, TensorGPU<float>(0), TensorGPU<float>(0), &weight, &bias, IN_PLACE);
+  auto bn = BatchNormOp<DeviceTensor>(3, 32, 1e-05, nullptr, nullptr, &weight, &bias, IN_PLACE);
 
 
-  auto output_tensor = bn.Forward(input_tensor);
+  auto output_tensor = bn(input_tensor);
 
   auto output_data = output_tensor.debug_gtest_cpu_data();
 
@@ -315,16 +319,17 @@ TYPED_TEST(BNTest, test_bn_3_t_t_f) {
 
   auto mean = DeviceTensor(random_generator.generate_random_vector(3));
   auto var = DeviceTensor(random_generator.generate_random_vector(3));
-  hypertea_abs(var.count(), &var, &var);
+  inplace_abs(var);
+  // hypertea_abs(var.count(), &var, &var);
   auto weight = DeviceTensor(random_generator.generate_random_vector(3));
   auto bias = DeviceTensor(random_generator.generate_random_vector(3));
 
   auto input_tensor = DeviceTensor(random_generator.generate_random_vector(96));
   
-  auto bn = BatchNormOp<DeviceTensor>(96, 2, 3, 1e-05, 1, true, &mean, &var, &weight, &bias, NOT_IN_PLACE);
+  auto bn = BatchNormOp<DeviceTensor>(3, 32, 1e-05, &mean, &var, &weight, &bias, NOT_IN_PLACE);
 
 
-  auto output_tensor = bn.Forward(input_tensor);
+  auto output_tensor = bn(input_tensor);
 
   auto output_data = output_tensor.debug_gtest_cpu_data();
 
@@ -344,16 +349,17 @@ TYPED_TEST(BNTest, test_bn_3_t_t_t) {
 
   auto mean = DeviceTensor(random_generator.generate_random_vector(3));
   auto var = DeviceTensor(random_generator.generate_random_vector(3));
-  hypertea_abs(var.count(), &var, &var);
+  inplace_abs(var);
+  // hypertea_abs(var.count(), &var, &var);
   auto weight = DeviceTensor(random_generator.generate_random_vector(3));
   auto bias = DeviceTensor(random_generator.generate_random_vector(3));
 
   auto input_tensor = DeviceTensor(random_generator.generate_random_vector(96));
   
-  auto bn = BatchNormOp<DeviceTensor>(96, 2, 3, 1e-05, 1, true, &mean, &var, &weight, &bias, IN_PLACE);
+  auto bn = BatchNormOp<DeviceTensor>(3, 32, 1e-05, &mean, &var, &weight, &bias, IN_PLACE);
 
 
-  auto output_tensor = bn.Forward(input_tensor);
+  auto output_tensor = bn(input_tensor);
 
   auto output_data = output_tensor.debug_gtest_cpu_data();
 
@@ -381,10 +387,10 @@ TYPED_TEST(BNTest, test_bn_3_f_f_f) {
 
   auto input_tensor = DeviceTensor(random_generator.generate_random_vector(96));
   
-  auto bn = BatchNormOp<DeviceTensor>(96, 2, 3, 1e-05, 1, false, TensorGPU<float>(0), TensorGPU<float>(0), TensorGPU<float>(0), TensorGPU<float>(0), NOT_IN_PLACE);
+  auto bn = BatchNormOp<DeviceTensor>(3, 32, 1e-05, nullptr, nullptr, nullptr, nullptr, NOT_IN_PLACE);
 
 
-  auto output_tensor = bn.Forward(input_tensor);
+  auto output_tensor = bn(input_tensor);
 
   auto output_data = output_tensor.debug_gtest_cpu_data();
 
@@ -411,10 +417,10 @@ TYPED_TEST(BNTest, test_bn_3_f_f_t) {
 
   auto input_tensor = DeviceTensor(random_generator.generate_random_vector(96));
   
-  auto bn = BatchNormOp<DeviceTensor>(96, 2, 3, 1e-05, 1, false, TensorGPU<float>(0), TensorGPU<float>(0), TensorGPU<float>(0), TensorGPU<float>(0), IN_PLACE);
+  auto bn = BatchNormOp<DeviceTensor>(3, 32, 1e-05, nullptr, nullptr, nullptr, nullptr, IN_PLACE);
 
 
-  auto output_tensor = bn.Forward(input_tensor);
+  auto output_tensor = bn(input_tensor);
 
   auto output_data = output_tensor.debug_gtest_cpu_data();
 
@@ -434,16 +440,17 @@ TYPED_TEST(BNTest, test_bn_3_f_t_f) {
 
   auto mean = DeviceTensor(random_generator.generate_random_vector(3));
   auto var = DeviceTensor(random_generator.generate_random_vector(3));
-  hypertea_abs(var.count(), &var, &var);
+  inplace_abs(var);
+  // hypertea_abs(var.count(), &var, &var);
   
   
 
   auto input_tensor = DeviceTensor(random_generator.generate_random_vector(96));
   
-  auto bn = BatchNormOp<DeviceTensor>(96, 2, 3, 1e-05, 1, true, &mean, &var, TensorGPU<float>(0), TensorGPU<float>(0), NOT_IN_PLACE);
+  auto bn = BatchNormOp<DeviceTensor>(3, 32, 1e-05, &mean, &var, nullptr, nullptr, NOT_IN_PLACE);
 
 
-  auto output_tensor = bn.Forward(input_tensor);
+  auto output_tensor = bn(input_tensor);
 
   auto output_data = output_tensor.debug_gtest_cpu_data();
 
@@ -464,16 +471,17 @@ TYPED_TEST(BNTest, test_bn_3_f_t_t) {
 
   auto mean = DeviceTensor(random_generator.generate_random_vector(3));
   auto var = DeviceTensor(random_generator.generate_random_vector(3));
-  hypertea_abs(var.count(), &var, &var);
+  inplace_abs(var);
+  // hypertea_abs(var.count(), &var, &var);
   
   
 
   auto input_tensor = DeviceTensor(random_generator.generate_random_vector(96));
   
-  auto bn = BatchNormOp<DeviceTensor>(96, 2, 3, 1e-05, 1, true, &mean, &var, TensorGPU<float>(0), TensorGPU<float>(0), IN_PLACE);
+  auto bn = BatchNormOp<DeviceTensor>(3, 32, 1e-05, &mean, &var, nullptr, nullptr, IN_PLACE);
 
 
-  auto output_tensor = bn.Forward(input_tensor);
+  auto output_tensor = bn(input_tensor);
 
   auto output_data = output_tensor.debug_gtest_cpu_data();
 
@@ -484,10 +492,10 @@ TYPED_TEST(BNTest, test_bn_3_f_t_t) {
 
 
 
-    */
-
     
 
+    
+*/
 
 
 

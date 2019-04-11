@@ -3,7 +3,7 @@
 
 #include "hypertea/operators/base_conv_op.hpp"
 #include "hypertea/util/im2col.hpp"
-#include "hypertea/util/math_functions.hpp"
+// #include "hypertea/util/math_functions.hpp"
 
 namespace hypertea {
 

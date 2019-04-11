@@ -14,41 +14,32 @@ namespace hypertea {
 
 
 template <typename TypeParam>
-class OUTPLACE_TENSOR_MATH_TestCPU : public ::testing::Test {
+class OUTPLACE_TENSOR_MATH_Test : public ::testing::Test {
  public:
-  typedef typename TypeParam::Dtype Dtype;
+  // using DeviceTensor = TypeParam;
  protected:
-  OUTPLACE_TENSOR_MATH_TestCPU() {}
-  virtual ~OUTPLACE_TENSOR_MATH_TestCPU() {}
-};
-
-template <typename TypeParam>
-class OUTPLACE_TENSOR_MATH_TestGPU : public ::testing::Test {
- public:
-  typedef typename TypeParam::Dtype Dtype;
-
- protected:
-  OUTPLACE_TENSOR_MATH_TestGPU() {
+  OUTPLACE_TENSOR_MATH_Test() {
     hypertea::OpenCLHandler::Get().build_opencl_math_code(false);
   }
-  virtual ~OUTPLACE_TENSOR_MATH_TestGPU() {}
+  virtual ~OUTPLACE_TENSOR_MATH_Test() {}
 };
 
 
-TYPED_TEST_CASE(OUTPLACE_TENSOR_MATH_TestCPU, TestDtypesCPU);
-TYPED_TEST_CASE(OUTPLACE_TENSOR_MATH_TestGPU, TestDtypesGPU);
+
+TYPED_TEST_CASE(OUTPLACE_TENSOR_MATH_Test, TestDtypes);
 
 
-TYPED_TEST(OUTPLACE_TENSOR_MATH_TestGPU, test_outplace_sqr_GPU) {
-  typedef typename TypeParam::Dtype Dtype;
+TYPED_TEST(OUTPLACE_TENSOR_MATH_Test, test_outplace_sqr) {
+  
+  using DeviceTensor = TypeParam;
   
   fake_random_number random_generator;
   const int N = 64;
 
-  auto a = hypertea::TensorGPU<Dtype>(random_generator.generate_random_vector(N));
+  auto a = DeviceTensor(random_generator.generate_random_vector(N));
   auto a_data = a.debug_gtest_cpu_data();
 
-  auto y = gpu_sqr(a);
+  auto y = outplace_sqr(a);
   auto y_data = y.debug_gtest_cpu_data();
 
   for (int i = 0; i < N; ++i) {
@@ -58,16 +49,17 @@ TYPED_TEST(OUTPLACE_TENSOR_MATH_TestGPU, test_outplace_sqr_GPU) {
 }
 
 
-TYPED_TEST(OUTPLACE_TENSOR_MATH_TestGPU, test_outplace_sqrt_GPU) {
-  typedef typename TypeParam::Dtype Dtype;
+TYPED_TEST(OUTPLACE_TENSOR_MATH_Test, test_outplace_sqrt) {
+  
+  using DeviceTensor = TypeParam;
   
   fake_random_number random_generator;
   const int N = 64;
 
-  auto a = hypertea::TensorGPU<Dtype>(random_generator.generate_random_vector(N)).abs();
+  auto a = DeviceTensor(random_generator.generate_random_vector(N)).abs();
   auto a_data = a.debug_gtest_cpu_data();
 
-  auto y = gpu_sqrt(a);
+  auto y = outplace_sqrt(a);
   auto y_data = y.debug_gtest_cpu_data();
 
 
@@ -78,16 +70,17 @@ TYPED_TEST(OUTPLACE_TENSOR_MATH_TestGPU, test_outplace_sqrt_GPU) {
 
 
 
-TYPED_TEST(OUTPLACE_TENSOR_MATH_TestGPU, test_outplace_powx_GPU) {
-  typedef typename TypeParam::Dtype Dtype;
+TYPED_TEST(OUTPLACE_TENSOR_MATH_Test, test_outplace_powx) {
+  
+  using DeviceTensor = TypeParam;
   
   fake_random_number random_generator;
   const int N = 64;
 
-  auto a = hypertea::TensorGPU<Dtype>(random_generator.generate_random_vector(N)).abs();
+  auto a = DeviceTensor(random_generator.generate_random_vector(N)).abs();
   auto a_data = a.debug_gtest_cpu_data();
 
-  auto y = gpu_powx(a, 1.5);
+  auto y = outplace_powx(a, 1.5);
   auto y_data = y.debug_gtest_cpu_data();
 
 
@@ -97,16 +90,17 @@ TYPED_TEST(OUTPLACE_TENSOR_MATH_TestGPU, test_outplace_powx_GPU) {
 }
 
 
-TYPED_TEST(OUTPLACE_TENSOR_MATH_TestGPU, test_outplace_exp_GPU) {
-  typedef typename TypeParam::Dtype Dtype;
+TYPED_TEST(OUTPLACE_TENSOR_MATH_Test, test_outplace_exp) {
+  
+  using DeviceTensor = TypeParam;
   
   fake_random_number random_generator;
   const int N = 64;
 
-  auto a = hypertea::TensorGPU<Dtype>(random_generator.generate_random_vector(N));
+  auto a = DeviceTensor(random_generator.generate_random_vector(N));
   auto a_data = a.debug_gtest_cpu_data();
 
-  auto y = gpu_exp(a);
+  auto y = outplace_exp(a);
   auto y_data = y.debug_gtest_cpu_data();
 
   for (int i = 0; i < N; ++i) {
@@ -115,16 +109,17 @@ TYPED_TEST(OUTPLACE_TENSOR_MATH_TestGPU, test_outplace_exp_GPU) {
 }
 
 
-TYPED_TEST(OUTPLACE_TENSOR_MATH_TestGPU, test_outplace_log_GPU) {
-  typedef typename TypeParam::Dtype Dtype;
+TYPED_TEST(OUTPLACE_TENSOR_MATH_Test, test_outplace_log) {
+  
+  using DeviceTensor = TypeParam;
   
   fake_random_number random_generator;
   const int N = 64;
 
-  auto a = hypertea::TensorGPU<Dtype>(random_generator.generate_random_vector(N)).abs();
+  auto a = DeviceTensor(random_generator.generate_random_vector(N)).abs();
   auto a_data = a.debug_gtest_cpu_data();
 
-  auto y = gpu_log(a);
+  auto y = outplace_log(a);
   auto y_data = y.debug_gtest_cpu_data();
 
 
@@ -134,16 +129,17 @@ TYPED_TEST(OUTPLACE_TENSOR_MATH_TestGPU, test_outplace_log_GPU) {
 }
 
 
-TYPED_TEST(OUTPLACE_TENSOR_MATH_TestGPU, test_outplace_abs_GPU) {
-  typedef typename TypeParam::Dtype Dtype;
+TYPED_TEST(OUTPLACE_TENSOR_MATH_Test, test_outplace_abs) {
+  
+  using DeviceTensor = TypeParam;
   
   fake_random_number random_generator;
   const int N = 64;
 
-  auto a = hypertea::TensorGPU<Dtype>(random_generator.generate_random_vector(N));
+  auto a = DeviceTensor(random_generator.generate_random_vector(N));
   auto a_data = a.debug_gtest_cpu_data();
 
-  auto y = gpu_abs(a);
+  auto y = outplace_abs(a);
   auto y_data = y.debug_gtest_cpu_data();
 
   for (int i = 0; i < N; ++i) {
@@ -152,16 +148,17 @@ TYPED_TEST(OUTPLACE_TENSOR_MATH_TestGPU, test_outplace_abs_GPU) {
 }
 
 
-TYPED_TEST(OUTPLACE_TENSOR_MATH_TestGPU, test_outplace_tanh_GPU) {
-  typedef typename TypeParam::Dtype Dtype;
+TYPED_TEST(OUTPLACE_TENSOR_MATH_Test, test_outplace_tanh) {
+  
+  using DeviceTensor = TypeParam;
   
   fake_random_number random_generator;
   const int N = 64;
 
-  auto a = hypertea::TensorGPU<Dtype>(random_generator.generate_random_vector(N));
+  auto a = DeviceTensor(random_generator.generate_random_vector(N));
   auto a_data = a.debug_gtest_cpu_data();
 
-  auto y = gpu_tanh(a);
+  auto y = outplace_tanh(a);
   auto y_data = y.debug_gtest_cpu_data();
 
   for (int i = 0; i < N; ++i) {
@@ -169,16 +166,17 @@ TYPED_TEST(OUTPLACE_TENSOR_MATH_TestGPU, test_outplace_tanh_GPU) {
   }
 }
 
-TYPED_TEST(OUTPLACE_TENSOR_MATH_TestGPU, test_outplace_sigmoid_GPU) {
-  typedef typename TypeParam::Dtype Dtype;
+TYPED_TEST(OUTPLACE_TENSOR_MATH_Test, test_outplace_sigmoid) {
+  
+  using DeviceTensor = TypeParam;
   
   fake_random_number random_generator;
   const int N = 64;
 
-  auto a = hypertea::TensorGPU<Dtype>(random_generator.generate_random_vector(N));
+  auto a = DeviceTensor(random_generator.generate_random_vector(N));
   auto a_data = a.debug_gtest_cpu_data();
 
-  auto y = gpu_sigmoid(a);
+  auto y = outplace_sigmoid(a);
   auto y_data = y.debug_gtest_cpu_data();
 
   for (int i = 0; i < N; ++i) {
@@ -188,18 +186,19 @@ TYPED_TEST(OUTPLACE_TENSOR_MATH_TestGPU, test_outplace_sigmoid_GPU) {
 
 
 
-TYPED_TEST(OUTPLACE_TENSOR_MATH_TestGPU, test_outplace_elu_GPU) {
-  typedef typename TypeParam::Dtype Dtype;
+TYPED_TEST(OUTPLACE_TENSOR_MATH_Test, test_outplace_elu) {
+  
+  using DeviceTensor = TypeParam;
   
   fake_random_number random_generator;
   const int N = 64;
 
-  auto a = hypertea::TensorGPU<Dtype>(random_generator.generate_random_vector(N));
+  auto a = DeviceTensor(random_generator.generate_random_vector(N));
   auto a_data = a.debug_gtest_cpu_data();
 
   float alpha = 1.0;
 
-  auto y = gpu_elu(a, alpha);
+  auto y = outplace_elu(a, alpha);
   auto y_data = y.debug_gtest_cpu_data();
 
   for (int i = 0; i < N; ++i) {
@@ -208,19 +207,20 @@ TYPED_TEST(OUTPLACE_TENSOR_MATH_TestGPU, test_outplace_elu_GPU) {
   }
 }
 
-TYPED_TEST(OUTPLACE_TENSOR_MATH_TestGPU, test_outplace_relu_GPU) {
-  typedef typename TypeParam::Dtype Dtype;
+TYPED_TEST(OUTPLACE_TENSOR_MATH_Test, test_outplace_relu) {
+  
+  using DeviceTensor = TypeParam;
   
   fake_random_number random_generator;
   const int N = 64;
 
-  auto a = hypertea::TensorGPU<Dtype>(random_generator.generate_random_vector(N));
+  auto a = DeviceTensor(random_generator.generate_random_vector(N));
   auto a_data = a.debug_gtest_cpu_data();
 
   float negative_slope = .0;
 
 
-  auto y = gpu_relu(a, negative_slope);
+  auto y = outplace_relu(a, negative_slope);
   auto y_data = y.debug_gtest_cpu_data();
 
   for (int i = 0; i < N; ++i) {
@@ -230,16 +230,17 @@ TYPED_TEST(OUTPLACE_TENSOR_MATH_TestGPU, test_outplace_relu_GPU) {
 }
 
 
-TYPED_TEST(OUTPLACE_TENSOR_MATH_TestGPU, test_outplace_add_GPU) {
-  typedef typename TypeParam::Dtype Dtype;
+TYPED_TEST(OUTPLACE_TENSOR_MATH_Test, test_outplace_add) {
+  
+  using DeviceTensor = TypeParam;
   
   fake_random_number random_generator;
   const int N = 64;
 
-  auto a = hypertea::TensorGPU<Dtype>(random_generator.generate_random_vector(N));
+  auto a = DeviceTensor(random_generator.generate_random_vector(N));
   auto a_data = a.debug_gtest_cpu_data();
   
-  auto b = hypertea::TensorGPU<Dtype>(random_generator.generate_random_vector(N));
+  auto b = DeviceTensor(random_generator.generate_random_vector(N));
   auto b_data = b.debug_gtest_cpu_data();
 
   auto c = a+b;
@@ -251,16 +252,17 @@ TYPED_TEST(OUTPLACE_TENSOR_MATH_TestGPU, test_outplace_add_GPU) {
 }
 
 
-TYPED_TEST(OUTPLACE_TENSOR_MATH_TestGPU, test_outplace_sub_GPU) {
-  typedef typename TypeParam::Dtype Dtype;
+TYPED_TEST(OUTPLACE_TENSOR_MATH_Test, test_outplace_sub) {
+  
+  using DeviceTensor = TypeParam;
   
   fake_random_number random_generator;
   const int N = 64;
 
-  auto a = hypertea::TensorGPU<Dtype>(random_generator.generate_random_vector(N));
+  auto a = DeviceTensor(random_generator.generate_random_vector(N));
   auto a_data = a.debug_gtest_cpu_data();
   
-  auto b = hypertea::TensorGPU<Dtype>(random_generator.generate_random_vector(N));
+  auto b = DeviceTensor(random_generator.generate_random_vector(N));
   auto b_data = b.debug_gtest_cpu_data();
 
   auto c = a-b;
@@ -271,16 +273,17 @@ TYPED_TEST(OUTPLACE_TENSOR_MATH_TestGPU, test_outplace_sub_GPU) {
   }
 }
 
-TYPED_TEST(OUTPLACE_TENSOR_MATH_TestGPU, test_outplace_mul_GPU) {
-  typedef typename TypeParam::Dtype Dtype;
+TYPED_TEST(OUTPLACE_TENSOR_MATH_Test, test_outplace_mul) {
+  
+  using DeviceTensor = TypeParam;
   
   fake_random_number random_generator;
   const int N = 64;
 
-  auto a = hypertea::TensorGPU<Dtype>(random_generator.generate_random_vector(N));
+  auto a = DeviceTensor(random_generator.generate_random_vector(N));
   auto a_data = a.debug_gtest_cpu_data();
   
-  auto b = hypertea::TensorGPU<Dtype>(random_generator.generate_random_vector(N));
+  auto b = DeviceTensor(random_generator.generate_random_vector(N));
   auto b_data = b.debug_gtest_cpu_data();
 
   auto c = a*b;
@@ -291,16 +294,17 @@ TYPED_TEST(OUTPLACE_TENSOR_MATH_TestGPU, test_outplace_mul_GPU) {
   }
 }
 
-TYPED_TEST(OUTPLACE_TENSOR_MATH_TestGPU, test_outplace_div_GPU) {
-  typedef typename TypeParam::Dtype Dtype;
+TYPED_TEST(OUTPLACE_TENSOR_MATH_Test, test_outplace_div) {
+  
+  using DeviceTensor = TypeParam;
   
   fake_random_number random_generator;
   const int N = 64;
 
-  auto a = hypertea::TensorGPU<Dtype>(random_generator.generate_random_vector(N));
+  auto a = DeviceTensor(random_generator.generate_random_vector(N));
   auto a_data = a.debug_gtest_cpu_data();
   
-  auto b = hypertea::TensorGPU<Dtype>(random_generator.generate_random_vector(N));
+  auto b = DeviceTensor(random_generator.generate_random_vector(N));
   auto b_data = b.debug_gtest_cpu_data();
 
   auto c = a/b;
@@ -316,13 +320,14 @@ TYPED_TEST(OUTPLACE_TENSOR_MATH_TestGPU, test_outplace_div_GPU) {
 
 
 
-TYPED_TEST(OUTPLACE_TENSOR_MATH_TestGPU, test_outplace_add_scalar_GPU) {
-  typedef typename TypeParam::Dtype Dtype;
+TYPED_TEST(OUTPLACE_TENSOR_MATH_Test, test_outplace_add_scalar) {
+  
+  using DeviceTensor = TypeParam;
   
   fake_random_number random_generator;
   const int N = 64;
 
-  auto a = hypertea::TensorGPU<Dtype>(random_generator.generate_random_vector(N));
+  auto a = DeviceTensor(random_generator.generate_random_vector(N));
   auto a_data = a.debug_gtest_cpu_data();
   
   auto c = a+61.23;
@@ -334,13 +339,14 @@ TYPED_TEST(OUTPLACE_TENSOR_MATH_TestGPU, test_outplace_add_scalar_GPU) {
 }
 
 
-TYPED_TEST(OUTPLACE_TENSOR_MATH_TestGPU, test_outplace_sub_scalar_GPU) {
-  typedef typename TypeParam::Dtype Dtype;
+TYPED_TEST(OUTPLACE_TENSOR_MATH_Test, test_outplace_sub_scalar) {
+  
+  using DeviceTensor = TypeParam;
   
   fake_random_number random_generator;
   const int N = 64;
 
-  auto a = hypertea::TensorGPU<Dtype>(random_generator.generate_random_vector(N));
+  auto a = DeviceTensor(random_generator.generate_random_vector(N));
   auto a_data = a.debug_gtest_cpu_data();
   
   auto c = a-61.23;
@@ -351,13 +357,14 @@ TYPED_TEST(OUTPLACE_TENSOR_MATH_TestGPU, test_outplace_sub_scalar_GPU) {
   }
 }
 
-TYPED_TEST(OUTPLACE_TENSOR_MATH_TestGPU, test_outplace_mul_scalar_GPU) {
-  typedef typename TypeParam::Dtype Dtype;
+TYPED_TEST(OUTPLACE_TENSOR_MATH_Test, test_outplace_mul_scalar) {
+  
+  using DeviceTensor = TypeParam;
   
   fake_random_number random_generator;
   const int N = 64;
 
-  auto a = hypertea::TensorGPU<Dtype>(random_generator.generate_random_vector(N));
+  auto a = DeviceTensor(random_generator.generate_random_vector(N));
   auto a_data = a.debug_gtest_cpu_data();
   
   auto c = a*61.23;
@@ -368,13 +375,14 @@ TYPED_TEST(OUTPLACE_TENSOR_MATH_TestGPU, test_outplace_mul_scalar_GPU) {
   }
 }
 
-TYPED_TEST(OUTPLACE_TENSOR_MATH_TestGPU, test_outplace_div_scalar_GPU) {
-  typedef typename TypeParam::Dtype Dtype;
+TYPED_TEST(OUTPLACE_TENSOR_MATH_Test, test_outplace_div_scalar) {
+  
+  using DeviceTensor = TypeParam;
   
   fake_random_number random_generator;
   const int N = 64;
 
-  auto a = hypertea::TensorGPU<Dtype>(random_generator.generate_random_vector(N));
+  auto a = DeviceTensor(random_generator.generate_random_vector(N));
   auto a_data = a.debug_gtest_cpu_data();
   
   auto c = a/61.23;
@@ -387,27 +395,28 @@ TYPED_TEST(OUTPLACE_TENSOR_MATH_TestGPU, test_outplace_div_scalar_GPU) {
 }
 
 
-TYPED_TEST(OUTPLACE_TENSOR_MATH_TestGPU, test_outplace_avg_g128_GPU) {
-  typedef typename TypeParam::Dtype Dtype;
+TYPED_TEST(OUTPLACE_TENSOR_MATH_Test, test_outplace_avg_g128) {
+  
+  using DeviceTensor = TypeParam;
   
   fake_random_number random_generator;
   const int N = 2*64*63*32;
 
-  auto a = hypertea::TensorGPU<Dtype>(random_generator.generate_random_vector(N)); //random_generator.generate_random_vector(N)
+  auto a = DeviceTensor(random_generator.generate_random_vector(N)); //random_generator.generate_random_vector(N)
   // a.set(1);
   auto a_data = a.debug_gtest_cpu_data();
   
 
-  auto mean = hypertea::TensorGPU<Dtype>(32);
-  auto var = hypertea::TensorGPU<Dtype>(32);
+  auto mean = DeviceTensor(32);
+  auto var = DeviceTensor(32);
 
-  gpu_channeled_avg(a, mean, var, 2, 64*63);
+  mean_var(a, mean, var, 32, 64*63, 1e-5);
 
   auto mean_data = mean.debug_gtest_cpu_data();
   auto var_data = var.debug_gtest_cpu_data();
 
-  Dtype mean_cpu[32];
-  Dtype var_cpu[32];
+  float mean_cpu[32];
+  float var_cpu[32];
 
 
     /* code */
@@ -439,27 +448,28 @@ TYPED_TEST(OUTPLACE_TENSOR_MATH_TestGPU, test_outplace_avg_g128_GPU) {
 }
 
 
-TYPED_TEST(OUTPLACE_TENSOR_MATH_TestGPU, test_outplace_avg_l128_GPU) {
-  typedef typename TypeParam::Dtype Dtype;
+TYPED_TEST(OUTPLACE_TENSOR_MATH_Test, test_outplace_avg_l128) {
+  
+  using DeviceTensor = TypeParam;
   
   fake_random_number random_generator;
   const int N = 2*64*32;
 
-  auto a = hypertea::TensorGPU<Dtype>(random_generator.generate_random_vector(N)); //random_generator.generate_random_vector(N)
+  auto a = DeviceTensor(random_generator.generate_random_vector(N)); //random_generator.generate_random_vector(N)
   // a.set(1);
   auto a_data = a.debug_gtest_cpu_data();
   
 
-  auto mean = hypertea::TensorGPU<Dtype>(32);
-  auto var = hypertea::TensorGPU<Dtype>(32);
+  auto mean = DeviceTensor(32);
+  auto var = DeviceTensor(32);
 
-  gpu_channeled_avg(a, mean, var, 2, 64);
+  mean_var(a, mean, var, 32, 64, 1e-5);
 
   auto mean_data = mean.debug_gtest_cpu_data();
   auto var_data = var.debug_gtest_cpu_data();
 
-  Dtype mean_cpu[32];
-  Dtype var_cpu[32];
+  float mean_cpu[32];
+  float var_cpu[32];
 
 
     /* code */

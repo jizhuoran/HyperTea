@@ -3,7 +3,6 @@
 #include <math.h>
 
 #include "hypertea/operators/MIOpen_batch_norm_op.hpp"
-#include "hypertea/util/math_functions.hpp"
 
 namespace hypertea {
 
@@ -14,7 +13,8 @@ TensorGPU<Dtype> MIOpenBatchNormOp_GPU<Dtype>::Forward(TensorGPU<Dtype> input_te
     TensorGPU<Dtype> output_tensor = TensorGPU<Dtype>(input_tensor.count());
     cl_mem output_data = output_tensor.mutable_data();
 
-
+    auto weight_data_ = weight_->immutable_data();
+    auto bias_data_ = bias_->immutable_data();
 
     if(single_)
     {
@@ -29,8 +29,8 @@ TensorGPU<Dtype> MIOpenBatchNormOp_GPU<Dtype>::Forward(TensorGPU<Dtype> input_te
           // Set arguments for kernel
         OPENCL_CHECK(clSetKernelArg(kernel, 0, sizeof(cl_mem), (void *)&input_data));  
         OPENCL_CHECK(clSetKernelArg(kernel, 1, sizeof(cl_mem), (void *)&output_data));  
-        OPENCL_CHECK(clSetKernelArg(kernel, 2, sizeof(cl_mem), (void *)&weight_));  
-        OPENCL_CHECK(clSetKernelArg(kernel, 3, sizeof(cl_mem), (void *)&bias_));   
+        OPENCL_CHECK(clSetKernelArg(kernel, 2, sizeof(cl_mem), (void *)&weight_data_));  
+        OPENCL_CHECK(clSetKernelArg(kernel, 3, sizeof(cl_mem), (void *)&bias_data_));   
         // OPENCL_CHECK(clSetKernelArg(kernel, 4, sizeof(cl_float), (void *)&inhw_));   
         // OPENCL_CHECK(clSetKernelArg(kernel, 5, sizeof(cl_float), (void *)&eps_));   
   

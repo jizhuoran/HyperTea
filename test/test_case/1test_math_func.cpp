@@ -7,7 +7,6 @@
 #include "hypertea/common.hpp"
 
 #include "test_hypertea_util.hpp"
-#include "hypertea/util/math_functions.hpp"
 
 
 namespace hypertea {

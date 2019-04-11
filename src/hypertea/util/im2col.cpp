@@ -1,7 +1,6 @@
 #include <vector>
 
 #include "hypertea/util/im2col.hpp"
-#include "hypertea/util/math_functions.hpp"
 
 namespace hypertea {
 

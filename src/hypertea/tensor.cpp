@@ -1,6 +1,4 @@
 #include "hypertea/tensor.hpp"
-#include "hypertea/util/math_functions.hpp"
-
 
 namespace hypertea {
 
@@ -42,7 +40,9 @@ template TensorCPU<float>::TensorCPU(float* data_ptr, int count, bool shared);
 
 template <typename Dtype>
 TensorCPU<Dtype>& TensorCPU<Dtype>::copy_data(const TensorCPU & other) {
-  hypertea_copy<Dtype>(this->count(), other.immutable_data(), this->mutable_data());
+
+  memcpy(this->mutable_data(), other.immutable_data(), sizeof(Dtype) * this->count());
+
   return *this;
 }
 template TensorCPU<float>& TensorCPU<float>::copy_data(const TensorCPU<float> & other);
@@ -51,7 +51,7 @@ template TensorCPU<float>& TensorCPU<float>::copy_data(const TensorCPU<float> & 
 template <typename Dtype>
 TensorCPU<Dtype> TensorCPU<Dtype>::duplicate() const{
   TensorCPU temp = TensorCPU(this->count_);
-  hypertea_copy<Dtype>(this->count(), this->immutable_data(), temp.mutable_data());
+  temp.copy_data(*this);
   return temp;
 }
 template TensorCPU<float> TensorCPU<float>::duplicate() const;
@@ -61,7 +61,7 @@ template TensorCPU<float> TensorCPU<float>::duplicate() const;
 template <typename Dtype>
 std::shared_ptr<Dtype> TensorCPU<Dtype>::duplicate_data() const {
   Dtype* t = new Dtype[this->count_];
-  hypertea_copy(this->count_, data_.get(), t);
+  memcpy(t, data_.get(), sizeof(Dtype) * this->count());
   return std::shared_ptr<Dtype>(t, std::default_delete<Dtype[]>());
 }
 template std::shared_ptr<float> TensorCPU<float>::duplicate_data() const;
@@ -164,7 +164,12 @@ template TensorGPU<half>::TensorGPU(std::vector<half> data);
 
 template <typename Dtype>
 TensorGPU<Dtype>& TensorGPU<Dtype>::copy_data(const TensorGPU & other) {
-  hypertea_cl_copy<Dtype>(this->count(), other.immutable_data(), this->mutable_data());
+
+  OPENCL_CHECK(clEnqueueCopyBuffer(OpenCLHandler::Get().commandQueue, 
+    (cl_mem) other.immutable_data(), 
+    (cl_mem) this->mutable_data(), 
+    0, 0, sizeof(Dtype) * this->count(), 0, NULL, NULL));
+
   return *this;
 }
 template TensorGPU<float>& TensorGPU<float>::copy_data(const TensorGPU<float> & other);

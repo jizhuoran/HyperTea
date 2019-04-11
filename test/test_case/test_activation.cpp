@@ -31,7 +31,7 @@ TYPED_TEST_CASE(ACTIVATION_Test, TestDtypes);
 
 TYPED_TEST(ACTIVATION_Test, test_inplace_relu) {
 
-  typedef TypeParam DeviceTensor;
+  using DeviceTensor = TypeParam;
   
   fake_random_number random_generator;
 
@@ -56,7 +56,7 @@ TYPED_TEST(ACTIVATION_Test, test_inplace_relu) {
 
 TYPED_TEST(ACTIVATION_Test, test_outplace_relu) {
 
-  typedef TypeParam DeviceTensor;
+  using DeviceTensor = TypeParam;
   
   fake_random_number random_generator;
 
@@ -86,7 +86,7 @@ TYPED_TEST(ACTIVATION_Test, test_outplace_relu) {
 
 TYPED_TEST(ACTIVATION_Test, test_inplace_elu) {
 
-  typedef TypeParam DeviceTensor;
+  using DeviceTensor = TypeParam;
   
   fake_random_number random_generator;
 
@@ -111,7 +111,7 @@ TYPED_TEST(ACTIVATION_Test, test_inplace_elu) {
 
 TYPED_TEST(ACTIVATION_Test, test_outplace_elu) {
 
-  typedef TypeParam DeviceTensor;
+  using DeviceTensor = TypeParam;
   
   fake_random_number random_generator;
 
@@ -140,7 +140,7 @@ TYPED_TEST(ACTIVATION_Test, test_outplace_elu) {
 
 TYPED_TEST(ACTIVATION_Test, test_inplace_tanh) {
 
-  typedef TypeParam DeviceTensor;
+  using DeviceTensor = TypeParam;
   
   fake_random_number random_generator;
 
@@ -163,7 +163,7 @@ TYPED_TEST(ACTIVATION_Test, test_inplace_tanh) {
 
 TYPED_TEST(ACTIVATION_Test, test_outplace_tanh) {
 
-  typedef TypeParam DeviceTensor;
+  using DeviceTensor = TypeParam;
   
   fake_random_number random_generator;
 

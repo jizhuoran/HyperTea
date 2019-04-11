@@ -7,35 +7,36 @@
 #include "hypertea/common.hpp"
 
 #include "test_hypertea_util.hpp"
-// #include "hypertea/util/math_functions.hpp"
 
 
 namespace hypertea {
 
 
 template <typename TypeParam>
-class INPLACE_TENSOR_MATH_TestCPU : public ::testing::Test {
+class INPLACE_TENSOR_MATH_Test : public ::testing::Test {
  public:
-  typedef typename TypeParam::Dtype Dtype;
+  // using DeviceTensor = TypeParam;
  protected:
-  INPLACE_TENSOR_MATH_TestCPU() {}
-  virtual ~INPLACE_TENSOR_MATH_TestCPU() {}
+  INPLACE_TENSOR_MATH_Test() {
+    hypertea::OpenCLHandler::Get().build_opencl_math_code(false);
+  }
+  virtual ~INPLACE_TENSOR_MATH_Test() {}
 };
 
 
+TYPED_TEST_CASE(INPLACE_TENSOR_MATH_Test, TestDtypes);
 
-TYPED_TEST_CASE(INPLACE_TENSOR_MATH_TestCPU, TestDtypesCPU);
 
-
-TYPED_TEST(INPLACE_TENSOR_MATH_TestCPU, test_inplace_set_CPU) {
-  typedef typename TypeParam::Dtype Dtype;
+TYPED_TEST(INPLACE_TENSOR_MATH_Test, test_inplace_set) {
+  
+  using DeviceTensor = TypeParam;
   
   fake_random_number random_generator;
   const int N = 64;
 
   float alpha = 23.61;
 
-  auto a = hypertea::TensorCPU<Dtype>(random_generator.generate_random_vector(N));
+  auto a = DeviceTensor(random_generator.generate_random_vector(N));
   a.set(alpha);
   auto y_data = a.debug_gtest_cpu_data();
 
@@ -47,13 +48,14 @@ TYPED_TEST(INPLACE_TENSOR_MATH_TestCPU, test_inplace_set_CPU) {
 
 
 
-TYPED_TEST(INPLACE_TENSOR_MATH_TestCPU, test_inplace_sqr_CPU) {
-  typedef typename TypeParam::Dtype Dtype;
+TYPED_TEST(INPLACE_TENSOR_MATH_Test, test_inplace_sqr) {
+  
+  using DeviceTensor = TypeParam;
   
   fake_random_number random_generator;
   const int N = 64;
 
-  auto a = hypertea::TensorCPU<Dtype>(random_generator.generate_random_vector(N));
+  auto a = DeviceTensor(random_generator.generate_random_vector(N));
   auto a_data = a.debug_gtest_cpu_data();
 
   auto y = a.sqr();
@@ -66,13 +68,14 @@ TYPED_TEST(INPLACE_TENSOR_MATH_TestCPU, test_inplace_sqr_CPU) {
 }
 
 
-TYPED_TEST(INPLACE_TENSOR_MATH_TestCPU, test_inplace_sqrt_CPU) {
-  typedef typename TypeParam::Dtype Dtype;
+TYPED_TEST(INPLACE_TENSOR_MATH_Test, test_inplace_sqrt) {
+  
+  using DeviceTensor = TypeParam;
   
   fake_random_number random_generator;
   const int N = 64;
 
-  auto a = hypertea::TensorCPU<Dtype>(random_generator.generate_random_vector(N)).abs();
+  auto a = DeviceTensor(random_generator.generate_random_vector(N)).abs();
   auto a_data = a.debug_gtest_cpu_data();
 
   auto y = a.sqrt();
@@ -86,13 +89,14 @@ TYPED_TEST(INPLACE_TENSOR_MATH_TestCPU, test_inplace_sqrt_CPU) {
 
 
 
-TYPED_TEST(INPLACE_TENSOR_MATH_TestCPU, test_inplace_powx_CPU) {
-  typedef typename TypeParam::Dtype Dtype;
+TYPED_TEST(INPLACE_TENSOR_MATH_Test, test_inplace_powx) {
+  
+  using DeviceTensor = TypeParam;
   
   fake_random_number random_generator;
   const int N = 64;
 
-  auto a = hypertea::TensorCPU<Dtype>(random_generator.generate_random_vector(N)).abs();
+  auto a = DeviceTensor(random_generator.generate_random_vector(N)).abs();
   auto a_data = a.debug_gtest_cpu_data();
 
   auto y = a.powx(1.5);
@@ -105,13 +109,14 @@ TYPED_TEST(INPLACE_TENSOR_MATH_TestCPU, test_inplace_powx_CPU) {
 }
 
 
-TYPED_TEST(INPLACE_TENSOR_MATH_TestCPU, test_inplace_exp_CPU) {
-  typedef typename TypeParam::Dtype Dtype;
+TYPED_TEST(INPLACE_TENSOR_MATH_Test, test_inplace_exp) {
+  
+  using DeviceTensor = TypeParam;
   
   fake_random_number random_generator;
   const int N = 64;
 
-  auto a = hypertea::TensorCPU<Dtype>(random_generator.generate_random_vector(N));
+  auto a = DeviceTensor(random_generator.generate_random_vector(N));
   auto a_data = a.debug_gtest_cpu_data();
 
   auto y = a.exp();
@@ -123,13 +128,14 @@ TYPED_TEST(INPLACE_TENSOR_MATH_TestCPU, test_inplace_exp_CPU) {
 }
 
 
-TYPED_TEST(INPLACE_TENSOR_MATH_TestCPU, test_inplace_log_CPU) {
-  typedef typename TypeParam::Dtype Dtype;
+TYPED_TEST(INPLACE_TENSOR_MATH_Test, test_inplace_log) {
+  
+  using DeviceTensor = TypeParam;
   
   fake_random_number random_generator;
   const int N = 64;
 
-  auto a = hypertea::TensorCPU<Dtype>(random_generator.generate_random_vector(N)).abs();
+  auto a = DeviceTensor(random_generator.generate_random_vector(N)).abs();
   auto a_data = a.debug_gtest_cpu_data();
 
   auto y = a.log();
@@ -142,13 +148,14 @@ TYPED_TEST(INPLACE_TENSOR_MATH_TestCPU, test_inplace_log_CPU) {
 }
 
 
-TYPED_TEST(INPLACE_TENSOR_MATH_TestCPU, test_inplace_abs_CPU) {
-  typedef typename TypeParam::Dtype Dtype;
+TYPED_TEST(INPLACE_TENSOR_MATH_Test, test_inplace_abs) {
+  
+  using DeviceTensor = TypeParam;
   
   fake_random_number random_generator;
   const int N = 64;
 
-  auto a = hypertea::TensorCPU<Dtype>(random_generator.generate_random_vector(N));
+  auto a = DeviceTensor(random_generator.generate_random_vector(N));
   auto a_data = a.debug_gtest_cpu_data();
 
   auto y = a.abs();
@@ -160,13 +167,14 @@ TYPED_TEST(INPLACE_TENSOR_MATH_TestCPU, test_inplace_abs_CPU) {
 }
 
 
-TYPED_TEST(INPLACE_TENSOR_MATH_TestCPU, test_inplace_tanh_CPU) {
-  typedef typename TypeParam::Dtype Dtype;
+TYPED_TEST(INPLACE_TENSOR_MATH_Test, test_inplace_tanh) {
+  
+  using DeviceTensor = TypeParam;
   
   fake_random_number random_generator;
   const int N = 64;
 
-  auto a = hypertea::TensorCPU<Dtype>(random_generator.generate_random_vector(N));
+  auto a = DeviceTensor(random_generator.generate_random_vector(N));
   auto a_data = a.debug_gtest_cpu_data();
 
   auto y = a.tanh();
@@ -177,13 +185,14 @@ TYPED_TEST(INPLACE_TENSOR_MATH_TestCPU, test_inplace_tanh_CPU) {
   }
 }
 
-TYPED_TEST(INPLACE_TENSOR_MATH_TestCPU, test_inplace_sigmoid_CPU) {
-  typedef typename TypeParam::Dtype Dtype;
+TYPED_TEST(INPLACE_TENSOR_MATH_Test, test_inplace_sigmoid) {
+  
+  using DeviceTensor = TypeParam;
   
   fake_random_number random_generator;
   const int N = 64;
 
-  auto a = hypertea::TensorCPU<Dtype>(random_generator.generate_random_vector(N));
+  auto a = DeviceTensor(random_generator.generate_random_vector(N));
   auto a_data = a.debug_gtest_cpu_data();
 
   auto y = a.sigmoid();
@@ -195,15 +204,16 @@ TYPED_TEST(INPLACE_TENSOR_MATH_TestCPU, test_inplace_sigmoid_CPU) {
 }
 
 
-TYPED_TEST(INPLACE_TENSOR_MATH_TestCPU, test_inplace_elu_CPU) {
-  typedef typename TypeParam::Dtype Dtype;
+TYPED_TEST(INPLACE_TENSOR_MATH_Test, test_inplace_elu) {
+  
+  using DeviceTensor = TypeParam;
   
   fake_random_number random_generator;
   const int N = 64;
 
   float alpha = 1.0;
 
-  auto a = hypertea::TensorCPU<Dtype>(random_generator.generate_random_vector(N));
+  auto a = DeviceTensor(random_generator.generate_random_vector(N));
   auto a_data = a.debug_gtest_cpu_data();
 
   auto y = a.elu(alpha);
@@ -216,13 +226,14 @@ TYPED_TEST(INPLACE_TENSOR_MATH_TestCPU, test_inplace_elu_CPU) {
 }
 
 
-TYPED_TEST(INPLACE_TENSOR_MATH_TestCPU, test_inplace_relu_CPU) {
-  typedef typename TypeParam::Dtype Dtype;
+TYPED_TEST(INPLACE_TENSOR_MATH_Test, test_inplace_relu) {
+  
+  using DeviceTensor = TypeParam;
   
   fake_random_number random_generator;
   const int N = 64;
 
-  auto a = hypertea::TensorCPU<Dtype>(random_generator.generate_random_vector(N));
+  auto a = DeviceTensor(random_generator.generate_random_vector(N));
   auto a_data = a.debug_gtest_cpu_data();
 
   float negative_slope = .0;
@@ -239,16 +250,17 @@ TYPED_TEST(INPLACE_TENSOR_MATH_TestCPU, test_inplace_relu_CPU) {
 
 
 
-TYPED_TEST(INPLACE_TENSOR_MATH_TestCPU, test_inplace_add_CPU) {
-  typedef typename TypeParam::Dtype Dtype;
+TYPED_TEST(INPLACE_TENSOR_MATH_Test, test_inplace_add) {
+  
+  using DeviceTensor = TypeParam;
   
   fake_random_number random_generator;
   const int N = 64;
 
-  auto a = hypertea::TensorCPU<Dtype>(random_generator.generate_random_vector(N));
+  auto a = DeviceTensor(random_generator.generate_random_vector(N));
   auto a_data = a.debug_gtest_cpu_data();
   
-  auto b = hypertea::TensorCPU<Dtype>(random_generator.generate_random_vector(N));
+  auto b = DeviceTensor(random_generator.generate_random_vector(N));
   auto b_data = b.debug_gtest_cpu_data();
 
   a+=b;
@@ -261,16 +273,17 @@ TYPED_TEST(INPLACE_TENSOR_MATH_TestCPU, test_inplace_add_CPU) {
 }
 
 
-TYPED_TEST(INPLACE_TENSOR_MATH_TestCPU, test_inplace_sub_CPU) {
-  typedef typename TypeParam::Dtype Dtype;
+TYPED_TEST(INPLACE_TENSOR_MATH_Test, test_inplace_sub) {
+  
+  using DeviceTensor = TypeParam;
   
   fake_random_number random_generator;
   const int N = 64;
 
-  auto a = hypertea::TensorCPU<Dtype>(random_generator.generate_random_vector(N));
+  auto a = DeviceTensor(random_generator.generate_random_vector(N));
   auto a_data = a.debug_gtest_cpu_data();
   
-  auto b = hypertea::TensorCPU<Dtype>(random_generator.generate_random_vector(N));
+  auto b = DeviceTensor(random_generator.generate_random_vector(N));
   auto b_data = b.debug_gtest_cpu_data();
 
   a-=b;
@@ -282,16 +295,17 @@ TYPED_TEST(INPLACE_TENSOR_MATH_TestCPU, test_inplace_sub_CPU) {
   }
 }
 
-TYPED_TEST(INPLACE_TENSOR_MATH_TestCPU, test_inplace_mul_CPU) {
-  typedef typename TypeParam::Dtype Dtype;
+TYPED_TEST(INPLACE_TENSOR_MATH_Test, test_inplace_mul) {
+  
+  using DeviceTensor = TypeParam;
   
   fake_random_number random_generator;
   const int N = 64;
 
-  auto a = hypertea::TensorCPU<Dtype>(random_generator.generate_random_vector(N));
+  auto a = DeviceTensor(random_generator.generate_random_vector(N));
   auto a_data = a.debug_gtest_cpu_data();
   
-  auto b = hypertea::TensorCPU<Dtype>(random_generator.generate_random_vector(N));
+  auto b = DeviceTensor(random_generator.generate_random_vector(N));
   auto b_data = b.debug_gtest_cpu_data();
 
   a*=b;
@@ -303,16 +317,17 @@ TYPED_TEST(INPLACE_TENSOR_MATH_TestCPU, test_inplace_mul_CPU) {
   }
 }
 
-TYPED_TEST(INPLACE_TENSOR_MATH_TestCPU, test_inplace_div_CPU) {
-  typedef typename TypeParam::Dtype Dtype;
+TYPED_TEST(INPLACE_TENSOR_MATH_Test, test_inplace_div) {
+  
+  using DeviceTensor = TypeParam;
   
   fake_random_number random_generator;
   const int N = 64;
 
-  auto a = hypertea::TensorCPU<Dtype>(random_generator.generate_random_vector(N));
+  auto a = DeviceTensor(random_generator.generate_random_vector(N));
   auto a_data = a.debug_gtest_cpu_data();
   
-  auto b = hypertea::TensorCPU<Dtype>(random_generator.generate_random_vector(N));
+  auto b = DeviceTensor(random_generator.generate_random_vector(N));
   auto b_data = b.debug_gtest_cpu_data();
 
   a/=b;
@@ -329,13 +344,14 @@ TYPED_TEST(INPLACE_TENSOR_MATH_TestCPU, test_inplace_div_CPU) {
 
 
 
-TYPED_TEST(INPLACE_TENSOR_MATH_TestCPU, test_inplace_add_scalar_CPU) {
-  typedef typename TypeParam::Dtype Dtype;
+TYPED_TEST(INPLACE_TENSOR_MATH_Test, test_inplace_add_scalar) {
+  
+  using DeviceTensor = TypeParam;
   
   fake_random_number random_generator;
   const int N = 64;
 
-  auto a = hypertea::TensorCPU<Dtype>(random_generator.generate_random_vector(N));
+  auto a = DeviceTensor(random_generator.generate_random_vector(N));
   auto a_data = a.debug_gtest_cpu_data();
   
   a+=61.23;
@@ -348,13 +364,14 @@ TYPED_TEST(INPLACE_TENSOR_MATH_TestCPU, test_inplace_add_scalar_CPU) {
 }
 
 
-TYPED_TEST(INPLACE_TENSOR_MATH_TestCPU, test_inplace_sub_scalar_CPU) {
-  typedef typename TypeParam::Dtype Dtype;
+TYPED_TEST(INPLACE_TENSOR_MATH_Test, test_inplace_sub_scalar) {
+  
+  using DeviceTensor = TypeParam;
   
   fake_random_number random_generator;
   const int N = 64;
 
-  auto a = hypertea::TensorCPU<Dtype>(random_generator.generate_random_vector(N));
+  auto a = DeviceTensor(random_generator.generate_random_vector(N));
   auto a_data = a.debug_gtest_cpu_data();
   
   a-=61.23;
@@ -366,13 +383,14 @@ TYPED_TEST(INPLACE_TENSOR_MATH_TestCPU, test_inplace_sub_scalar_CPU) {
   }
 }
 
-TYPED_TEST(INPLACE_TENSOR_MATH_TestCPU, test_inplace_mul_scalar_CPU) {
-  typedef typename TypeParam::Dtype Dtype;
+TYPED_TEST(INPLACE_TENSOR_MATH_Test, test_inplace_mul_scalar) {
+  
+  using DeviceTensor = TypeParam;
   
   fake_random_number random_generator;
   const int N = 64;
 
-  auto a = hypertea::TensorCPU<Dtype>(random_generator.generate_random_vector(N));
+  auto a = DeviceTensor(random_generator.generate_random_vector(N));
   auto a_data = a.debug_gtest_cpu_data();
   
   a*=61.23;
@@ -384,13 +402,14 @@ TYPED_TEST(INPLACE_TENSOR_MATH_TestCPU, test_inplace_mul_scalar_CPU) {
   }
 }
 
-TYPED_TEST(INPLACE_TENSOR_MATH_TestCPU, test_inplace_div_scalar_CPU) {
-  typedef typename TypeParam::Dtype Dtype;
+TYPED_TEST(INPLACE_TENSOR_MATH_Test, test_inplace_div_scalar) {
+  
+  using DeviceTensor = TypeParam;
   
   fake_random_number random_generator;
   const int N = 64;
 
-  auto a = hypertea::TensorCPU<Dtype>(random_generator.generate_random_vector(N));
+  auto a = DeviceTensor(random_generator.generate_random_vector(N));
   auto a_data = a.debug_gtest_cpu_data();
   
   a/=61.23;

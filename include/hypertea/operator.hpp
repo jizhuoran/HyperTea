@@ -7,7 +7,7 @@
 #include <numeric>
 
 #include "hypertea/common.hpp"
-#include "hypertea/util/math_functions.hpp"
+// #include "hypertea/util/math_functions.hpp"
 #include "hypertea/util/benchmark.hpp"
 #include "hypertea/util/tensor_gpu_math_func.hpp"
 
@@ -48,64 +48,64 @@ class Functor {
 
 
 
-template <typename Dtype>
-class CPUFunctor : public Functor<Dtype> {
+// template <typename Dtype>
+// class CPUFunctor : public Functor<Dtype> {
 
-public:
-  CPUFunctor() : Functor<Dtype>() {}
-  ~CPUFunctor() {}
+// public:
+//   CPUFunctor() : Functor<Dtype>() {}
+//   ~CPUFunctor() {}
 
 
-  virtual void Forward(const std::vector<Dtype*> bottom_datas,
-      const std::vector<Dtype*> top_datas) {}
+//   virtual void Forward(const std::vector<Dtype*> bottom_datas,
+//       const std::vector<Dtype*> top_datas) {}
 
-  // virtual std::vector<Tensor<Dtype> *> Forward(const std::vector<Tensor<Dtype> *> inputs) { return {}; }
+//   // virtual std::vector<Tensor<Dtype> *> Forward(const std::vector<Tensor<Dtype> *> inputs) { return {}; }
   
-  virtual TensorCPU<Dtype> Forward(TensorCPU<Dtype> &input_tensor) = 0;
+//   virtual TensorCPU<Dtype> Forward(TensorCPU<Dtype> &input_tensor) = 0;
 
-    // return *(this->Forward({&input})[0]);
+//     // return *(this->Forward({&input})[0]);
 
-  // }
+//   // }
 
 
-  TensorCPU<Dtype> operator()(TensorCPU<Dtype> &input) {
-    return this->Forward(input);
-  }
+//   TensorCPU<Dtype> operator()(TensorCPU<Dtype> &input) {
+//     return this->Forward(input);
+//   }
   
-};
+// };
 
-#ifdef USE_OPENCL
+// #ifdef USE_OPENCL
 
-template <typename Dtype>
-class GPUFunctor : public Functor<Dtype> {
+// template <typename Dtype>
+// class GPUFunctor : public Functor<Dtype> {
 
-public:
-  GPUFunctor() : Functor<Dtype>() {}
-  ~GPUFunctor() {}
+// public:
+//   GPUFunctor() : Functor<Dtype>() {}
+//   ~GPUFunctor() {}
 
 
-  virtual void Forward(const std::vector<cl_mem> bottom_datas,
-      const std::vector<cl_mem> top_datas) {}
+//   virtual void Forward(const std::vector<cl_mem> bottom_datas,
+//       const std::vector<cl_mem> top_datas) {}
 
-  virtual TensorGPU<Dtype> Forward(TensorGPU<Dtype> input_tensor) {}
+//   virtual TensorGPU<Dtype> Forward(TensorGPU<Dtype> input_tensor) {}
   
-  TensorGPU<Dtype> operator()(TensorGPU<Dtype> input) {
-    // GPUTimer timer;
-    // timer.Start();
-    auto output_tensor = this->Forward(input);
-    // timer.Stop();
-    // LOG(INFO) << "The time used for operator " << this->type() << " is " << timer.MilliSeconds() << "ms." << std::endl;
+//   TensorGPU<Dtype> operator()(TensorGPU<Dtype> input) {
+//     // GPUTimer timer;
+//     // timer.Start();
+//     auto output_tensor = this->Forward(input);
+//     // timer.Stop();
+//     // LOG(INFO) << "The time used for operator " << this->type() << " is " << timer.MilliSeconds() << "ms." << std::endl;
 
-    return output_tensor;
-  }
+//     return output_tensor;
+//   }
 
-  // TensorGPU<Dtype> operator()(TensorGPU<Dtype> &&input) {
-  //   return this->Forward(input);
-  // }
+//   // TensorGPU<Dtype> operator()(TensorGPU<Dtype> &&input) {
+//   //   return this->Forward(input);
+//   // }
 
-};
+// };
 
-#endif //USE_OPENCL
+// #endif //USE_OPENCL
 
 }  // namespace hypertea
 
