@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include "hypertea/operators/base_conv.hpp"
+#include "hypertea/operators/base_conv_op.hpp"
 
 namespace hypertea {
 

@@ -1,91 +1,105 @@
-#ifndef HYPERTEA_CONV_OP_HPP_
-#define HYPERTEA_CONV_OP_HPP_
+#ifndef HYPERTEA_LIBDNNCONV_OP_HPP_
+#define HYPERTEA_LIBDNNCONV_OP_HPP_
 
 #include <vector>
-
-#include "hypertea/operators/base_conv_op.hpp"
+#include "hypertea/operator.hpp"
 
 namespace hypertea {
 
-/**
- * @brief Convolves the input image with a bank of learned filters,
- *        and (optionally) adds biases.
- *
- *   Hypertea convolves by reduction to matrix multiplication. This achieves
- *   high-throughput and generality of input and filter dimensions but comes at
- *   the cost of memory for matrices. This makes use of efficiency in BLAS.
- *
- *   The input is "im2col" transformed to a channel K' x H x W data matrix
- *   for multiplication with the N x K' x H x W filter matrix to yield a
- *   N' x H x W output matrix that is then "col2im" restored. K' is the
- *   input channel * kernel height * kernel width dimension of the unrolled
- *   inputs so that the im2col matrix has a column for each input region to
- *   be filtered. col2im restores the output spatial structure by rolling up
- *   the output channel N' columns of the output matrix.
- */
-
-
 
 template <typename Dtype>
-class ConvolutionOp_CPU : public BaseConvolutionOp_CPU<Dtype> {
- public:
+class LibDNNBase {
 
-  explicit ConvolutionOp_CPU(const Dtype* weight, const Dtype* bias,
-              int group,
-              bool is_1x1,
-              std::vector<int> kernel_shape,
-              std::vector<int> stride,
-              std::vector<int> pad,
-              std::vector<int> dilation,
-              std::vector<int> input_shape,
-              std::vector<int> output_shape,
-              bool force_nd_im2col) 
+public:
+  explicit LibDNNBase(
+    std::string kernel_name,
+    int top_count,
+    TensorGPU<float>* weight, 
+    TensorGPU<float>* bias,
+    std::vector<int> local,
+    std::vector<int> global)
 
-    : BaseConvolutionOp_CPU<Dtype>(weight, bias, group, is_1x1,
-      kernel_shape, stride, pad, dilation, input_shape, output_shape, force_nd_im2col, false) {}
+    :kernel_name_(kernel_name),
+    top_count_(top_count), 
+    weight_(weight), bias_(bias) {
+
+    local_size_.push_back(local[0]);
+    local_size_.push_back(local[1]);
+    local_size_.push_back(local[2]);
+
+    global_size_.push_back(global[0]);
+    global_size_.push_back(global[1]);
+    global_size_.push_back(global[2]);
+
+  }
 
 
+protected:
 
-  virtual inline const char* type() const { return "Convolution"; }
+  int top_count_;
+  std::string kernel_name_;
 
- // protected:
-  virtual void Forward(const std::vector<Dtype*> bottom_datas,
-      const std::vector<Dtype*> top_datas);
+  TensorGPU<float>* weight_;
+  TensorGPU<float>* bias_;
 
-  virtual TensorCPU<Dtype> Forward(TensorCPU<Dtype> &input_tensor);
 
-   
+  std::vector<size_t> local_size_;
+  std::vector<size_t> global_size_;
+
 };
+
 
 #ifdef USE_OPENCL
 
 template <typename Dtype>
-class ConvolutionOp_GPU : public BaseConvolutionOp_GPU<Dtype> {
+class LibDNNConvOp : public LibDNNBase<Dtype> {
  public:
 
-  explicit ConvolutionOp_GPU(
+  explicit LibDNNConvOp(
     std::string kernel_name,
     int top_count,
-    const TensorGPU<float>& weight, 
-    const TensorGPU<float>& bias,
+    TensorGPU<float>* weight, 
+    TensorGPU<float>* bias,
     std::vector<int> local,
     std::vector<int> global)
-    : BaseConvolutionOp_GPU<Dtype>(
+    : LibDNNBase<Dtype>(
       kernel_name, top_count, weight, bias,
       local, global) { }
 
-  virtual inline const char* type() const { return "Convolution"; }
+  inline const char* type() const { return "Convolution"; }
 
-  // virtual void Forward(const std::vector<cl_mem> bottom_datas,
-      // const std::vector<cl_mem> top_datas);
   
-  virtual TensorGPU<Dtype> Forward(TensorGPU<Dtype> input_tensor);
+  TensorGPU<Dtype> operator()(TensorGPU<Dtype> &input);
   
 };
+
+
+template <typename Dtype>
+class LibDNNDeconvOp : public LibDNNBase<Dtype> {
+ public:
+
+  explicit LibDNNDeconvOp(
+    std::string kernel_name,
+    int top_count,
+    TensorGPU<float>* weight, 
+    TensorGPU<float>* bias,
+    std::vector<int> local,
+    std::vector<int> global)
+    : LibDNNBase<Dtype>(
+      kernel_name, top_count, weight, bias,
+      local, global) { }
+
+  inline const char* type() const { return "Deconvolution"; }
+
+  TensorGPU<Dtype> operator()(TensorGPU<Dtype> &input);
+
+  
+};
+
 
 #endif //USE_OPENCL
 
 
 }  // namespace hypertea
 
-#endif  // HYPERTEA_CONV_OP_HPP_
+#endif  // HYPERTEA_LIBDNNCONV_OP_HPP_

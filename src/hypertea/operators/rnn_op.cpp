@@ -4,10 +4,6 @@
 
 namespace hypertea {
 
-
-
-
-
 template <typename DeviceTensor>
 void GRUCell<DeviceTensor>::Forward(
     DeviceTensor& input,

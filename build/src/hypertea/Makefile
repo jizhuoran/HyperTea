@@ -360,32 +360,32 @@ operators/deconv_op.cpp.s:
 	cd /home/zrji/hypertea/build && $(MAKE) -f src/hypertea/CMakeFiles/hypertea.dir/build.make src/hypertea/CMakeFiles/hypertea.dir/operators/deconv_op.cpp.s
 .PHONY : operators/deconv_op.cpp.s
 
-operators/native_deconv_op.o: operators/native_deconv_op.cpp.o
+operators/libdnn_conv_op.o: operators/libdnn_conv_op.cpp.o
 
-.PHONY : operators/native_deconv_op.o
+.PHONY : operators/libdnn_conv_op.o
 
 # target to build an object file
-operators/native_deconv_op.cpp.o:
-	cd /home/zrji/hypertea/build && $(MAKE) -f src/hypertea/CMakeFiles/hypertea.dir/build.make src/hypertea/CMakeFiles/hypertea.dir/operators/native_deconv_op.cpp.o
-.PHONY : operators/native_deconv_op.cpp.o
+operators/libdnn_conv_op.cpp.o:
+	cd /home/zrji/hypertea/build && $(MAKE) -f src/hypertea/CMakeFiles/hypertea.dir/build.make src/hypertea/CMakeFiles/hypertea.dir/operators/libdnn_conv_op.cpp.o
+.PHONY : operators/libdnn_conv_op.cpp.o
 
-operators/native_deconv_op.i: operators/native_deconv_op.cpp.i
+operators/libdnn_conv_op.i: operators/libdnn_conv_op.cpp.i
 
-.PHONY : operators/native_deconv_op.i
+.PHONY : operators/libdnn_conv_op.i
 
 # target to preprocess a source file
-operators/native_deconv_op.cpp.i:
-	cd /home/zrji/hypertea/build && $(MAKE) -f src/hypertea/CMakeFiles/hypertea.dir/build.make src/hypertea/CMakeFiles/hypertea.dir/operators/native_deconv_op.cpp.i
-.PHONY : operators/native_deconv_op.cpp.i
+operators/libdnn_conv_op.cpp.i:
+	cd /home/zrji/hypertea/build && $(MAKE) -f src/hypertea/CMakeFiles/hypertea.dir/build.make src/hypertea/CMakeFiles/hypertea.dir/operators/libdnn_conv_op.cpp.i
+.PHONY : operators/libdnn_conv_op.cpp.i
 
-operators/native_deconv_op.s: operators/native_deconv_op.cpp.s
+operators/libdnn_conv_op.s: operators/libdnn_conv_op.cpp.s
 
-.PHONY : operators/native_deconv_op.s
+.PHONY : operators/libdnn_conv_op.s
 
 # target to generate assembly for a file
-operators/native_deconv_op.cpp.s:
-	cd /home/zrji/hypertea/build && $(MAKE) -f src/hypertea/CMakeFiles/hypertea.dir/build.make src/hypertea/CMakeFiles/hypertea.dir/operators/native_deconv_op.cpp.s
-.PHONY : operators/native_deconv_op.cpp.s
+operators/libdnn_conv_op.cpp.s:
+	cd /home/zrji/hypertea/build && $(MAKE) -f src/hypertea/CMakeFiles/hypertea.dir/build.make src/hypertea/CMakeFiles/hypertea.dir/operators/libdnn_conv_op.cpp.s
+.PHONY : operators/libdnn_conv_op.cpp.s
 
 operators/rnn_op.o: operators/rnn_op.cpp.o
 
@@ -691,9 +691,9 @@ help:
 	@echo "... operators/deconv_op.o"
 	@echo "... operators/deconv_op.i"
 	@echo "... operators/deconv_op.s"
-	@echo "... operators/native_deconv_op.o"
-	@echo "... operators/native_deconv_op.i"
-	@echo "... operators/native_deconv_op.s"
+	@echo "... operators/libdnn_conv_op.o"
+	@echo "... operators/libdnn_conv_op.i"
+	@echo "... operators/libdnn_conv_op.s"
 	@echo "... operators/rnn_op.o"
 	@echo "... operators/rnn_op.i"
 	@echo "... operators/rnn_op.s"

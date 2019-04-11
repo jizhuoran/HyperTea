@@ -148,18 +148,18 @@ src/hypertea/CMakeFiles/hypertea.dir/operators/deconv_op.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/hypertea.dir/operators/deconv_op.cpp.s"
 	cd /home/zrji/hypertea/build/src/hypertea && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/zrji/hypertea/src/hypertea/operators/deconv_op.cpp -o CMakeFiles/hypertea.dir/operators/deconv_op.cpp.s
 
-src/hypertea/CMakeFiles/hypertea.dir/operators/native_deconv_op.cpp.o: src/hypertea/CMakeFiles/hypertea.dir/flags.make
-src/hypertea/CMakeFiles/hypertea.dir/operators/native_deconv_op.cpp.o: ../src/hypertea/operators/native_deconv_op.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/zrji/hypertea/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object src/hypertea/CMakeFiles/hypertea.dir/operators/native_deconv_op.cpp.o"
-	cd /home/zrji/hypertea/build/src/hypertea && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/hypertea.dir/operators/native_deconv_op.cpp.o -c /home/zrji/hypertea/src/hypertea/operators/native_deconv_op.cpp
+src/hypertea/CMakeFiles/hypertea.dir/operators/libdnn_conv_op.cpp.o: src/hypertea/CMakeFiles/hypertea.dir/flags.make
+src/hypertea/CMakeFiles/hypertea.dir/operators/libdnn_conv_op.cpp.o: ../src/hypertea/operators/libdnn_conv_op.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/zrji/hypertea/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object src/hypertea/CMakeFiles/hypertea.dir/operators/libdnn_conv_op.cpp.o"
+	cd /home/zrji/hypertea/build/src/hypertea && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/hypertea.dir/operators/libdnn_conv_op.cpp.o -c /home/zrji/hypertea/src/hypertea/operators/libdnn_conv_op.cpp
 
-src/hypertea/CMakeFiles/hypertea.dir/operators/native_deconv_op.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/hypertea.dir/operators/native_deconv_op.cpp.i"
-	cd /home/zrji/hypertea/build/src/hypertea && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/zrji/hypertea/src/hypertea/operators/native_deconv_op.cpp > CMakeFiles/hypertea.dir/operators/native_deconv_op.cpp.i
+src/hypertea/CMakeFiles/hypertea.dir/operators/libdnn_conv_op.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/hypertea.dir/operators/libdnn_conv_op.cpp.i"
+	cd /home/zrji/hypertea/build/src/hypertea && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/zrji/hypertea/src/hypertea/operators/libdnn_conv_op.cpp > CMakeFiles/hypertea.dir/operators/libdnn_conv_op.cpp.i
 
-src/hypertea/CMakeFiles/hypertea.dir/operators/native_deconv_op.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/hypertea.dir/operators/native_deconv_op.cpp.s"
-	cd /home/zrji/hypertea/build/src/hypertea && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/zrji/hypertea/src/hypertea/operators/native_deconv_op.cpp -o CMakeFiles/hypertea.dir/operators/native_deconv_op.cpp.s
+src/hypertea/CMakeFiles/hypertea.dir/operators/libdnn_conv_op.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/hypertea.dir/operators/libdnn_conv_op.cpp.s"
+	cd /home/zrji/hypertea/build/src/hypertea && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/zrji/hypertea/src/hypertea/operators/libdnn_conv_op.cpp -o CMakeFiles/hypertea.dir/operators/libdnn_conv_op.cpp.s
 
 src/hypertea/CMakeFiles/hypertea.dir/operators/rnn_op.cpp.o: src/hypertea/CMakeFiles/hypertea.dir/flags.make
 src/hypertea/CMakeFiles/hypertea.dir/operators/rnn_op.cpp.o: ../src/hypertea/operators/rnn_op.cpp
@@ -300,7 +300,7 @@ hypertea_OBJECTS = \
 "CMakeFiles/hypertea.dir/operators/batch_norm_op.cpp.o" \
 "CMakeFiles/hypertea.dir/operators/conv_op.cpp.o" \
 "CMakeFiles/hypertea.dir/operators/deconv_op.cpp.o" \
-"CMakeFiles/hypertea.dir/operators/native_deconv_op.cpp.o" \
+"CMakeFiles/hypertea.dir/operators/libdnn_conv_op.cpp.o" \
 "CMakeFiles/hypertea.dir/operators/rnn_op.cpp.o" \
 "CMakeFiles/hypertea.dir/operators/scale_op.cpp.o" \
 "CMakeFiles/hypertea.dir/tensor.cpp.o" \
@@ -322,7 +322,7 @@ lib/libhypertea.a: src/hypertea/CMakeFiles/hypertea.dir/operators/base_conv_op.c
 lib/libhypertea.a: src/hypertea/CMakeFiles/hypertea.dir/operators/batch_norm_op.cpp.o
 lib/libhypertea.a: src/hypertea/CMakeFiles/hypertea.dir/operators/conv_op.cpp.o
 lib/libhypertea.a: src/hypertea/CMakeFiles/hypertea.dir/operators/deconv_op.cpp.o
-lib/libhypertea.a: src/hypertea/CMakeFiles/hypertea.dir/operators/native_deconv_op.cpp.o
+lib/libhypertea.a: src/hypertea/CMakeFiles/hypertea.dir/operators/libdnn_conv_op.cpp.o
 lib/libhypertea.a: src/hypertea/CMakeFiles/hypertea.dir/operators/rnn_op.cpp.o
 lib/libhypertea.a: src/hypertea/CMakeFiles/hypertea.dir/operators/scale_op.cpp.o
 lib/libhypertea.a: src/hypertea/CMakeFiles/hypertea.dir/tensor.cpp.o

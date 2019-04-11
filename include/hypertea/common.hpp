@@ -32,6 +32,8 @@
 #include "hypertea/tensor.hpp"
 
 
+#define IN_PLACE true
+#define NOT_IN_PLACE false
 
 // Convert macro to string
 #define STRINGIFY(m) #m

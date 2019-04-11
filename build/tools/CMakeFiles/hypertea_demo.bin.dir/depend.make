@@ -7,12 +7,10 @@ tools/CMakeFiles/hypertea_demo.bin.dir/hypertea_demo.cpp.o: ../include/hypertea/
 tools/CMakeFiles/hypertea_demo.bin.dir/hypertea_demo.cpp.o: ../include/hypertea/operator.hpp
 tools/CMakeFiles/hypertea_demo.bin.dir/hypertea_demo.cpp.o: ../include/hypertea/operators/MIOpen_batch_norm_op.hpp
 tools/CMakeFiles/hypertea_demo.bin.dir/hypertea_demo.cpp.o: ../include/hypertea/operators/activation.hpp
-tools/CMakeFiles/hypertea_demo.bin.dir/hypertea_demo.cpp.o: ../include/hypertea/operators/base_conv.hpp
 tools/CMakeFiles/hypertea_demo.bin.dir/hypertea_demo.cpp.o: ../include/hypertea/operators/base_conv_op.hpp
 tools/CMakeFiles/hypertea_demo.bin.dir/hypertea_demo.cpp.o: ../include/hypertea/operators/batch_norm_op.hpp
 tools/CMakeFiles/hypertea_demo.bin.dir/hypertea_demo.cpp.o: ../include/hypertea/operators/conv_op.hpp
 tools/CMakeFiles/hypertea_demo.bin.dir/hypertea_demo.cpp.o: ../include/hypertea/operators/deconv_op.hpp
-tools/CMakeFiles/hypertea_demo.bin.dir/hypertea_demo.cpp.o: ../include/hypertea/operators/native_deconv_op.hpp
 tools/CMakeFiles/hypertea_demo.bin.dir/hypertea_demo.cpp.o: ../include/hypertea/operators/rnn_op.hpp
 tools/CMakeFiles/hypertea_demo.bin.dir/hypertea_demo.cpp.o: ../include/hypertea/operators/scale_op.hpp
 tools/CMakeFiles/hypertea_demo.bin.dir/hypertea_demo.cpp.o: ../include/hypertea/tensor.hpp

@@ -1,11 +1,7 @@
-#include <algorithm>
-#include <vector>
-
+#include "hypertea/common.hpp"
 #include "hypertea/operators/activation.hpp"
 
-
 namespace hypertea {
-
 
 template<typename DeviceTensor>
 DeviceTensor ReLUOp<DeviceTensor>::operator()(DeviceTensor& input) {
@@ -26,7 +22,6 @@ DeviceTensor ELUOp<DeviceTensor>::operator()(DeviceTensor& input) {
 	return inplace_?DeviceTensor(input.elu(alpha_)) : outplace_elu(input, alpha_);
 }
 DEFINE_FORWARD_FUNC(ELUOp);
-
 
 
 }  // namespace hypertea

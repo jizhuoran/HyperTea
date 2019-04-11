@@ -13,8 +13,7 @@
 
 namespace hypertea {
 
-#define IN_PLACE true
-#define NOT_IN_PLACE false
+
 
 /**
  * @brief An interface for the units of computation which can be composed into a

@@ -6,7 +6,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/hypertea.dir/operators/batch_norm_op.cpp.o"
   "CMakeFiles/hypertea.dir/operators/conv_op.cpp.o"
   "CMakeFiles/hypertea.dir/operators/deconv_op.cpp.o"
-  "CMakeFiles/hypertea.dir/operators/native_deconv_op.cpp.o"
+  "CMakeFiles/hypertea.dir/operators/libdnn_conv_op.cpp.o"
   "CMakeFiles/hypertea.dir/operators/rnn_op.cpp.o"
   "CMakeFiles/hypertea.dir/operators/scale_op.cpp.o"
   "CMakeFiles/hypertea.dir/tensor.cpp.o"

@@ -7,11 +7,6 @@
 
 namespace hypertea {
 
-/**
- * @brief Rectified Linear Unit non-linearity @f$ y = \max(0, x) @f$.
- *        The simple max is fast to compute, and the function does not saturate.
- */
-
 
 enum class RNN_CELL_TYPE {
   LSTM_CELL,
