@@ -6,16 +6,12 @@
 
 #include "hypertea/common.hpp"
 
-
 #include "hypertea/operators/activation.hpp"
-// #include "hypertea/operators/relu_op.hpp"
 #include "hypertea/operators/conv_op.hpp"
 #include "hypertea/operators/deconv_op.hpp"
 #include "hypertea/operators/scale_op.hpp"
-// #include "hypertea/operators/tanh_op.hpp"
 #include "hypertea/operators/batch_norm_op.hpp"
 #include "hypertea/operators/MIOpen_batch_norm_op.hpp"
-// #include "hypertea/operators/native_deconv_op.hpp"
 #include "hypertea/operators/rnn_op.hpp"
 
 #endif  // HYPERTEA_HYPERTEA_HPP_

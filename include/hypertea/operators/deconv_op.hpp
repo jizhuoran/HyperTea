@@ -28,9 +28,8 @@ class DeconvolutionOp : public BaseConvolutionOp<DeviceTensor> {
 
 
 
-  inline const char* type() const { return "Deconvolution"; }
-
-  DeviceTensor operator()(DeviceTensor &input);
+  virtual inline const char* type() const override { return "Deconvolution"; }
+  virtual DeviceTensor operator()(DeviceTensor &input) override;
 
 };
 

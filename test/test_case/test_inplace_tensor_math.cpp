@@ -58,7 +58,7 @@ TYPED_TEST(INPLACE_TENSOR_MATH_Test, test_inplace_sqr) {
   auto a = DeviceTensor(random_generator.generate_random_vector(N));
   auto a_data = a.debug_gtest_cpu_data();
 
-  auto y = a.sqr();
+  auto y = inplace_sqr(a);
   auto y_data = y.debug_gtest_cpu_data();
 
   for (int i = 0; i < N; ++i) {
@@ -75,10 +75,11 @@ TYPED_TEST(INPLACE_TENSOR_MATH_Test, test_inplace_sqrt) {
   fake_random_number random_generator;
   const int N = 64;
 
-  auto a = DeviceTensor(random_generator.generate_random_vector(N)).abs();
+  auto a = DeviceTensor(random_generator.generate_random_vector(N));
+  inplace_abs(a);
   auto a_data = a.debug_gtest_cpu_data();
 
-  auto y = a.sqrt();
+  auto y = inplace_sqrt(a);
   auto y_data = y.debug_gtest_cpu_data();
 
 
@@ -96,10 +97,11 @@ TYPED_TEST(INPLACE_TENSOR_MATH_Test, test_inplace_powx) {
   fake_random_number random_generator;
   const int N = 64;
 
-  auto a = DeviceTensor(random_generator.generate_random_vector(N)).abs();
+  auto a = DeviceTensor(random_generator.generate_random_vector(N));
+  inplace_abs(a);
   auto a_data = a.debug_gtest_cpu_data();
 
-  auto y = a.powx(1.5);
+  auto y = inplace_powx(a, 1.5);
   auto y_data = y.debug_gtest_cpu_data();
 
 
@@ -119,7 +121,7 @@ TYPED_TEST(INPLACE_TENSOR_MATH_Test, test_inplace_exp) {
   auto a = DeviceTensor(random_generator.generate_random_vector(N));
   auto a_data = a.debug_gtest_cpu_data();
 
-  auto y = a.exp();
+  auto y = inplace_exp(a);
   auto y_data = y.debug_gtest_cpu_data();
 
   for (int i = 0; i < N; ++i) {
@@ -135,10 +137,11 @@ TYPED_TEST(INPLACE_TENSOR_MATH_Test, test_inplace_log) {
   fake_random_number random_generator;
   const int N = 64;
 
-  auto a = DeviceTensor(random_generator.generate_random_vector(N)).abs();
+  auto a = DeviceTensor(random_generator.generate_random_vector(N));
+  inplace_abs(a);
   auto a_data = a.debug_gtest_cpu_data();
 
-  auto y = a.log();
+  auto y = inplace_log(a);
   auto y_data = y.debug_gtest_cpu_data();
 
 
@@ -158,7 +161,7 @@ TYPED_TEST(INPLACE_TENSOR_MATH_Test, test_inplace_abs) {
   auto a = DeviceTensor(random_generator.generate_random_vector(N));
   auto a_data = a.debug_gtest_cpu_data();
 
-  auto y = a.abs();
+  auto y = inplace_abs(a);
   auto y_data = y.debug_gtest_cpu_data();
 
   for (int i = 0; i < N; ++i) {
@@ -177,7 +180,7 @@ TYPED_TEST(INPLACE_TENSOR_MATH_Test, test_inplace_tanh) {
   auto a = DeviceTensor(random_generator.generate_random_vector(N));
   auto a_data = a.debug_gtest_cpu_data();
 
-  auto y = a.tanh();
+  auto y = inplace_tanh(a);
   auto y_data = y.debug_gtest_cpu_data();
 
   for (int i = 0; i < N; ++i) {
@@ -195,7 +198,7 @@ TYPED_TEST(INPLACE_TENSOR_MATH_Test, test_inplace_sigmoid) {
   auto a = DeviceTensor(random_generator.generate_random_vector(N));
   auto a_data = a.debug_gtest_cpu_data();
 
-  auto y = a.sigmoid();
+  auto y = inplace_sigmoid(a);;
   auto y_data = y.debug_gtest_cpu_data();
 
   for (int i = 0; i < N; ++i) {
@@ -216,11 +219,11 @@ TYPED_TEST(INPLACE_TENSOR_MATH_Test, test_inplace_elu) {
   auto a = DeviceTensor(random_generator.generate_random_vector(N));
   auto a_data = a.debug_gtest_cpu_data();
 
-  auto y = a.elu(alpha);
+  auto y = inplace_elu(a, alpha);
   auto y_data = y.debug_gtest_cpu_data();
 
   for (int i = 0; i < N; ++i) {
-    auto truth_value = a_data.get()[i] > 0 ? a_data.get()[i] : alpha * (exp(a_data.get()[i]) - 1);
+    auto truth_value = std::max(a_data.get()[i], float(0)) + alpha * (exp(std::min(a_data.get()[i], float(0))) - float(1));
     EXPECT_NEAR(y_data.get()[i], truth_value, 1e-3);
   }
 }
@@ -238,7 +241,7 @@ TYPED_TEST(INPLACE_TENSOR_MATH_Test, test_inplace_relu) {
 
   float negative_slope = .0;
 
-  auto y = a.relu(negative_slope);
+  auto y = inplace_relu(a, negative_slope);
   auto y_data = y.debug_gtest_cpu_data();
 
   for (int i = 0; i < N; ++i) {

@@ -1,20 +1,23 @@
 #ifndef HYPERTEA_SCALE_OP_HPP_
 #define HYPERTEA_SCALE_OP_HPP_
 
+#include "hypertea/operator.hpp"
+
 namespace hypertea {
 
 template <typename DeviceTensor>
-class ScaleOp {
+class ScaleOp  : public TensorOperator<DeviceTensor>{
 
 public:
   explicit ScaleOp(
     DeviceTensor* weight, DeviceTensor* bias, 
     int channels, int spatial_dim)
-  : weight_(weight), bias_(bias),
+  : TensorOperator<DeviceTensor>(),
+    weight_(weight), bias_(bias),
     channels_(channels), spatial_dim_(spatial_dim) {}
 
-  inline const char* type() const { return "Scale"; }
-  DeviceTensor operator()(DeviceTensor &input);
+  virtual inline const char* type() const override { return "Scale"; }
+  virtual DeviceTensor operator()(DeviceTensor &input) override;
 
 private:
   DeviceTensor* bias_;

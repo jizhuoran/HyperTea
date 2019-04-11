@@ -102,6 +102,7 @@ TYPED_TEST(ACTIVATION_Test, test_inplace_elu) {
   auto y_data = a.debug_gtest_cpu_data();
 
   for (int i = 0; i < a.count(); ++i) {
+
     auto ground_truth = std::max(a_data.get()[i], float(0)) + alpha * (exp(std::min(a_data.get()[i], float(0))) - float(1));
     EXPECT_NEAR(y_data.get()[i], ground_truth, 1e-3);
   }

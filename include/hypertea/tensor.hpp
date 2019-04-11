@@ -34,6 +34,8 @@ class TensorGPU : public Tensor<Dtype>
 {
 public:
 
+	TensorGPU() = delete;
+
 	explicit TensorGPU(int count) {
 		data_.reset((void*)clCreateBuffer(OpenCLHandler::Get().context, CL_MEM_READ_WRITE, count * sizeof(Dtype), NULL, NULL), [=](void *ptr){clReleaseMemObject((cl_mem) ptr);});
 		this->count_ = count;
@@ -65,23 +67,9 @@ public:
 	TensorGPU& operator/=(const TensorGPU & other) {return inplace_div(other, *this); }
 	TensorGPU& operator/=(const float other) {return inplace_div_scalar(*this, other); }
 
-	TensorGPU& sigmoid() {return inplace_sigmoid(*this); }
-	TensorGPU& tanh() {return inplace_tanh(*this); }
-	TensorGPU& abs() {return inplace_abs(*this); }
-	TensorGPU& exp() {return inplace_exp(*this); }
-	TensorGPU& log() {return inplace_log(*this); }
-	TensorGPU& sqr() {return inplace_sqr(*this); }
-	TensorGPU& sqrt() {return inplace_sqrt(*this); }
-
 	TensorGPU& set(const Dtype e) {return inplace_set(*this, e); }
-	TensorGPU& powx(const float e) {return inplace_powx(*this, e); }
-	TensorGPU& elu(const float e) {return inplace_elu(*this, e); }
-	TensorGPU& relu(const float e) {return inplace_relu(*this, e); }
 
 private:
-
-	TensorGPU();
-
 	std::shared_ptr<void> data_;
 
 };
@@ -93,6 +81,7 @@ class TensorCPU : public Tensor<Dtype>
 {
 public:
 
+	TensorCPU() = delete;
 	explicit TensorCPU(int count) {
 		data_.reset(new Dtype[count], std::default_delete<Dtype[]>() );
 		this->count_ = count;
@@ -125,7 +114,6 @@ public:
 	}
 
 
-	// TensorCPU add(TensorCPU & other, Dtype alpha=1);
 
 	TensorCPU& operator+=(const TensorCPU & other) {return inplace_add(other, *this); }
 	TensorCPU& operator+=(const float other) {return inplace_add_scalar(*this, other); }
@@ -136,24 +124,10 @@ public:
 	TensorCPU& operator/=(const TensorCPU & other) {return inplace_div(other, *this); }
 	TensorCPU& operator/=(const float other) {return inplace_div_scalar(*this, other); }
 
-
-	TensorCPU& sigmoid() {return inplace_sigmoid(*this); }
-	TensorCPU& tanh() {return inplace_tanh(*this); }
-	TensorCPU& abs() {return inplace_abs(*this); }
-	TensorCPU& exp() {return inplace_exp(*this); }
-	TensorCPU& log() {return inplace_log(*this); }
-	TensorCPU& sqr() {return inplace_sqr(*this); }
-	TensorCPU& sqrt() {return inplace_sqrt(*this); }
-
 	TensorCPU& set(const Dtype e) {return inplace_set(*this, e); }
-	TensorCPU& powx(const float e) {return inplace_powx(*this, e); }
-	TensorCPU& elu(const float e) {return inplace_elu(*this, e); }
-	TensorCPU& relu(const float e) {return inplace_relu(*this, e); }
-
 
 private:
 
-	TensorCPU();
 	std::shared_ptr<Dtype> data_;
 
 

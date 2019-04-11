@@ -672,7 +672,7 @@ void mean_var(
       std::make_pair(sizeof(Dtype), (void *)&eps_)
 
     },
-    std::vector<size_t> {128, channels, 1},
+    std::vector<size_t> {128, static_cast<size_t>(channels), 1},
     std::vector<size_t> {128, 1, 1}
   );
 

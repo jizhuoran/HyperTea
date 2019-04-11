@@ -56,7 +56,8 @@ TYPED_TEST(OUTPLACE_TENSOR_MATH_Test, test_outplace_sqrt) {
   fake_random_number random_generator;
   const int N = 64;
 
-  auto a = DeviceTensor(random_generator.generate_random_vector(N)).abs();
+  auto a = DeviceTensor(random_generator.generate_random_vector(N));
+  inplace_abs(a);
   auto a_data = a.debug_gtest_cpu_data();
 
   auto y = outplace_sqrt(a);
@@ -77,7 +78,8 @@ TYPED_TEST(OUTPLACE_TENSOR_MATH_Test, test_outplace_powx) {
   fake_random_number random_generator;
   const int N = 64;
 
-  auto a = DeviceTensor(random_generator.generate_random_vector(N)).abs();
+  auto a = DeviceTensor(random_generator.generate_random_vector(N));
+  inplace_abs(a);
   auto a_data = a.debug_gtest_cpu_data();
 
   auto y = outplace_powx(a, 1.5);
@@ -116,7 +118,8 @@ TYPED_TEST(OUTPLACE_TENSOR_MATH_Test, test_outplace_log) {
   fake_random_number random_generator;
   const int N = 64;
 
-  auto a = DeviceTensor(random_generator.generate_random_vector(N)).abs();
+  auto a = DeviceTensor(random_generator.generate_random_vector(N));
+  inplace_abs(a);
   auto a_data = a.debug_gtest_cpu_data();
 
   auto y = outplace_log(a);

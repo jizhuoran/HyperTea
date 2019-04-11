@@ -27,9 +27,9 @@ class ConvolutionOp : public BaseConvolutionOp<DeviceTensor> {
     : BaseConvolutionOp<DeviceTensor>(weight, bias, group, is_1x1,
       kernel_shape, stride, pad, dilation, input_shape, output_shape, false) {}
 
-  inline const char* type() const { return "Convolution"; }
+  virtual inline const char* type() const override { return "Convolution"; }
 
-  DeviceTensor operator()(DeviceTensor &input);
+  virtual DeviceTensor operator()(DeviceTensor &input) override;
 
 };
 

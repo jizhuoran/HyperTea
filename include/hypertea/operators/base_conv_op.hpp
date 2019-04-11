@@ -11,7 +11,7 @@ namespace hypertea {
 
 
 template <typename DeviceTensor>
-class BaseConvolutionOp {
+class BaseConvolutionOp : public TensorOperator<DeviceTensor>{
  public:
 
     
@@ -27,7 +27,8 @@ class BaseConvolutionOp {
     std::vector<int> input_shape,
     std::vector<int> output_shape,
     bool is_transposed) 
-    : weight_(weight), 
+    : TensorOperator<DeviceTensor>(),
+      weight_(weight), 
       bias_(bias),
       group_(group),
       is_1x1_(is_1x1),
@@ -108,7 +109,6 @@ class BaseConvolutionOp {
       delete col_buffer_;
     }
   }
-
 
 
   DeviceTensor* weight_;

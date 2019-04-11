@@ -4,9 +4,6 @@
 #include <stdint.h>
 #include <cmath>  // for std::fabs and std::signbit
 #include <cblas.h>
-// #include "hypertea/util/device_alternate.hpp"
-// #include "hypertea/util/mkl_alternate.hpp"
-
 
 
 namespace hypertea {
@@ -14,54 +11,6 @@ namespace hypertea {
 template<typename Dtype> class Tensor;
 template<typename Dtype> class TensorCPU;
 
-
-// template <typename Dtype>
-// TensorCPU<Dtype> unary_math_cpu(const TensorCPU<Dtype> &x, const std::string& op_name);
-
-// template <typename Dtype>
-// TensorCPU<Dtype> unary_scalar_math_cpu(const TensorCPU<Dtype> &x, const float scalar, const std::string& op_name);
-
-// template <typename Dtype>
-// TensorCPU<Dtype>& unary_math_cpu_inplace(TensorCPU<Dtype> &x, const std::string& op_name);
-
-// template <typename Dtype>
-// TensorCPU<Dtype>& unary_scalar_math_cpu_inplace(TensorCPU<Dtype> &x, const float scalar, const std::string& op_name);
-
-
-
-
-// template <typename Dtype>
-// TensorCPU<Dtype> binary_math_cpu(const TensorCPU<Dtype> &x, const TensorCPU<Dtype> &y, const std::string& op_name);
-
-// template <typename Dtype>
-// TensorCPU<Dtype>& binary_math_cpu_inplace(const TensorCPU<Dtype> &x, TensorCPU<Dtype> &y, const std::string& op_name);
-
-// template <typename Dtype>
-// TensorCPU<Dtype> binary_scalar_math_cpu(const TensorCPU<Dtype> &x, const TensorCPU<Dtype> &y, const float scalar, const std::string& op_name);
-
-// template <typename Dtype>
-// TensorCPU<Dtype>& binary_scalar_math_cpu_inplace(const TensorCPU<Dtype> &x, TensorCPU<Dtype> &y, const float scalar, const std::string& op_name);
-
-
-
-// template <typename Dtype>
-// TensorCPU<Dtype>& inplace_gemv(
-// 	const CBLAS_TRANSPOSE TransA, 
-// 	const int M, const int N,
-//     const float alpha, 
-//     const TensorCPU<Dtype>& A, 
-//     const TensorCPU<Dtype>& x, 
-//     const float beta,
-//     TensorCPU<Dtype>& y) {
-
-// 	auto A_data = A.immutable_data();
-//   	auto x_data = x.immutable_data();
-//   	auto y_data = y.mutable_data();
-
-//   	cblas_sgemv(CblasRowMajor, TransA, M, N, alpha, A_data, N, x_data, 1, beta, y_data, 1);
-
-// 	return y;
-// }
 
 template <typename Dtype>
 TensorCPU<Dtype>& inplace_gemm(
@@ -565,52 +514,6 @@ void mean_var(
 		var_data[c] = sqrt(var_data[c] - mean_data[c]*mean_data[c] + eps);
 	}
 }
-
-// template <typename Dtype>
-// TensorCPU<Dtype>& inplace_channeled_scal(
-// 	TensorCPU<Dtype>& x, 
-// 	const TensorCPU<Dtype>& weight,
-// 	int channels,
-// 	int inner_dim
-// );
-
-
-// template <typename Dtype>
-// TensorCPU<Dtype>& inplace_channeled_add(
-// 	TensorCPU<Dtype>& x, 
-// 	const TensorCPU<Dtype>& bias,
-// 	int channels,
-// 	int inner_dim
-// );
-
-// template <typename Dtype>
-// TensorCPU<Dtype>& inplace_channeled_sub(
-// 	TensorCPU<Dtype>& x, 
-// 	const TensorCPU<Dtype>& bias,
-// 	int channels,
-// 	int inner_dim
-// );
-
-// template <typename Dtype>
-// TensorCPU<Dtype>& inplace_channeled_scaladd(
-// 	TensorCPU<Dtype>& x, 
-// 	const TensorCPU<Dtype>& weight,
-// 	const TensorCPU<Dtype>& bias,
-// 	int channels,
-// 	int inner_dim
-// );
-
-
-
-// template <typename Dtype>
-// void cpu_channeled_avg(
-//   const TensorCPU<Dtype>& x, 
-//   TensorCPU<Dtype>& mean,
-//   TensorCPU<Dtype>& var,
-//   int batch_size,
-//   int spatial_dim
-//  );
-
 
  
 template<typename Dtype> 
