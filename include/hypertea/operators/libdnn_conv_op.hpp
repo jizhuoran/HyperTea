@@ -7,15 +7,15 @@
 namespace hypertea {
 
 
-template <typename Dtype>
-class LibDNNBase {
+template <typename DeviceTensor>
+class LibDNNBase  : public TensorOperator<DeviceTensor>{
 
 public:
   explicit LibDNNBase(
     std::string kernel_name,
     int top_count,
-    TensorGPU<float>* weight, 
-    TensorGPU<float>* bias,
+    DeviceTensor* weight, 
+    DeviceTensor* bias,
     std::vector<int> local,
     std::vector<int> global)
 
@@ -39,8 +39,8 @@ protected:
   int top_count_;
   std::string kernel_name_;
 
-  TensorGPU<float>* weight_;
-  TensorGPU<float>* bias_;
+  DeviceTensor* weight_;
+  DeviceTensor* bias_;
 
 
   std::vector<size_t> local_size_;
@@ -51,47 +51,47 @@ protected:
 
 #ifdef USE_OPENCL
 
-template <typename Dtype>
-class LibDNNConvOp : public LibDNNBase<Dtype> {
+template <typename DeviceTensor>
+class LibDNNConvOp : public LibDNNBase<DeviceTensor> {
  public:
 
   explicit LibDNNConvOp(
     std::string kernel_name,
     int top_count,
-    TensorGPU<float>* weight, 
-    TensorGPU<float>* bias,
+    DeviceTensor* weight, 
+    DeviceTensor* bias,
     std::vector<int> local,
     std::vector<int> global)
-    : LibDNNBase<Dtype>(
+    : LibDNNBase<DeviceTensor>(
       kernel_name, top_count, weight, bias,
       local, global) { }
 
-  inline const char* type() const { return "Convolution"; }
+  virtual inline const char* type() const override { return "Convolution"; }
 
   
-  TensorGPU<Dtype> operator()(TensorGPU<Dtype> &input);
+  virtual DeviceTensor operator()(DeviceTensor input) override;
   
 };
 
 
-template <typename Dtype>
-class LibDNNDeconvOp : public LibDNNBase<Dtype> {
+template <typename DeviceTensor>
+class LibDNNDeconvOp : public LibDNNBase<DeviceTensor> {
  public:
 
   explicit LibDNNDeconvOp(
     std::string kernel_name,
     int top_count,
-    TensorGPU<float>* weight, 
-    TensorGPU<float>* bias,
+    DeviceTensor* weight, 
+    DeviceTensor* bias,
     std::vector<int> local,
     std::vector<int> global)
-    : LibDNNBase<Dtype>(
+    : LibDNNBase<DeviceTensor>(
       kernel_name, top_count, weight, bias,
       local, global) { }
 
-  inline const char* type() const { return "Deconvolution"; }
+  virtual inline const char* type() const override { return "Deconvolution"; }
 
-  TensorGPU<Dtype> operator()(TensorGPU<Dtype> &input);
+  virtual DeviceTensor operator()(DeviceTensor input) override;
 
   
 };

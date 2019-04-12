@@ -10,9 +10,7 @@ template<typename DeviceTensor>
 DeviceTensor DeconvolutionOp<DeviceTensor>::operator()(DeviceTensor input) {
 
 
-  auto output = DeviceTensor(this->top_count_);
-  output.set(0);
-
+  auto output = DeviceTensor(this->top_count_, 0);
 
   auto inputs_tensors  = input.chunked_tensors(this->num_);
   auto outputs_tensors = output.chunked_tensors(this->num_);

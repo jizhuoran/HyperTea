@@ -7,11 +7,11 @@ namespace hypertea {
 
 #ifdef USE_OPENCL
 
-template <typename Dtype>
-TensorGPU<Dtype> LibDNNConvOp<Dtype>::operator()(TensorGPU<Dtype>& input) {
+template <typename DeviceTensor>
+DeviceTensor LibDNNConvOp<DeviceTensor>::operator()(DeviceTensor input) {
 
   const cl_mem input_data = input.immutable_data();
-  TensorGPU<Dtype> output(this->top_count_);
+  DeviceTensor output(this->top_count_);
   cl_mem output_data = output.mutable_data();
 
   auto weight_data_ = this->weight_->immutable_data();
@@ -39,15 +39,15 @@ TensorGPU<Dtype> LibDNNConvOp<Dtype>::operator()(TensorGPU<Dtype>& input) {
 
 }
 
-template TensorGPU<float> LibDNNConvOp<float>::operator()(TensorGPU<float>& input);
-template TensorGPU<half> LibDNNConvOp<half>::operator()(TensorGPU<half>& input);
+template TensorGPU<float> LibDNNConvOp<TensorGPU<float>>::operator()(TensorGPU<float> input);
+template TensorGPU<half> LibDNNConvOp<TensorGPU<half>>::operator()(TensorGPU<half> input);
 
 
-template <typename Dtype>
-TensorGPU<Dtype> LibDNNDeconvOp<Dtype>::operator()(TensorGPU<Dtype>& input) {
+template <typename DeviceTensor>
+DeviceTensor LibDNNDeconvOp<DeviceTensor>::operator()(DeviceTensor input) {
 
   const cl_mem input_data = input.immutable_data();
-  TensorGPU<Dtype> output(this->top_count_);
+  DeviceTensor output(this->top_count_);
   cl_mem output_data = output.mutable_data();
 
   auto weight_data_ = this->weight_->immutable_data();
@@ -76,8 +76,8 @@ TensorGPU<Dtype> LibDNNDeconvOp<Dtype>::operator()(TensorGPU<Dtype>& input) {
 }
 
 
-template TensorGPU<float> LibDNNDeconvOp<float>::operator()(TensorGPU<float>& input);
-template TensorGPU<half> LibDNNDeconvOp<half>::operator()(TensorGPU<half>& input);
+template TensorGPU<float> LibDNNDeconvOp<TensorGPU<float>>::operator()(TensorGPU<float> input);
+template TensorGPU<half> LibDNNDeconvOp<TensorGPU<half>>::operator()(TensorGPU<half> input);
 
 
 #endif //USE_OPENCL

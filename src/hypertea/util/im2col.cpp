@@ -53,13 +53,11 @@ void im2col(const TensorCPU<Dtype>& data_im, const int channels,
 
 }
 
-
 template void im2col(const TensorCPU<float>& data_im, const int channels,
     const int height, const int width, const int kernel_h, const int kernel_w,
     const int pad_h, const int pad_w, const int stride_h,
     const int stride_w, const int dilation_h, const int dilation_w,
     TensorCPU<float>& data_col);
-
 
 
 
@@ -106,7 +104,6 @@ void im2col(const TensorGPU<Dtype>& data_im, const int channels,
 
 }
 
-
 template void im2col(const TensorGPU<float>& data_im, const int channels,
     const int height, const int width, const int kernel_h, const int kernel_w,
     const int pad_h, const int pad_w, const int stride_h,
@@ -118,8 +115,6 @@ template void im2col(const TensorGPU<half>& data_im, const int channels,
     const int pad_h, const int pad_w, const int stride_h,
     const int stride_w, const int dilation_h, const int dilation_w,
     TensorGPU<half>& data_col);
-
-
 
 
 
@@ -165,8 +160,6 @@ void col2im(const TensorCPU<Dtype>& data_col, const int channels,
     }
   }
 }
-
-
 
 template void col2im(const TensorCPU<float>& data_col, const int channels,
     const int height, const int width, const int kernel_h, const int kernel_w,

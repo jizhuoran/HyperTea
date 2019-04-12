@@ -1,8 +1,6 @@
 #ifndef HYPERTEA_BATCHNORM_OP_HPP_
 #define HYPERTEA_BATCHNORM_OP_HPP_
 
-// #include <vector>
-
 #include "hypertea/operator.hpp"
 
 namespace hypertea {
