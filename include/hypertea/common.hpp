@@ -59,9 +59,9 @@
 
 
 #define DEFINE_FORWARD_FUNC(classname) \
-template TensorCPU<float> classname<TensorCPU<float>>::operator()(TensorCPU<float>& input); \
-template TensorGPU<float> classname<TensorGPU<float>>::operator()(TensorGPU<float>& input); \
-template TensorGPU<half> classname<TensorGPU<half>>::operator()(TensorGPU<half>& input)
+template TensorCPU<float> classname<TensorCPU<float>>::operator()(TensorCPU<float> input); \
+template TensorGPU<float> classname<TensorGPU<float>>::operator()(TensorGPU<float> input); \
+template TensorGPU<half> classname<TensorGPU<half>>::operator()(TensorGPU<half> input)
 
 
 

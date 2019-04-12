@@ -7,7 +7,7 @@ namespace hypertea {
 
 
 template<typename DeviceTensor>
-DeviceTensor DeconvolutionOp<DeviceTensor>::operator()(DeviceTensor& input) {
+DeviceTensor DeconvolutionOp<DeviceTensor>::operator()(DeviceTensor input) {
 
 
   auto output = DeviceTensor(this->top_count_);

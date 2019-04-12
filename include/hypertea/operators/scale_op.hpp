@@ -17,7 +17,7 @@ public:
     channels_(channels), spatial_dim_(spatial_dim) {}
 
   virtual inline const char* type() const override { return "Scale"; }
-  virtual DeviceTensor operator()(DeviceTensor &input) override;
+  virtual DeviceTensor operator()(DeviceTensor input) override;
 
 private:
   DeviceTensor* bias_;

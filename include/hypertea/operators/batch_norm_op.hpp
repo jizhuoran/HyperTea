@@ -3,13 +3,13 @@
 
 // #include <vector>
 
-// #include "hypertea/operator.hpp"
+#include "hypertea/operator.hpp"
 
 namespace hypertea {
 
 
 template <typename DeviceTensor>
-class BatchNormOp {
+class BatchNormOp : public TensorOperator<DeviceTensor>{
 
 public:
   
@@ -43,9 +43,9 @@ public:
   }
 
 
-  inline const char* type() const { return "BatchNorm"; }
+  virtual inline const char* type() const override { return "BatchNorm"; }
 
-  DeviceTensor operator()(DeviceTensor &input);
+  virtual DeviceTensor operator()(DeviceTensor input) override;
 
 private:
 

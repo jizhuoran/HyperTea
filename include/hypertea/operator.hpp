@@ -25,7 +25,7 @@ public:
   virtual ~TensorOperator() {}
   
   virtual inline const char* type() const = 0;
-  virtual DeviceTensor operator()(DeviceTensor& input) = 0;
+  virtual DeviceTensor operator()(DeviceTensor input) = 0;
 
 
 };  

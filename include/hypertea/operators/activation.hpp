@@ -13,7 +13,7 @@ public:
     : TensorOperator<DeviceTensor>(), negative_slope_(negative_slope), inplace_(inplace) {}
     
     virtual inline const char* type() const override { return "ReLU"; }
-    virtual DeviceTensor operator()(DeviceTensor &input) override;
+    virtual DeviceTensor operator()(DeviceTensor input) override;
 
 private:
     float negative_slope_;
@@ -30,7 +30,7 @@ public:
     : TensorOperator<DeviceTensor>(), inplace_(inplace) {}
 
     virtual inline const char* type() const override { return "TanH"; }
-    virtual DeviceTensor operator()(DeviceTensor &input) override;
+    virtual DeviceTensor operator()(DeviceTensor input) override;
 
 private:
     bool inplace_;
@@ -47,7 +47,7 @@ public:
     : TensorOperator<DeviceTensor>(), alpha_(alpha), inplace_(inplace) {}
 
     virtual inline const char* type() const override { return "ELU"; }
-    virtual DeviceTensor operator()(DeviceTensor &input) override;
+    virtual DeviceTensor operator()(DeviceTensor input) override;
 
 private:
     float alpha_;

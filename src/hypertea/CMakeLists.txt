@@ -17,6 +17,6 @@ target_link_libraries(hypertea ${Hypertea_LINKER_LIBS})
 
 endif()
 
-hypertea_default_properties(hypertea)
+#hypertea_default_properties(hypertea)
 
 #INSTALL(TARGETS hypertea DESTINATION lib)

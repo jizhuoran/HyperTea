@@ -4,7 +4,7 @@
 #include <iostream>
 #include <chrono>
 
-#include "../tools/demo_net_gpu.hpp"
+#include "../tools/demo_net.hpp"
 
 
 
@@ -105,20 +105,11 @@ static PPMImage *readPPM(const char *filename) {
 int main(int argc, char** argv) {
 
 
-
-//     std::vector<float> temp_debug(10, 0);
-// OPENCL_CHECK(clEnqueueReadBuffer(OpenCLHandler::Get().commandQueue, conv1_weight, CL_TRUE, 0, 40, temp_debug.data(), 0, NULL, NULL));
-// for (auto const& x: temp_debug) {
-//   std::cout << x << " ";
-// }
-
-
-
     PPMImage *image;
     image = readPPM("./examples/style_transfer/HKU.ppm");
 
-    std::vector<float> converter(512*512*3*1, 0);
-    std::vector<float> converter1(512*512*3*1, 0);
+    std::vector<float> converter(512*512*3*2, 0);
+    std::vector<float> converter1(512*512*3*2, 0);
 
     for (int y = 0; y < 512; y++) {
       for (int x = 0; x < 512; x++) {
@@ -127,9 +118,9 @@ int main(int argc, char** argv) {
         converter[y * 512 + x + 2 * 512 * 512] = image->data[y * 512 + x].blue;
 
 
-        // converter[512*512*3 + y * 512 + x] = image->data[y * 512 + x].red;
-        // converter[512*512*3 + y * 512 + x + 512 * 512] = image->data[y * 512 + x].green;
-        // converter[512*512*3 + y * 512 + x + 2 * 512 * 512] = image->data[y * 512 + x].blue;
+        converter[512*512*3 + y * 512 + x] = image->data[y * 512 + x].red;
+        converter[512*512*3 + y * 512 + x + 512 * 512] = image->data[y * 512 + x].green;
+        converter[512*512*3 + y * 512 + x + 2 * 512 * 512] = image->data[y * 512 + x].blue;
 
 
       }

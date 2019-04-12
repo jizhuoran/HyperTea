@@ -1,3 +1,3 @@
 file(REMOVE_RECURSE
-  "../../lib/libhypertea.a"
+  "libhypertea.a"
 )

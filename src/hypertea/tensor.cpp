@@ -177,13 +177,13 @@ template TensorGPU<half>& TensorGPU<half>::copy_data(const TensorGPU<half> & oth
 
 
 template <typename Dtype>
-TensorGPU<Dtype> TensorGPU<Dtype>::duplicate() {
+TensorGPU<Dtype> TensorGPU<Dtype>::duplicate() const {
   TensorGPU temp = TensorGPU(this->count_);
   temp.copy_data(*this);
   return temp;
 }
-template TensorGPU<float> TensorGPU<float>::duplicate();
-template TensorGPU<half> TensorGPU<half>::duplicate();
+template TensorGPU<float> TensorGPU<float>::duplicate() const;
+template TensorGPU<half> TensorGPU<half>::duplicate() const;
 
 
 

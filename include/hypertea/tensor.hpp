@@ -46,7 +46,7 @@ public:
 	explicit TensorGPU(cl_mem data_ptr, int count, bool shared = false);
 
 	TensorGPU& copy_data(const TensorGPU & other);
- 	TensorGPU duplicate();
+ 	TensorGPU duplicate() const;
 
 	virtual ~TensorGPU() {}
 	

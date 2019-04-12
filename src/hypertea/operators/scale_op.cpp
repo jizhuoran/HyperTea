@@ -4,7 +4,7 @@
 namespace hypertea {
 
 template<typename DeviceTensor>
-DeviceTensor ScaleOp<DeviceTensor>::operator()(DeviceTensor& input) {
+DeviceTensor ScaleOp<DeviceTensor>::operator()(DeviceTensor input) {
 
   DeviceTensor output = inplace_? input : input.duplicate();
 
