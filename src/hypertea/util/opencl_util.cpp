@@ -7,11 +7,7 @@ namespace hypertea {
  
 #ifdef USE_OPENCL
 
-void cl_mem_destory(void* ptr) {
-
-	OPENCL_CHECK(clReleaseMemObject((cl_mem) ptr));
-
-}
+void cl_mem_destory(void* ptr) { OPENCL_CHECK(clReleaseMemObject((cl_mem) ptr)); }
 
 
 
@@ -51,47 +47,6 @@ void opencl_launch_wrapper(
     )
   );  
   
-}
-
-
-
-
-
-size_t reference_count(cl_mem mem_obj) {
-
-  cl_uint refer_count;
-
-  OPENCL_CHECK(
-    clGetMemObjectInfo (
-      mem_obj,
-      CL_MEM_REFERENCE_COUNT,
-      sizeof(cl_uint),
-      &refer_count,
-      nullptr
-    )
-  );
-
-  return refer_count;
-}
-
-
-
-
-size_t cl_mem_count(cl_mem mem_obj) {
-
-  size_t mem_count;
-
-  OPENCL_CHECK(
-    clGetMemObjectInfo (
-      mem_obj,
-      CL_MEM_SIZE,
-      sizeof(size_t),
-      &mem_count,
-      nullptr
-    )
-  );
-
-  return mem_count;
 }
 
 
@@ -451,6 +406,14 @@ void OpenCLHandler::DeviceQuery(){
 }
 
 
+std::string unary_opencl_function(
+  std::string name,
+  std::string operation) {
+
+  return " ";
+
+}
+
 
 std::string OpenCLHandler::opencl_math_code(bool is_half) {
 	
@@ -461,11 +424,9 @@ std::string OpenCLHandler::opencl_math_code(bool is_half) {
 		#pragma OPENCL EXTENSION cl_khr_fp16 : enable
 
 		#define Dtype half
-		#define Dtype1 half
 		#define Dtype2 half2
 		#define Dtype4 half4
 		#define Dtype8 half8
-		#define Dtype16 half16)
 
 		#undef FLT_MIN
 		#define FLT_MIN 0x1.0p-14h
@@ -475,11 +436,8 @@ std::string OpenCLHandler::opencl_math_code(bool is_half) {
 	R"(
 
 		#define Dtype float
-		#define Dtype1 float
 		#define Dtype2 float2
 		#define Dtype4 float4
-		#define Dtype8 float8
-		#define Dtype16 float16
 
 	)";
 
@@ -493,27 +451,35 @@ std::string OpenCLHandler::opencl_math_code(bool is_half) {
 
 
 	__kernel void null_kernel_float(int alpha) {
-	int a = get_local_id(0);
+    int a = get_local_id(0);
 	}
 
 
-	__kernel void ReLUForward(__global Dtype *in,
-	__global Dtype *out,
-	Dtype negative_slope,
-  int N) {
-	OPENCL_KERNEL_LOOP(index, N) {
-	out[index] = in[index] > 0 ? in[index] : in[index] * negative_slope;
-	}
+	__kernel void ReLUForward(
+    const __global  Dtype *in,
+	  __global Dtype *out,
+	  Dtype negative_slope,
+    int N) {
+	
+    OPENCL_KERNEL_LOOP(index, N) {
+	    out[index] = in[index] > 0 ? in[index] : in[index] * negative_slope;
+	  }
 	}
 
 
-	__kernel void PReLUForward(__global Dtype *in, __global Dtype *slope_data,
-	__global Dtype *out,
-	int N, int channels, int dim, int div_factor) {
-	OPENCL_KERNEL_LOOP(index, N) {
-	 int c = (index / dim) % channels / div_factor;
-	 out[index] = in[index] > 0 ? in[index] : in[index] * slope_data[c];
-	}
+	__kernel void PReLUForward(
+    const __global Dtype *in, 
+    __global Dtype *slope_data,
+	  __global Dtype *out,
+	  int N, 
+    int channels, 
+    int dim, 
+    int div_factor) {
+	    
+    OPENCL_KERNEL_LOOP(index, N) {
+      int c = (index / dim) % channels / div_factor;
+      out[index] = in[index] > 0 ? in[index] : in[index] * slope_data[c];
+    }
 	}
 
 

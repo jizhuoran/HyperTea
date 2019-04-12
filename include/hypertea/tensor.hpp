@@ -48,6 +48,30 @@ public:
 	TensorGPU& copy_data(const TensorGPU & other);
  	TensorGPU duplicate() const;
 
+ 	void copy_to_ptr(void* ptr) const {
+ 		OPENCL_CHECK(
+ 			clEnqueueReadBuffer(
+ 				OpenCLHandler::Get().commandQueue, 
+ 				mutable_data(), CL_TRUE, 
+ 				0, this->count_ * sizeof(Dtype), 
+ 				ptr, 
+ 				0, nullptr, nullptr
+ 			)
+ 		);
+ 	}
+
+	void copy_from_ptr(void* ptr) const {
+ 		OPENCL_CHECK(
+ 			clEnqueueWriteBuffer(
+ 				OpenCLHandler::Get().commandQueue, 
+ 				mutable_data(), CL_TRUE, 
+ 				0, this->count_ * sizeof(Dtype), 
+ 				ptr, 
+ 				0, nullptr, nullptr
+ 			)
+ 		);
+ 	}
+
 	virtual ~TensorGPU() {}
 	
 	cl_mem mutable_data() const { return (cl_mem)data_.get(); }
@@ -96,6 +120,13 @@ public:
 	TensorCPU& copy_data(const TensorCPU & other);
 	TensorCPU duplicate() const;
 
+	void copy_to_ptr(void* ptr) const {
+ 		memcpy(ptr, immutable_data(), this->count_ * sizeof(Dtype));
+ 	}
+
+	void copy_from_ptr(void* ptr) const {
+ 		memcpy(mutable_data(), ptr, this->count_ * sizeof(Dtype));
+ 	}
 
 	virtual ~TensorCPU() {}
 

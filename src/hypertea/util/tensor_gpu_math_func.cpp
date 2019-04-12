@@ -192,17 +192,6 @@ template TensorGPU<half> binary_scalar_math_gpu(
   const std::string& op_name
 );
 
-
-
-
-
-
-
-
-
-
-
-
 template <typename Dtype>
 TensorGPU<Dtype>& unary_math_gpu_inplace(
   TensorGPU<Dtype> &x,
@@ -370,18 +359,6 @@ template TensorGPU<half>& binary_scalar_math_gpu_inplace(
   const float scalar,
   const std::string& op_name
 );
-
-// template TensorGPU<float>& inplace_gpu_sigmoid<float>(TensorGPU<float>& x);
-// template TensorGPU<half>&  inplace_gpu_sigmoid<half> (TensorGPU<half>&  x);
-
-
-
-// template <typename Dtype>
-// TensorGPU<Dtype>& inplace_gpu_tanh(TensorGPU<Dtype>& x) {
-//   return unary_math_gpu(x, x, "TanHForward");
-// }
-// template TensorGPU<float>& inplace_gpu_tanh<float>(TensorGPU<float>& x);
-// template TensorGPU<half>&  inplace_gpu_tanh<half> (TensorGPU<half>&  x);
 
 
 template <typename Dtype>
@@ -574,68 +551,6 @@ template TensorGPU<half>& inplace_channeled_scaladd(
   int inner_dim
 );
 
-
-
-
-
-template <typename Dtype>
-void gpu_channeled_avg(
-  const TensorGPU<Dtype>& x, 
-  TensorGPU<Dtype>& mean,
-  TensorGPU<Dtype>& var,
-  int batch_size,
-  int spatial_dim){
-  
-
-  int nspatial_dim = batch_size * spatial_dim;
-  size_t channels = x.count() / nspatial_dim;
-  int cspatial_dim = spatial_dim * channels;
-
-  auto data = x.mutable_data();
-  auto mean_ = mean.mutable_data();
-  auto var_ = var.mutable_data();
-
-  Dtype alpha_ = to_dtype<Dtype>(1. / nspatial_dim);
-  Dtype eps_ = to_dtype<Dtype>(1e-5);
-
-  opencl_launch_wrapper(
-    OpenCLHandler::Get().math_program,
-    "average_channeled",
-    std::vector<std::pair<size_t, const void *> > {
-      std::make_pair(sizeof(cl_mem), (void *)&data),
-      std::make_pair(sizeof(cl_mem), (void *)&mean_),
-      std::make_pair(sizeof(cl_mem), (void *)&var_),
-      std::make_pair(sizeof(cl_int), (void *)&spatial_dim),
-      std::make_pair(sizeof(cl_int), (void *)&cspatial_dim),
-      std::make_pair(sizeof(cl_int), (void *)&nspatial_dim),
-      std::make_pair(sizeof(Dtype), (void *)&alpha_),
-      std::make_pair(sizeof(Dtype), (void *)&eps_)
-
-    },
-    std::vector<size_t> {128, channels, 1},
-    std::vector<size_t> {128, 1, 1}
-  );
-
-}
-
-
-
-template void gpu_channeled_avg(
-  const TensorGPU<float>& x, 
-  TensorGPU<float>& mean,
-  TensorGPU<float>& var,
-  int batch_size,
-  int inner_dim
-);
-
-
-template void gpu_channeled_avg(
-  const TensorGPU<half>& x, 
-  TensorGPU<half>& mean,
-  TensorGPU<half>& var,
-  int batch_size,
-  int inner_dim
-);
 
 
 

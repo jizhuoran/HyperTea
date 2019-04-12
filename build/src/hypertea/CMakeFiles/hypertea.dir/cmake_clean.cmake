@@ -11,7 +11,6 @@ file(REMOVE_RECURSE
   "CMakeFiles/hypertea.dir/util/benchmark.cpp.o"
   "CMakeFiles/hypertea.dir/util/im2col.cpp.o"
   "CMakeFiles/hypertea.dir/util/opencl_util.cpp.o"
-  "CMakeFiles/hypertea.dir/util/tensor_cpu_math_func.cpp.o"
   "CMakeFiles/hypertea.dir/util/tensor_gpu_math_func.cpp.o"
   "libhypertea.pdb"
   "libhypertea.a"

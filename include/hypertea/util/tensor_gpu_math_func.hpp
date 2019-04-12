@@ -4,13 +4,7 @@
 #include <stdint.h>
 #include <cmath>  // for std::fabs and std::signbit
 #include <clblast.h>
-
-
-// #include "hypertea/common.hpp"
-#include "hypertea/util/device_alternate.hpp"
-#include "hypertea/util/mkl_alternate.hpp"
-
-
+#include <cblas.h>
 
 namespace hypertea {
 

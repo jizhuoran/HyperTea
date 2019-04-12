@@ -32,7 +32,7 @@ DeviceTensor BatchNormOp<DeviceTensor>::operator()(DeviceTensor input) {
       inplace_channeled_scal(output, weight_with_var, channels_, spatial_dim_);
     }
   } else {
-    inplace_inv(*variance_, 0);
+    inplace_inv(*variance_);
     inplace_channeled_scal(output, *variance_, channels_, spatial_dim_);
   }
 

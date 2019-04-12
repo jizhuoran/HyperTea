@@ -3,7 +3,7 @@
 namespace hypertea {
 
 
-using DeviceTensor = TensorCPU<float>;
+using DeviceTensor = TensorGPU<float>;
 
 class new_net {
 public:
@@ -11,6 +11,8 @@ public:
      
 
     new_net(const std::string &param_file) {
+
+        OpenCLHandler::Get().build_opencl_math_code(false);
 
         int weight_size = 7285260;
         unsigned char* all_weights = (unsigned char*) malloc(weight_size);
@@ -22,13 +24,9 @@ public:
         }
         fclose(f);
 
-
-        memcpy(param.mutable_data(), all_weights, 7285260);
-        // OPENCL_CHECK(clEnqueueWriteBuffer(OpenCLHandler::Get().commandQueue, param.mutable_data(), CL_TRUE, 0, 7285260, all_weights, 0, nullptr, nullptr));
+        param.copy_from_ptr((void*)all_weights);
 
         free(all_weights);
-
-        // OpenCLHandler::Get().build_opencl_math_code(false);
 
     }
 
@@ -43,33 +41,31 @@ public:
         auto data = DeviceTensor(data_from_user);
 
         auto temp = bn1(outplace_elu(conv1(data)));
-        temp = bn2(outplace_elu(conv2(std::move(temp))));
-        temp = bn3(outplace_elu(conv3(std::move(temp))));
+        temp = bn2(outplace_elu(conv2(temp)));
+        temp = bn3(outplace_elu(conv3(temp)));
 
 
-        temp += res1_bn2(res1_conv2(outplace_relu(res1_bn1(res1_conv1(std::move(temp))))));
-        temp += res2_bn2(res2_conv2(outplace_relu(res2_bn1(res2_conv1(std::move(temp))))));
-        temp += res3_bn2(res3_conv2(outplace_relu(res3_bn1(res3_conv1(std::move(temp))))));
-        temp += res4_bn2(res4_conv2(outplace_relu(res4_bn1(res4_conv1(std::move(temp))))));
-        temp += res5_bn2(res5_conv2(outplace_relu(res5_bn1(res5_conv1(std::move(temp))))));
+        temp += res1_bn2(res1_conv2(outplace_relu(res1_bn1(res1_conv1(temp)))));
+        temp += res2_bn2(res2_conv2(outplace_relu(res2_bn1(res2_conv1(temp)))));
+        temp += res3_bn2(res3_conv2(outplace_relu(res3_bn1(res3_conv1(temp)))));
+        temp += res4_bn2(res4_conv2(outplace_relu(res4_bn1(res4_conv1(temp)))));
+        temp += res5_bn2(res5_conv2(outplace_relu(res5_bn1(res5_conv1(temp)))));
         
 
-        temp = de_bn1(outplace_elu(deconv1(std::move(temp))));
-        temp = de_bn2(outplace_elu(deconv2(std::move(temp))));
-        temp = outplace_tanh(deconv3(std::move(temp)));
+        temp = de_bn1(outplace_elu(deconv1(temp)));
+        temp = de_bn2(outplace_elu(deconv2(temp)));
+        temp = outplace_tanh(deconv3(temp));
 
         temp = (temp + 1) * 127.5;
 
-        // OPENCL_CHECK(clEnqueueReadBuffer(OpenCLHandler::Get().commandQueue, temp.immutable_data(), CL_TRUE, 0, data_to_user.size() * sizeof(data_to_user[0]), data_to_user.data(), 0, nullptr, nullptr));
-        memcpy(data_to_user.data(), temp.immutable_data(), data_to_user.size() * sizeof(data_to_user[0]));
-
+        temp.copy_to_ptr((void*)data_to_user.data());
 
     }
 
 
 private:
 
-    DeviceTensor param = DeviceTensor(7285260);
+    DeviceTensor param = DeviceTensor(1821315);
      
     DeviceTensor conv1_bias = param.sub_view(0, 32);
     DeviceTensor conv1_weight = param.sub_view(32, 7776);

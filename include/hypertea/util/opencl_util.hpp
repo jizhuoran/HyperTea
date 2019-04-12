@@ -15,6 +15,14 @@
 
 namespace hypertea {
 
+// OPENCL: use 128 threads per block
+const size_t HYPERTEA_OPENCL_NUM_THREADS = 128;
+
+// OPENCL: number of blocks for threads.
+inline size_t HYPERTEA_GET_BLOCKS(const size_t N) {
+  return (N + HYPERTEA_OPENCL_NUM_THREADS - 1) / HYPERTEA_OPENCL_NUM_THREADS * HYPERTEA_OPENCL_NUM_THREADS;
+}
+
 
 void cl_mem_destory(void* ptr);
 
