@@ -22,7 +22,7 @@ public:
 	Tensor() {}
 	virtual ~Tensor() {}
 	
-	const int size() const {return count_; }
+	const int size() const {return count_ * sizeof(Dtype); }
 	const int count() const {return count_; }
 
 protected:
