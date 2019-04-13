@@ -149,31 +149,29 @@ DeviceTensor StackedRNN<DeviceTensor>::Forward(
 
 
 template void GRUCell<TensorCPU<float>>::Forward(TensorCPU<float>& input, TensorCPU<float>& hidden, TensorCPU<float>& output);
+template void LSTMCell<TensorCPU<float>>::Forward(TensorCPU<float>& input, TensorCPU<float>& hidden, TensorCPU<float>& output);
+template TensorCPU<float> UnidirectionalRNN<TensorCPU<float>>::Forward(TensorCPU<float>& input, TensorCPU<float>& hidden);
+template TensorCPU<float> BidirectionalRNN<TensorCPU<float>>::Forward(TensorCPU<float>& input, TensorCPU<float>& hidden);
+template TensorCPU<float> StackedRNN<TensorCPU<float>>::Forward(TensorCPU<float>& input, std::vector<TensorCPU<float>> hidden);
+
+
+
+#ifdef USE_OPENCL
 template void GRUCell<TensorGPU<float>>::Forward(TensorGPU<float>& input, TensorGPU<float>& hidden, TensorGPU<float>& output);
 template void GRUCell<TensorGPU<half>>::Forward(TensorGPU<half>& input, TensorGPU<half>& hidden, TensorGPU<half>& output);
 
-
-
-template void LSTMCell<TensorCPU<float>>::Forward(TensorCPU<float>& input, TensorCPU<float>& hidden, TensorCPU<float>& output);
 template void LSTMCell<TensorGPU<float>>::Forward(TensorGPU<float>& input, TensorGPU<float>& hidden, TensorGPU<float>& output);
 template void LSTMCell<TensorGPU<half>>::Forward(TensorGPU<half>& input, TensorGPU<half>& hidden, TensorGPU<half>& output);
 
- 
-
-template TensorCPU<float> UnidirectionalRNN<TensorCPU<float>>::Forward(TensorCPU<float>& input, TensorCPU<float>& hidden);
 template TensorGPU<float> UnidirectionalRNN<TensorGPU<float>>::Forward(TensorGPU<float>& input, TensorGPU<float>& hidden);
 template TensorGPU<half> UnidirectionalRNN<TensorGPU<half>>::Forward(TensorGPU<half>& input, TensorGPU<half>& hidden);
 
-
-template TensorCPU<float> BidirectionalRNN<TensorCPU<float>>::Forward(TensorCPU<float>& input, TensorCPU<float>& hidden);
 template TensorGPU<float> BidirectionalRNN<TensorGPU<float>>::Forward(TensorGPU<float>& input, TensorGPU<float>& hidden);
 template TensorGPU<half> BidirectionalRNN<TensorGPU<half>>::Forward(TensorGPU<half>& input, TensorGPU<half>& hidden);
 
-
-template TensorCPU<float> StackedRNN<TensorCPU<float>>::Forward(TensorCPU<float>& input, std::vector<TensorCPU<float>> hidden);
 template TensorGPU<float> StackedRNN<TensorGPU<float>>::Forward(TensorGPU<float>& input, std::vector<TensorGPU<float>> hidden);
 template TensorGPU<half> StackedRNN<TensorGPU<half>>::Forward(TensorGPU<half>& input, std::vector<TensorGPU<half>>hidden);
-
+#endif //USE_OPENCL
  
 
 

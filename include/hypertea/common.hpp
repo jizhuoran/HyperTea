@@ -27,6 +27,7 @@
 
 
 #include "hypertea/util/device_alternate.hpp"
+#include "hypertea/util/benchmark.hpp"
 #include "hypertea/util/half.hpp"
 #include "hypertea/util/opencl_util.hpp"
 #include "hypertea/tensor.hpp"
@@ -57,12 +58,15 @@
 #endif
 
 
-
+#ifdef USE_OPENCL
 #define DEFINE_FORWARD_FUNC(classname) \
 template TensorCPU<float> classname<TensorCPU<float>>::operator()(TensorCPU<float> input); \
 template TensorGPU<float> classname<TensorGPU<float>>::operator()(TensorGPU<float> input); \
 template TensorGPU<half> classname<TensorGPU<half>>::operator()(TensorGPU<half> input)
-
+#else
+#define DEFINE_FORWARD_FUNC(classname) \
+template TensorCPU<float> classname<TensorCPU<float>>::operator()(TensorCPU<float> input);
+#endif //USE_OPENCL
 
 
 

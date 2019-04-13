@@ -3,16 +3,19 @@
 namespace hypertea {
 
 
-using DeviceTensor = TensorGPU<float>;
+// using DeviceTensor = TensorGPU<float>;
 
+
+template <typename DeviceTensor>
 class new_net {
 public:
 
-     
-
     new_net(const std::string &param_file) {
 
+#ifdef USE_OPENCL
+
         OpenCLHandler::Get().build_opencl_math_code(false);
+#endif //USE_OPENCL
 
         int weight_size = 7285260;
         unsigned char* all_weights = (unsigned char*) malloc(weight_size);

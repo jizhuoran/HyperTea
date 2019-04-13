@@ -107,7 +107,7 @@ template std::vector<TensorCPU<half> > TensorCPU<half>::chunked_tensors(int chun
 
 
 
-
+#ifdef USE_OPENCL
 
 template <typename Dtype>
 TensorGPU<Dtype>::TensorGPU(int count, Dtype value) {
@@ -247,6 +247,8 @@ std::shared_ptr<Dtype> TensorGPU<Dtype>::debug_gtest_cpu_data() const {
 
 template std::shared_ptr<float> TensorGPU<float>::debug_gtest_cpu_data() const;
 template std::shared_ptr<half> TensorGPU<half>::debug_gtest_cpu_data() const;
+
+#endif //USE_OPENCL
 
 
 } //namespace hypertea

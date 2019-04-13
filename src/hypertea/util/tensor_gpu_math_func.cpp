@@ -1,11 +1,13 @@
- #include <math.h>
+#ifdef USE_OPENCL
+
+
+#include <math.h>
 
 #include <limits>
 
 #include "hypertea/common.hpp"
 #include "hypertea/util/tensor_gpu_math_func.hpp"
 
-#ifdef USE_OPENCL
 
 #include <clblast_c.h>
 #include <clblast.h>

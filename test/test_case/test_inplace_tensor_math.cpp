@@ -18,7 +18,9 @@ class INPLACE_TENSOR_MATH_Test : public ::testing::Test {
   // using DeviceTensor = TypeParam;
  protected:
   INPLACE_TENSOR_MATH_Test() {
+#ifdef USE_OPENCL    
     hypertea::OpenCLHandler::Get().build_opencl_math_code(false);
+#endif
   }
   virtual ~INPLACE_TENSOR_MATH_Test() {}
 };

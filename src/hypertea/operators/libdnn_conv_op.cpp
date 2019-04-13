@@ -1,3 +1,5 @@
+#ifdef USE_OPENCL
+
 #include <vector>
 
 #include "hypertea/operators/libdnn_conv_op.hpp"
@@ -5,7 +7,6 @@
 namespace hypertea {
 
 
-#ifdef USE_OPENCL
 
 template <typename DeviceTensor>
 DeviceTensor LibDNNConvOp<DeviceTensor>::operator()(DeviceTensor input) {
@@ -80,7 +81,8 @@ template TensorGPU<float> LibDNNDeconvOp<TensorGPU<float>>::operator()(TensorGPU
 template TensorGPU<half> LibDNNDeconvOp<TensorGPU<half>>::operator()(TensorGPU<half> input);
 
 
-#endif //USE_OPENCL
 
 
 }  // namespace hypertea
+
+#endif //USE_OPENCL

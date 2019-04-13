@@ -19,7 +19,9 @@ class OUTPLACE_TENSOR_MATH_Test : public ::testing::Test {
   // using DeviceTensor = TypeParam;
  protected:
   OUTPLACE_TENSOR_MATH_Test() {
+#ifdef USE_OPENCL    
     hypertea::OpenCLHandler::Get().build_opencl_math_code(false);
+#endif
   }
   virtual ~OUTPLACE_TENSOR_MATH_Test() {}
 };

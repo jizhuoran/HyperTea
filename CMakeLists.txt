@@ -6,12 +6,11 @@ if(POLICY CMP0054)
     cmake_policy(SET CMP0054 NEW)
 endif()
 
+
+option(WITH_OPENCL "USE OPENCL SUPPORT" ON)
+
 set(HYPERTEA_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include)
 include_directories(${HYPERTEA_INCLUDE_DIRS})
-
-
-option(USE_OPENCL "USE OPENCL SUPPORT" ON)
-
  
 include(./cmake/Utils.cmake)
 include(./cmake/Misc.cmake)
@@ -55,7 +54,7 @@ endif()
 
 
 
-if(USE_OPENCL)
+if(WITH_OPENCL)
     add_definitions(-DUSE_OPENCL)
 
     include(./cmake/Modules/FindOpenCL.cmake)

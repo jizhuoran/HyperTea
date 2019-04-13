@@ -1,3 +1,5 @@
+#ifdef USE_OPENCL
+
 #include <algorithm>
 #include <vector>
 #include <math.h>
@@ -68,3 +70,6 @@ INSTANTIATE_CLASS_GPU(MIOpenBatchNormOp_GPU);
 
 
 }//namespace hypertea
+
+
+#endif //USE_OPENCL

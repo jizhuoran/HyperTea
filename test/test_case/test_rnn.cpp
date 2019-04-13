@@ -20,7 +20,9 @@ class RNN_Test : public ::testing::Test {
   // using DeviceTensor = TypeParam;
  protected:
   RNN_Test() {
+#ifdef USE_OPENCL    
     hypertea::OpenCLHandler::Get().build_opencl_math_code(false);
+#endif
   }
   virtual ~RNN_Test() {}
 };

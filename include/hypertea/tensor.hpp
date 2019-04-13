@@ -5,8 +5,11 @@
 #include <assert.h>
 #include <numeric>
 #include "hypertea/common.hpp"
-#include "hypertea/util/tensor_gpu_math_func.hpp"
 #include "hypertea/util/tensor_cpu_math_func.hpp"
+
+#ifdef USE_OPENCL
+#include "hypertea/util/tensor_gpu_math_func.hpp"
+#endif //USE_OPENCL
 
 namespace hypertea {
 
@@ -25,76 +28,6 @@ public:
 protected:
 
 	int count_ = 0;
-
-};
-
-
-template <typename Dtype>
-class TensorGPU : public Tensor<Dtype>
-{
-public:
-
-	TensorGPU() = delete;
-
-	explicit TensorGPU(int count) {
-		data_.reset((void*)clCreateBuffer(OpenCLHandler::Get().context, CL_MEM_READ_WRITE, count * sizeof(Dtype), NULL, NULL), [=](void *ptr){clReleaseMemObject((cl_mem) ptr);});
-		this->count_ = count;
-	}
-
-	explicit TensorGPU(int count, Dtype value);
-	explicit TensorGPU(std::vector<Dtype> data);
-	explicit TensorGPU(cl_mem data_ptr, int count, bool shared = false);
-
-	TensorGPU& copy_data(const TensorGPU & other);
- 	TensorGPU duplicate() const;
-
- 	void copy_to_ptr(void* ptr) const {
- 		OPENCL_CHECK(
- 			clEnqueueReadBuffer(
- 				OpenCLHandler::Get().commandQueue, 
- 				mutable_data(), CL_TRUE, 
- 				0, this->count_ * sizeof(Dtype), 
- 				ptr, 
- 				0, nullptr, nullptr
- 			)
- 		);
- 	}
-
-	void copy_from_ptr(void* ptr) const {
- 		OPENCL_CHECK(
- 			clEnqueueWriteBuffer(
- 				OpenCLHandler::Get().commandQueue, 
- 				mutable_data(), CL_TRUE, 
- 				0, this->count_ * sizeof(Dtype), 
- 				ptr, 
- 				0, nullptr, nullptr
- 			)
- 		);
- 	}
-
-	virtual ~TensorGPU() {}
-	
-	cl_mem mutable_data() const { return (cl_mem)data_.get(); }
-	const cl_mem immutable_data() const { return (cl_mem)data_.get(); }
-
-	TensorGPU<Dtype> sub_view(unsigned int offset, unsigned int size, cl_mem_flags flags = CL_MEM_READ_WRITE);
-	std::vector<TensorGPU<Dtype> > chunked_tensors(int chunck_num, cl_mem_flags flags = CL_MEM_READ_WRITE);
-
-	std::shared_ptr<Dtype> debug_gtest_cpu_data() const;
-
-	TensorGPU& operator+=(const TensorGPU & other) {return inplace_add(other, *this); }
-	TensorGPU& operator+=(const float other) {return inplace_add_scalar(*this, other); }
-	TensorGPU& operator-=(const TensorGPU & other) {return inplace_sub(other, *this); }
-	TensorGPU& operator-=(const float other) {return inplace_sub_scalar(*this, other); }
-	TensorGPU& operator*=(const TensorGPU & other) {return inplace_mul(other, *this); }
-	TensorGPU& operator*=(const float other) {return inplace_mul_scalar(*this, other); }
-	TensorGPU& operator/=(const TensorGPU & other) {return inplace_div(other, *this); }
-	TensorGPU& operator/=(const float other) {return inplace_div_scalar(*this, other); }
-
-	TensorGPU& set(const Dtype e) {return inplace_set(*this, e); }
-
-private:
-	std::shared_ptr<void> data_;
 
 };
 
@@ -165,7 +98,78 @@ private:
 };
 
 
+#ifdef USE_OPENCL
 
+template <typename Dtype>
+class TensorGPU : public Tensor<Dtype>
+{
+public:
+
+	TensorGPU() = delete;
+
+	explicit TensorGPU(int count) {
+		data_.reset((void*)clCreateBuffer(OpenCLHandler::Get().context, CL_MEM_READ_WRITE, count * sizeof(Dtype), NULL, NULL), [=](void *ptr){clReleaseMemObject((cl_mem) ptr);});
+		this->count_ = count;
+	}
+
+	explicit TensorGPU(int count, Dtype value);
+	explicit TensorGPU(std::vector<Dtype> data);
+	explicit TensorGPU(cl_mem data_ptr, int count, bool shared = false);
+
+	TensorGPU& copy_data(const TensorGPU & other);
+ 	TensorGPU duplicate() const;
+
+ 	void copy_to_ptr(void* ptr) const {
+ 		OPENCL_CHECK(
+ 			clEnqueueReadBuffer(
+ 				OpenCLHandler::Get().commandQueue, 
+ 				mutable_data(), CL_TRUE, 
+ 				0, this->count_ * sizeof(Dtype), 
+ 				ptr, 
+ 				0, nullptr, nullptr
+ 			)
+ 		);
+ 	}
+
+	void copy_from_ptr(void* ptr) const {
+ 		OPENCL_CHECK(
+ 			clEnqueueWriteBuffer(
+ 				OpenCLHandler::Get().commandQueue, 
+ 				mutable_data(), CL_TRUE, 
+ 				0, this->count_ * sizeof(Dtype), 
+ 				ptr, 
+ 				0, nullptr, nullptr
+ 			)
+ 		);
+ 	}
+
+	virtual ~TensorGPU() {}
+	
+	cl_mem mutable_data() const { return (cl_mem)data_.get(); }
+	const cl_mem immutable_data() const { return (cl_mem)data_.get(); }
+
+	TensorGPU<Dtype> sub_view(unsigned int offset, unsigned int size, cl_mem_flags flags = CL_MEM_READ_WRITE);
+	std::vector<TensorGPU<Dtype> > chunked_tensors(int chunck_num, cl_mem_flags flags = CL_MEM_READ_WRITE);
+
+	std::shared_ptr<Dtype> debug_gtest_cpu_data() const;
+
+	TensorGPU& operator+=(const TensorGPU & other) {return inplace_add(other, *this); }
+	TensorGPU& operator+=(const float other) {return inplace_add_scalar(*this, other); }
+	TensorGPU& operator-=(const TensorGPU & other) {return inplace_sub(other, *this); }
+	TensorGPU& operator-=(const float other) {return inplace_sub_scalar(*this, other); }
+	TensorGPU& operator*=(const TensorGPU & other) {return inplace_mul(other, *this); }
+	TensorGPU& operator*=(const float other) {return inplace_mul_scalar(*this, other); }
+	TensorGPU& operator/=(const TensorGPU & other) {return inplace_div(other, *this); }
+	TensorGPU& operator/=(const float other) {return inplace_div_scalar(*this, other); }
+
+	TensorGPU& set(const Dtype e) {return inplace_set(*this, e); }
+
+private:
+	std::shared_ptr<void> data_;
+
+};
+
+#endif //USE_OPENCL
 
 }
 

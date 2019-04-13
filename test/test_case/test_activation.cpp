@@ -19,7 +19,9 @@ class ACTIVATION_Test : public ::testing::Test {
   // typedef typename TypeParam::Dtype Dtype;
  protected:
   ACTIVATION_Test() {
+#ifdef USE_OPENCL    
     hypertea::OpenCLHandler::Get().build_opencl_math_code(false);
+#endif
   }
   virtual ~ACTIVATION_Test() {}
 };

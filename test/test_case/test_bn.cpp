@@ -19,7 +19,9 @@ class BNTest : public ::testing::Test {
 
  protected:
   BNTest() {
+#ifdef USE_OPENCL    
     hypertea::OpenCLHandler::Get().build_opencl_math_code(false);
+#endif
   }
   virtual ~BNTest() {}
 };

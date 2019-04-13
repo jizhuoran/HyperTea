@@ -28,19 +28,11 @@ int main(int argc, char** argv);
 
 namespace hypertea {
 
-
-template <typename TypeParam>
-struct Device {
-  typedef TypeParam Dtype;
-};
-
-
-typedef ::testing::Types<Device<float> > TestDtypesCPU;
-typedef ::testing::Types<Device<float> > TestDtypesGPU;
-
-
-typedef ::testing::Types<TensorCPU<float>,  TensorGPU<float>> TestDtypes;
-
+#ifdef USE_OPENCL
+typedef ::testing::Types<TensorCPU<float>, TensorGPU<float> > TestDtypes;
+#else
+typedef ::testing::Types<TensorCPU<float> > TestDtypes;
+#endif //USE_OPENCL
 
 class fake_random_number {
 public:
@@ -77,52 +69,6 @@ public:
   int pos = 0;
   
 };
-
-
-// template <typename TypeParam>
-// class MultiDeviceTest : public ::testing::Test {
-//  public:
-//   typedef typename TypeParam::Dtype Dtype;
-//  protected:
-//   MultiDeviceTest() {
-//     Caffe::set_mode(TypeParam::device);
-//   }
-//   virtual ~MultiDeviceTest() {}
-// };
-
-// typedef ::testing::Types<float> TestDtypes;
-
-// template <typename TypeParam>
-// struct CPUDevice {
-//   typedef TypeParam Dtype;
-//   static const Caffe::Brew device = Caffe::CPU;
-// };
-
-// template <typename Dtype>
-// class CPUDeviceTest : public MultiDeviceTest<CPUDevice<Dtype> > {
-// };
-
-// #ifdef CPU_ONLY
-
-// typedef ::testing::Types<CPUDevice<float> > TestDtypesAndDevices;
-
-// #else
-
-// template <typename TypeParam>
-// struct GPUDevice {
-//   typedef TypeParam Dtype;
-//   static const Caffe::Brew device = Caffe::GPU;
-// };
-
-// template <typename Dtype>
-// class GPUDeviceTest : public MultiDeviceTest<GPUDevice<Dtype> > {
-// };
-
-// typedef ::testing::Types<CPUDevice<float>,
-//                          GPUDevice<float> >
-//                          TestDtypesAndDevices;
-// //, GPUDevice<half> 
-// #endif
 
 }  // namespace hypertea
 
