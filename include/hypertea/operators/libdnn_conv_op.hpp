@@ -16,20 +16,13 @@ public:
     int top_count,
     DeviceTensor* weight, 
     DeviceTensor* bias,
-    std::vector<int> local,
-    std::vector<int> global)
+    std::vector<size_t> local,
+    std::vector<size_t> global)
 
     :kernel_name_(kernel_name),
     top_count_(top_count), 
-    weight_(weight), bias_(bias) {
-
-    local_size_.push_back(local[0]);
-    local_size_.push_back(local[1]);
-    local_size_.push_back(local[2]);
-
-    global_size_.push_back(global[0]);
-    global_size_.push_back(global[1]);
-    global_size_.push_back(global[2]);
+    weight_(weight), bias_(bias),
+    local_size_(local), global_size_(global) {
 
   }
 
@@ -60,8 +53,8 @@ class LibDNNConvOp : public LibDNNBase<DeviceTensor> {
     int top_count,
     DeviceTensor* weight, 
     DeviceTensor* bias,
-    std::vector<int> local,
-    std::vector<int> global)
+    std::vector<size_t> local,
+    std::vector<size_t> global)
     : LibDNNBase<DeviceTensor>(
       kernel_name, top_count, weight, bias,
       local, global) { }
@@ -83,8 +76,8 @@ class LibDNNDeconvOp : public LibDNNBase<DeviceTensor> {
     int top_count,
     DeviceTensor* weight, 
     DeviceTensor* bias,
-    std::vector<int> local,
-    std::vector<int> global)
+    std::vector<size_t> local,
+    std::vector<size_t> global)
     : LibDNNBase<DeviceTensor>(
       kernel_name, top_count, weight, bias,
       local, global) { }

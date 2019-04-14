@@ -9,6 +9,7 @@
 #include "hypertea/operators/activation.hpp"
 #include "hypertea/operators/conv_op.hpp"
 #include "hypertea/operators/deconv_op.hpp"
+#include "hypertea/operators/libdnn_conv_op.hpp"
 #include "hypertea/operators/scale_op.hpp"
 #include "hypertea/operators/batch_norm_op.hpp"
 #include "hypertea/operators/MIOpen_batch_norm_op.hpp"
@@ -40,6 +41,19 @@ namespace hypertea {
         
     }
 
+
+
+    void compile_opencl_kernels(
+#ifdef USE_OPENCL
+        const std::string &conv_opencl_funcs,
+        const std::string &bn_opencl_funcs) {
+        OpenCLHandler::Get().build_opencl_math_code(false);
+        OpenCLHandler::Get().build_opencl_program(conv_opencl_funcs, OpenCLHandler::Get().conv_program);
+        OpenCLHandler::Get().build_opencl_program(bn_opencl_funcs, OpenCLHandler::Get().bn_program);
+#endif //USE_OPENCL
+
+    }
+        
 }
 
 

@@ -122,7 +122,7 @@ void OpenCLHandler::load_opencl_program(std::string save_binary_file, cl_program
 }
 
 
-void OpenCLHandler::build_opencl_program(std::string kernel_code, cl_program &program) {
+void OpenCLHandler::build_opencl_program(const std::string &kernel_code, cl_program &program) {
 
   cl_int ret = -1;
 

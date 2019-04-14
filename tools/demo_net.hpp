@@ -1,4 +1,5 @@
 #include "hypertea/hypertea.hpp"
+#include "kernels/conv_kernel.cl"
 
 namespace hypertea {
 
@@ -9,9 +10,7 @@ public:
 
     new_net(const std::string &param_file) { 
 
-#ifdef USE_OPENCL
-        OpenCLHandler::Get().build_opencl_math_code(false);
-#endif //USE_OPENCL
+        compile_opencl_kernels(conv_opencl_funcs, " ");
         
         load_weight_to_tensor(param_file, param);
 
@@ -101,47 +100,47 @@ private:
      DeviceTensor de_bn2_bias = param.sub_view(1813504, 32);
      DeviceTensor deconv3_bias = param.sub_view(1813536, 3);
      DeviceTensor deconv3_weight = param.sub_view(1813539, 7776);
-    ConvolutionOp<DeviceTensor> conv1 = ConvolutionOp<DeviceTensor> (&conv1_weight, &conv1_bias, 1, false, std::vector<int> {9,9}, std::vector<int> {1,1}, std::vector<int> {4,4}, std::vector<int> {1,1}, std::vector<int> {1,3,512,512}, std::vector<int> {1,32,512,512});
+    LibDNNConvOp<DeviceTensor> conv1 = LibDNNConvOp<DeviceTensor> ("conv1_forward", 8388608, &conv1_weight, &conv1_bias, std::vector<size_t> {16,4,1}, std::vector<size_t> {32768,8,1});
     ELUOp<DeviceTensor> elu1 = ELUOp<DeviceTensor> ( 1, NOT_IN_PLACE );
     BatchNormOp<DeviceTensor> bn1 = BatchNormOp<DeviceTensor> (32, 262144, 1e-05, nullptr, nullptr, &bn1_weight, &bn1_bias);
-    ConvolutionOp<DeviceTensor> conv2 = ConvolutionOp<DeviceTensor> (&conv2_weight, &conv2_bias, 1, false, std::vector<int> {4,4}, std::vector<int> {2,2}, std::vector<int> {1,1}, std::vector<int> {1,1}, std::vector<int> {1,32,512,512}, std::vector<int> {1,64,256,256});
+    LibDNNConvOp<DeviceTensor> conv2 = LibDNNConvOp<DeviceTensor> ("conv2_forward", 4194304, &conv2_weight, &conv2_bias, std::vector<size_t> {16,4,1}, std::vector<size_t> {8192,16,1});
     ELUOp<DeviceTensor> elu2 = ELUOp<DeviceTensor> ( 1, NOT_IN_PLACE );
     BatchNormOp<DeviceTensor> bn2 = BatchNormOp<DeviceTensor> (64, 65536, 1e-05, nullptr, nullptr, &bn2_weight, &bn2_bias);
-    ConvolutionOp<DeviceTensor> conv3 = ConvolutionOp<DeviceTensor> (&conv3_weight, &conv3_bias, 1, false, std::vector<int> {4,4}, std::vector<int> {2,2}, std::vector<int> {1,1}, std::vector<int> {1,1}, std::vector<int> {1,64,256,256}, std::vector<int> {1,128,128,128});
+    LibDNNConvOp<DeviceTensor> conv3 = LibDNNConvOp<DeviceTensor> ("conv3_forward", 2097152, &conv3_weight, &conv3_bias, std::vector<size_t> {16,4,1}, std::vector<size_t> {2048,32,1});
     ELUOp<DeviceTensor> elu3 = ELUOp<DeviceTensor> ( 1, NOT_IN_PLACE );
     BatchNormOp<DeviceTensor> bn3 = BatchNormOp<DeviceTensor> (128, 16384, 1e-05, nullptr, nullptr, &bn3_weight, &bn3_bias);
-    ConvolutionOp<DeviceTensor> res1_conv1 = ConvolutionOp<DeviceTensor> (&res1_conv1_weight, nullptr, 1, false, std::vector<int> {3,3}, std::vector<int> {1,1}, std::vector<int> {1,1}, std::vector<int> {1,1}, std::vector<int> {1,128,128,128}, std::vector<int> {1,128,128,128});
+    LibDNNConvOp<DeviceTensor> res1_conv1 = LibDNNConvOp<DeviceTensor> ("res1_conv1_forward", 2097152, &res1_conv1_weight, nullptr, std::vector<size_t> {16,4,1}, std::vector<size_t> {2048,32,1});
     BatchNormOp<DeviceTensor> res1_bn1 = BatchNormOp<DeviceTensor> (128, 16384, 1e-05, nullptr, nullptr, &res1_bn1_weight, &res1_bn1_bias);
     ReLUOp<DeviceTensor> res1_relu1 = ReLUOp<DeviceTensor> ( 0, NOT_IN_PLACE );
-    ConvolutionOp<DeviceTensor> res1_conv2 = ConvolutionOp<DeviceTensor> (&res1_conv2_weight, nullptr, 1, false, std::vector<int> {3,3}, std::vector<int> {1,1}, std::vector<int> {1,1}, std::vector<int> {1,1}, std::vector<int> {1,128,128,128}, std::vector<int> {1,128,128,128});
+    LibDNNConvOp<DeviceTensor> res1_conv2 = LibDNNConvOp<DeviceTensor> ("res1_conv2_forward", 2097152, &res1_conv2_weight, nullptr, std::vector<size_t> {16,4,1}, std::vector<size_t> {2048,32,1});
     BatchNormOp<DeviceTensor> res1_bn2 = BatchNormOp<DeviceTensor> (128, 16384, 1e-05, nullptr, nullptr, &res1_bn2_weight, &res1_bn2_bias);
-    ConvolutionOp<DeviceTensor> res2_conv1 = ConvolutionOp<DeviceTensor> (&res2_conv1_weight, nullptr, 1, false, std::vector<int> {3,3}, std::vector<int> {1,1}, std::vector<int> {1,1}, std::vector<int> {1,1}, std::vector<int> {1,128,128,128}, std::vector<int> {1,128,128,128});
+    LibDNNConvOp<DeviceTensor> res2_conv1 = LibDNNConvOp<DeviceTensor> ("res2_conv1_forward", 2097152, &res2_conv1_weight, nullptr, std::vector<size_t> {16,4,1}, std::vector<size_t> {2048,32,1});
     BatchNormOp<DeviceTensor> res2_bn1 = BatchNormOp<DeviceTensor> (128, 16384, 1e-05, nullptr, nullptr, &res2_bn1_weight, &res2_bn1_bias);
     ReLUOp<DeviceTensor> res2_relu1 = ReLUOp<DeviceTensor> ( 0, NOT_IN_PLACE );
-    ConvolutionOp<DeviceTensor> res2_conv2 = ConvolutionOp<DeviceTensor> (&res2_conv2_weight, nullptr, 1, false, std::vector<int> {3,3}, std::vector<int> {1,1}, std::vector<int> {1,1}, std::vector<int> {1,1}, std::vector<int> {1,128,128,128}, std::vector<int> {1,128,128,128});
+    LibDNNConvOp<DeviceTensor> res2_conv2 = LibDNNConvOp<DeviceTensor> ("res2_conv2_forward", 2097152, &res2_conv2_weight, nullptr, std::vector<size_t> {16,4,1}, std::vector<size_t> {2048,32,1});
     BatchNormOp<DeviceTensor> res2_bn2 = BatchNormOp<DeviceTensor> (128, 16384, 1e-05, nullptr, nullptr, &res2_bn2_weight, &res2_bn2_bias);
-    ConvolutionOp<DeviceTensor> res3_conv1 = ConvolutionOp<DeviceTensor> (&res3_conv1_weight, nullptr, 1, false, std::vector<int> {3,3}, std::vector<int> {1,1}, std::vector<int> {1,1}, std::vector<int> {1,1}, std::vector<int> {1,128,128,128}, std::vector<int> {1,128,128,128});
+    LibDNNConvOp<DeviceTensor> res3_conv1 = LibDNNConvOp<DeviceTensor> ("res3_conv1_forward", 2097152, &res3_conv1_weight, nullptr, std::vector<size_t> {16,4,1}, std::vector<size_t> {2048,32,1});
     BatchNormOp<DeviceTensor> res3_bn1 = BatchNormOp<DeviceTensor> (128, 16384, 1e-05, nullptr, nullptr, &res3_bn1_weight, &res3_bn1_bias);
     ReLUOp<DeviceTensor> res3_relu1 = ReLUOp<DeviceTensor> ( 0, NOT_IN_PLACE );
-    ConvolutionOp<DeviceTensor> res3_conv2 = ConvolutionOp<DeviceTensor> (&res3_conv2_weight, nullptr, 1, false, std::vector<int> {3,3}, std::vector<int> {1,1}, std::vector<int> {1,1}, std::vector<int> {1,1}, std::vector<int> {1,128,128,128}, std::vector<int> {1,128,128,128});
+    LibDNNConvOp<DeviceTensor> res3_conv2 = LibDNNConvOp<DeviceTensor> ("res3_conv2_forward", 2097152, &res3_conv2_weight, nullptr, std::vector<size_t> {16,4,1}, std::vector<size_t> {2048,32,1});
     BatchNormOp<DeviceTensor> res3_bn2 = BatchNormOp<DeviceTensor> (128, 16384, 1e-05, nullptr, nullptr, &res3_bn2_weight, &res3_bn2_bias);
-    ConvolutionOp<DeviceTensor> res4_conv1 = ConvolutionOp<DeviceTensor> (&res4_conv1_weight, nullptr, 1, false, std::vector<int> {3,3}, std::vector<int> {1,1}, std::vector<int> {1,1}, std::vector<int> {1,1}, std::vector<int> {1,128,128,128}, std::vector<int> {1,128,128,128});
+    LibDNNConvOp<DeviceTensor> res4_conv1 = LibDNNConvOp<DeviceTensor> ("res4_conv1_forward", 2097152, &res4_conv1_weight, nullptr, std::vector<size_t> {16,4,1}, std::vector<size_t> {2048,32,1});
     BatchNormOp<DeviceTensor> res4_bn1 = BatchNormOp<DeviceTensor> (128, 16384, 1e-05, nullptr, nullptr, &res4_bn1_weight, &res4_bn1_bias);
     ReLUOp<DeviceTensor> res4_relu1 = ReLUOp<DeviceTensor> ( 0, NOT_IN_PLACE );
-    ConvolutionOp<DeviceTensor> res4_conv2 = ConvolutionOp<DeviceTensor> (&res4_conv2_weight, nullptr, 1, false, std::vector<int> {3,3}, std::vector<int> {1,1}, std::vector<int> {1,1}, std::vector<int> {1,1}, std::vector<int> {1,128,128,128}, std::vector<int> {1,128,128,128});
+    LibDNNConvOp<DeviceTensor> res4_conv2 = LibDNNConvOp<DeviceTensor> ("res4_conv2_forward", 2097152, &res4_conv2_weight, nullptr, std::vector<size_t> {16,4,1}, std::vector<size_t> {2048,32,1});
     BatchNormOp<DeviceTensor> res4_bn2 = BatchNormOp<DeviceTensor> (128, 16384, 1e-05, nullptr, nullptr, &res4_bn2_weight, &res4_bn2_bias);
-    ConvolutionOp<DeviceTensor> res5_conv1 = ConvolutionOp<DeviceTensor> (&res5_conv1_weight, nullptr, 1, false, std::vector<int> {3,3}, std::vector<int> {1,1}, std::vector<int> {1,1}, std::vector<int> {1,1}, std::vector<int> {1,128,128,128}, std::vector<int> {1,128,128,128});
+    LibDNNConvOp<DeviceTensor> res5_conv1 = LibDNNConvOp<DeviceTensor> ("res5_conv1_forward", 2097152, &res5_conv1_weight, nullptr, std::vector<size_t> {16,4,1}, std::vector<size_t> {2048,32,1});
     BatchNormOp<DeviceTensor> res5_bn1 = BatchNormOp<DeviceTensor> (128, 16384, 1e-05, nullptr, nullptr, &res5_bn1_weight, &res5_bn1_bias);
     ReLUOp<DeviceTensor> res5_relu1 = ReLUOp<DeviceTensor> ( 0, NOT_IN_PLACE );
-    ConvolutionOp<DeviceTensor> res5_conv2 = ConvolutionOp<DeviceTensor> (&res5_conv2_weight, nullptr, 1, false, std::vector<int> {3,3}, std::vector<int> {1,1}, std::vector<int> {1,1}, std::vector<int> {1,1}, std::vector<int> {1,128,128,128}, std::vector<int> {1,128,128,128});
+    LibDNNConvOp<DeviceTensor> res5_conv2 = LibDNNConvOp<DeviceTensor> ("res5_conv2_forward", 2097152, &res5_conv2_weight, nullptr, std::vector<size_t> {16,4,1}, std::vector<size_t> {2048,32,1});
     BatchNormOp<DeviceTensor> res5_bn2 = BatchNormOp<DeviceTensor> (128, 16384, 1e-05, nullptr, nullptr, &res5_bn2_weight, &res5_bn2_bias);
-    DeconvolutionOp<DeviceTensor> deconv1 = DeconvolutionOp<DeviceTensor> (&deconv1_weight, &deconv1_bias, 1, false, std::vector<int> {4,4}, std::vector<int> {2,2}, std::vector<int> {1,1}, std::vector<int> {1,1}, std::vector<int> {1,128,128,128}, std::vector<int> {1,64,256,256});
+    LibDNNDeconvOp<DeviceTensor> deconv1 = LibDNNDeconvOp<DeviceTensor> ("deconv1_forward", 4194304, &deconv1_weight, &deconv1_bias, std::vector<size_t> {16,4,1}, std::vector<size_t> {8192,16,1});
     ELUOp<DeviceTensor> de_elu1 = ELUOp<DeviceTensor> ( 1, NOT_IN_PLACE );
     BatchNormOp<DeviceTensor> de_bn1 = BatchNormOp<DeviceTensor> (64, 65536, 1e-05, nullptr, nullptr, &de_bn1_weight, &de_bn1_bias);
-    DeconvolutionOp<DeviceTensor> deconv2 = DeconvolutionOp<DeviceTensor> (&deconv2_weight, &deconv2_bias, 1, false, std::vector<int> {4,4}, std::vector<int> {2,2}, std::vector<int> {1,1}, std::vector<int> {1,1}, std::vector<int> {1,64,256,256}, std::vector<int> {1,32,512,512});
+    LibDNNDeconvOp<DeviceTensor> deconv2 = LibDNNDeconvOp<DeviceTensor> ("deconv2_forward", 8388608, &deconv2_weight, &deconv2_bias, std::vector<size_t> {16,4,1}, std::vector<size_t> {32768,8,1});
     ELUOp<DeviceTensor> de_elu2 = ELUOp<DeviceTensor> ( 1, NOT_IN_PLACE );
     BatchNormOp<DeviceTensor> de_bn2 = BatchNormOp<DeviceTensor> (32, 262144, 1e-05, nullptr, nullptr, &de_bn2_weight, &de_bn2_bias);
-    DeconvolutionOp<DeviceTensor> deconv3 = DeconvolutionOp<DeviceTensor> (&deconv3_weight, &deconv3_bias, 1, false, std::vector<int> {9,9}, std::vector<int> {1,1}, std::vector<int> {4,4}, std::vector<int> {1,1}, std::vector<int> {1,32,512,512}, std::vector<int> {1,3,512,512});
+    LibDNNDeconvOp<DeviceTensor> deconv3 = LibDNNDeconvOp<DeviceTensor> ("deconv3_forward", 786432, &deconv3_weight, &deconv3_bias, std::vector<size_t> {16,4,1}, std::vector<size_t> {32768,4,1});
     TanHOp<DeviceTensor> de_tanh3 = TanHOp<DeviceTensor> ( NOT_IN_PLACE );
 
 };
