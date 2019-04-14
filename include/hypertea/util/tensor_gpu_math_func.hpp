@@ -230,12 +230,21 @@ inline TensorGPU<Dtype>& inplace_elu(TensorGPU<Dtype>& x, const float a = 1.) {
 	return unary_scalar_math_gpu_inplace(x, a, "elu_kernel");
 }
 
+
 template <typename Dtype>
 inline TensorGPU<Dtype>& inplace_relu(TensorGPU<Dtype>& x, const float a = .0) {
 	return unary_scalar_math_gpu_inplace(x, a, "relu_kernel");
 }
 
 
+
+template <typename Dtype>
+TensorGPU<Dtype>& inplace_prelu(
+	TensorGPU<Dtype>& x, 
+	const TensorGPU<Dtype>& weight,
+	int channels,
+	int inner_dim
+);
 
 template <typename Dtype>
 TensorGPU<Dtype>& inplace_channeled_scal(

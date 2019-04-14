@@ -23,6 +23,7 @@ public:
         auto data = DeviceTensor(data_from_user);
 
         auto temp = bn1(outplace_elu(conv1(data)));
+
         temp = bn2(outplace_elu(conv2(temp)));
         temp = bn3(outplace_elu(conv3(temp)));
 

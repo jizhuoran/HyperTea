@@ -471,6 +471,22 @@ std::string OpenCLHandler::opencl_math_code(bool is_half) {
 	  }
 	}
 
+
+
+  __kernel void prelu_kernel(
+    const __global Dtype *in,
+	  __global Dtype *out,
+	  int N,
+    const __global Dtype *scale,
+    int scale_dim,
+    int inner_dim) {
+	  OPENCL_KERNEL_LOOP(index, N) {
+	    const int scale_index = (index / inner_dim) % scale_dim;
+	    out[index] = in[index] > 0? in[index] : in[index] * scale[scale_index];
+	  }
+	}
+
+
   __kernel void ChanneledAddForward(
     const __global Dtype *in,
     __global Dtype *out,

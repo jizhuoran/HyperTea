@@ -14,7 +14,7 @@
 #include "hypertea/operators/batch_norm_op.hpp"
 #include "hypertea/operators/MIOpen_batch_norm_op.hpp"
 #include "hypertea/operators/rnn_op.hpp"
-
+#include "hypertea/operators/linear_op.hpp"
 
 namespace hypertea {
 

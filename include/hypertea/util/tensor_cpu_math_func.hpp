@@ -209,7 +209,28 @@ inline TensorCPU<Dtype>& inplace_div(const TensorCPU<Dtype>& x, TensorCPU<Dtype>
 
 
 
+template <typename Dtype>
+TensorCPU<Dtype>& inplace_prelu(
+	TensorCPU<Dtype>& x, 
+	const TensorCPU<Dtype>& weight,
+	int channels,
+	int spatial_dim
+) {
 
+	int num = x.count() / (channels * spatial_dim);
+
+	auto data = x.mutable_data();
+	auto weight_data = weight.immutable_data();
+
+	for (auto& n: x.chunked_tensors(num)) {
+		auto d = n.chunked_tensors(channels);
+
+		for (int i = 0; i < channels; ++i) {
+			inplace_relu(d[i], weight_data[i]);
+		}
+	}
+	return x;
+}
 
 
 template <typename Dtype>

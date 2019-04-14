@@ -4580,6 +4580,10 @@ void res5_conv2_forward(
 #undef v_g
 #endif
 #define v_g 1
+#ifdef v_A_off
+#undef v_A_off
+#endif
+#define v_A_off 131072
 #ifdef v_B_off
 #undef v_B_off
 #endif
@@ -4620,14 +4624,18 @@ void res5_conv2_forward(
 #undef v_k_1
 #endif
 #define v_k_1 4
+#ifdef v_ks
+#undef v_ks
+#endif
+#define v_ks 16
 #ifdef v_p_0
 #undef v_p_0
 #endif
-#define v_p_0 1
+#define v_p_0 2
 #ifdef v_p_1
 #undef v_p_1
 #endif
-#define v_p_1 1
+#define v_p_1 2
 #ifdef v_s_0
 #undef v_s_0
 #endif
@@ -4736,15 +4744,15 @@ void res5_conv2_forward(
 #undef v_num_tiles
 #endif
 #define v_num_tiles (((K - 1)/(TSK*2) + 1)*2)
-__kernel
-__attribute__((reqd_work_group_size(16, 4, 1)))
-__attribute__((vec_type_hint(Dtype4)))
-void deconv1_forward(
-  __global const Dtype* __restrict im_in, 
-  __global const Dtype* __restrict wg,
-  __global Dtype* __restrict im_out 
-  , __global const Dtype* __restrict bias
-  ) {
+    __kernel
+    __attribute__((reqd_work_group_size(16, 4, 1)))
+    __attribute__((vec_type_hint(Dtype4)))
+    void deconv1_forward(
+    __global const Dtype* __restrict im_out, 
+    __global const Dtype* __restrict wg, 
+    __global Dtype* __restrict im_in
+    , __global const Dtype* __restrict bias
+    ) {
 
     const int tidn = get_local_id(0);
     const int tidm = get_local_id(1);
@@ -4754,13 +4762,12 @@ void deconv1_forward(
     volatile __local Dtype Asub[16][8 + v_pad_A];
     volatile __local Dtype Bsub[8][128 + v_pad_B];
 
-    
     int batch = get_global_id(2);
     
 
     __global const Dtype* Aptr = wg;
-    __global const Dtype* Bptr = im_in + v_B_off * batch;
-    __global Dtype* Cptr = im_out + v_C_off * batch;
+    __global const Dtype* Bptr = im_out + v_B_off * batch;
+    __global Dtype* Cptr = im_in + v_C_off * batch;
     __global const Dtype* Dptr = bias;
     {
       
@@ -4792,15 +4799,18 @@ void deconv1_forward(
               int col = id % TSK;
               int tiledIndex = TSK * t + col;
               
+              int kidx = (v_ks - 1 - tiledIndex % v_ks) + (offM + row) * v_ks;
+              int midx = tiledIndex / v_ks;
+
               if ((offM + row) < M && tiledIndex < K) {
-                Asub[row][col] = Aptr[(offM + row) * K + tiledIndex];
+                Asub[row][col] = Aptr[kidx + (v_fout / v_g * v_ks) * midx];
               } else {  
                 Asub[row][col] = 0.0;
               }
             }  
           }  
 
-    
+
           {  
             #pragma unroll 4
             for (int lb = 0; lb < LPTB; ++lb) {
@@ -4816,15 +4826,16 @@ void deconv1_forward(
                 int d_temp_0;
                 int d_temp_1;
 
+
                 int imageIndex = offN + col;
 
                 d_iter_1 = (tiledIndex % v_k_1) * v_d_1;
                 tiledIndex = tiledIndex / v_k_1;
-                d_temp_1 = (imageIndex % v_imso_1) * v_s_1 - v_p_1;
+                d_temp_1 = (imageIndex % v_imso_1) - v_p_1;
                 imageIndex = imageIndex / v_imso_1;
                 d_iter_0 = (tiledIndex % v_k_0) * v_d_0;
                 tiledIndex = tiledIndex / v_k_0;
-                d_temp_0 = (imageIndex % v_imso_0) * v_s_0 - v_p_0;
+                d_temp_0 = (imageIndex % v_imso_0) - v_p_0;
                 imageIndex = imageIndex / v_imso_0;
 
                 bool in_range = true;
@@ -4832,11 +4843,11 @@ void deconv1_forward(
                 int d_iter_im;
 
                 d_iter_im = d_temp_0 + d_iter_0;
-                tiledIndex = tiledIndex * v_imsi_0 + d_iter_im;
-                in_range &= d_iter_im >= 0 && d_iter_im < v_imsi_0;
+                tiledIndex = tiledIndex * v_imsi_0 + d_iter_im / v_s_0;
+                in_range &= d_iter_im >= 0 && d_iter_im < v_imsi_0 * v_s_0 && d_iter_im % v_s_0 == 0;
                 d_iter_im = d_temp_1 + d_iter_1;
-                tiledIndex = tiledIndex * v_imsi_1 + d_iter_im;
-                in_range &= d_iter_im >= 0 && d_iter_im < v_imsi_1;
+                tiledIndex = tiledIndex * v_imsi_1 + d_iter_im / v_s_1;
+                in_range &= d_iter_im >= 0 && d_iter_im < v_imsi_1 * v_s_1 && d_iter_im % v_s_1 == 0;
                 
                 if (in_range) {
                    Bsub[row][col] = Bptr[tiledIndex];
@@ -4926,12 +4937,15 @@ void deconv1_forward(
       }
     }
   } 
-
         
 #ifdef v_g
 #undef v_g
 #endif
 #define v_g 1
+#ifdef v_A_off
+#undef v_A_off
+#endif
+#define v_A_off 32768
 #ifdef v_B_off
 #undef v_B_off
 #endif
@@ -4972,14 +4986,18 @@ void deconv1_forward(
 #undef v_k_1
 #endif
 #define v_k_1 4
+#ifdef v_ks
+#undef v_ks
+#endif
+#define v_ks 16
 #ifdef v_p_0
 #undef v_p_0
 #endif
-#define v_p_0 1
+#define v_p_0 2
 #ifdef v_p_1
 #undef v_p_1
 #endif
-#define v_p_1 1
+#define v_p_1 2
 #ifdef v_s_0
 #undef v_s_0
 #endif
@@ -5088,15 +5106,15 @@ void deconv1_forward(
 #undef v_num_tiles
 #endif
 #define v_num_tiles (((K - 1)/(TSK*2) + 1)*2)
-__kernel
-__attribute__((reqd_work_group_size(16, 4, 1)))
-__attribute__((vec_type_hint(Dtype4)))
-void deconv2_forward(
-  __global const Dtype* __restrict im_in, 
-  __global const Dtype* __restrict wg,
-  __global Dtype* __restrict im_out 
-  , __global const Dtype* __restrict bias
-  ) {
+    __kernel
+    __attribute__((reqd_work_group_size(16, 4, 1)))
+    __attribute__((vec_type_hint(Dtype4)))
+    void deconv2_forward(
+    __global const Dtype* __restrict im_out, 
+    __global const Dtype* __restrict wg, 
+    __global Dtype* __restrict im_in
+    , __global const Dtype* __restrict bias
+    ) {
 
     const int tidn = get_local_id(0);
     const int tidm = get_local_id(1);
@@ -5106,13 +5124,12 @@ void deconv2_forward(
     volatile __local Dtype Asub[16][8 + v_pad_A];
     volatile __local Dtype Bsub[8][128 + v_pad_B];
 
-    
     int batch = get_global_id(2);
     
 
     __global const Dtype* Aptr = wg;
-    __global const Dtype* Bptr = im_in + v_B_off * batch;
-    __global Dtype* Cptr = im_out + v_C_off * batch;
+    __global const Dtype* Bptr = im_out + v_B_off * batch;
+    __global Dtype* Cptr = im_in + v_C_off * batch;
     __global const Dtype* Dptr = bias;
     {
       
@@ -5144,15 +5161,18 @@ void deconv2_forward(
               int col = id % TSK;
               int tiledIndex = TSK * t + col;
               
+              int kidx = (v_ks - 1 - tiledIndex % v_ks) + (offM + row) * v_ks;
+              int midx = tiledIndex / v_ks;
+
               if ((offM + row) < M && tiledIndex < K) {
-                Asub[row][col] = Aptr[(offM + row) * K + tiledIndex];
+                Asub[row][col] = Aptr[kidx + (v_fout / v_g * v_ks) * midx];
               } else {  
                 Asub[row][col] = 0.0;
               }
             }  
           }  
 
-    
+
           {  
             #pragma unroll 4
             for (int lb = 0; lb < LPTB; ++lb) {
@@ -5168,15 +5188,16 @@ void deconv2_forward(
                 int d_temp_0;
                 int d_temp_1;
 
+
                 int imageIndex = offN + col;
 
                 d_iter_1 = (tiledIndex % v_k_1) * v_d_1;
                 tiledIndex = tiledIndex / v_k_1;
-                d_temp_1 = (imageIndex % v_imso_1) * v_s_1 - v_p_1;
+                d_temp_1 = (imageIndex % v_imso_1) - v_p_1;
                 imageIndex = imageIndex / v_imso_1;
                 d_iter_0 = (tiledIndex % v_k_0) * v_d_0;
                 tiledIndex = tiledIndex / v_k_0;
-                d_temp_0 = (imageIndex % v_imso_0) * v_s_0 - v_p_0;
+                d_temp_0 = (imageIndex % v_imso_0) - v_p_0;
                 imageIndex = imageIndex / v_imso_0;
 
                 bool in_range = true;
@@ -5184,11 +5205,11 @@ void deconv2_forward(
                 int d_iter_im;
 
                 d_iter_im = d_temp_0 + d_iter_0;
-                tiledIndex = tiledIndex * v_imsi_0 + d_iter_im;
-                in_range &= d_iter_im >= 0 && d_iter_im < v_imsi_0;
+                tiledIndex = tiledIndex * v_imsi_0 + d_iter_im / v_s_0;
+                in_range &= d_iter_im >= 0 && d_iter_im < v_imsi_0 * v_s_0 && d_iter_im % v_s_0 == 0;
                 d_iter_im = d_temp_1 + d_iter_1;
-                tiledIndex = tiledIndex * v_imsi_1 + d_iter_im;
-                in_range &= d_iter_im >= 0 && d_iter_im < v_imsi_1;
+                tiledIndex = tiledIndex * v_imsi_1 + d_iter_im / v_s_1;
+                in_range &= d_iter_im >= 0 && d_iter_im < v_imsi_1 * v_s_1 && d_iter_im % v_s_1 == 0;
                 
                 if (in_range) {
                    Bsub[row][col] = Bptr[tiledIndex];
@@ -5278,12 +5299,15 @@ void deconv2_forward(
       }
     }
   } 
-
         
 #ifdef v_g
 #undef v_g
 #endif
 #define v_g 1
+#ifdef v_A_off
+#undef v_A_off
+#endif
+#define v_A_off 7776
 #ifdef v_B_off
 #undef v_B_off
 #endif
@@ -5324,6 +5348,10 @@ void deconv2_forward(
 #undef v_k_1
 #endif
 #define v_k_1 9
+#ifdef v_ks
+#undef v_ks
+#endif
+#define v_ks 81
 #ifdef v_p_0
 #undef v_p_0
 #endif
@@ -5440,15 +5468,15 @@ void deconv2_forward(
 #undef v_num_tiles
 #endif
 #define v_num_tiles (((K - 1)/(TSK*2) + 1)*2)
-__kernel
-__attribute__((reqd_work_group_size(16, 4, 1)))
-__attribute__((vec_type_hint(Dtype4)))
-void deconv3_forward(
-  __global const Dtype* __restrict im_in, 
-  __global const Dtype* __restrict wg,
-  __global Dtype* __restrict im_out 
-  , __global const Dtype* __restrict bias
-  ) {
+    __kernel
+    __attribute__((reqd_work_group_size(16, 4, 1)))
+    __attribute__((vec_type_hint(Dtype4)))
+    void deconv3_forward(
+    __global const Dtype* __restrict im_out, 
+    __global const Dtype* __restrict wg, 
+    __global Dtype* __restrict im_in
+    , __global const Dtype* __restrict bias
+    ) {
 
     const int tidn = get_local_id(0);
     const int tidm = get_local_id(1);
@@ -5458,13 +5486,12 @@ void deconv3_forward(
     volatile __local Dtype Asub[16][8 + v_pad_A];
     volatile __local Dtype Bsub[8][128 + v_pad_B];
 
-    
     int batch = get_global_id(2);
     
 
     __global const Dtype* Aptr = wg;
-    __global const Dtype* Bptr = im_in + v_B_off * batch;
-    __global Dtype* Cptr = im_out + v_C_off * batch;
+    __global const Dtype* Bptr = im_out + v_B_off * batch;
+    __global Dtype* Cptr = im_in + v_C_off * batch;
     __global const Dtype* Dptr = bias;
     {
       
@@ -5496,15 +5523,18 @@ void deconv3_forward(
               int col = id % TSK;
               int tiledIndex = TSK * t + col;
               
+              int kidx = (v_ks - 1 - tiledIndex % v_ks) + (offM + row) * v_ks;
+              int midx = tiledIndex / v_ks;
+
               if ((offM + row) < M && tiledIndex < K) {
-                Asub[row][col] = Aptr[(offM + row) * K + tiledIndex];
+                Asub[row][col] = Aptr[kidx + (v_fout / v_g * v_ks) * midx];
               } else {  
                 Asub[row][col] = 0.0;
               }
             }  
           }  
 
-    
+
           {  
             #pragma unroll 4
             for (int lb = 0; lb < LPTB; ++lb) {
@@ -5520,15 +5550,16 @@ void deconv3_forward(
                 int d_temp_0;
                 int d_temp_1;
 
+
                 int imageIndex = offN + col;
 
                 d_iter_1 = (tiledIndex % v_k_1) * v_d_1;
                 tiledIndex = tiledIndex / v_k_1;
-                d_temp_1 = (imageIndex % v_imso_1) * v_s_1 - v_p_1;
+                d_temp_1 = (imageIndex % v_imso_1) - v_p_1;
                 imageIndex = imageIndex / v_imso_1;
                 d_iter_0 = (tiledIndex % v_k_0) * v_d_0;
                 tiledIndex = tiledIndex / v_k_0;
-                d_temp_0 = (imageIndex % v_imso_0) * v_s_0 - v_p_0;
+                d_temp_0 = (imageIndex % v_imso_0) - v_p_0;
                 imageIndex = imageIndex / v_imso_0;
 
                 bool in_range = true;
@@ -5536,11 +5567,11 @@ void deconv3_forward(
                 int d_iter_im;
 
                 d_iter_im = d_temp_0 + d_iter_0;
-                tiledIndex = tiledIndex * v_imsi_0 + d_iter_im;
-                in_range &= d_iter_im >= 0 && d_iter_im < v_imsi_0;
+                tiledIndex = tiledIndex * v_imsi_0 + d_iter_im / v_s_0;
+                in_range &= d_iter_im >= 0 && d_iter_im < v_imsi_0 * v_s_0 && d_iter_im % v_s_0 == 0;
                 d_iter_im = d_temp_1 + d_iter_1;
-                tiledIndex = tiledIndex * v_imsi_1 + d_iter_im;
-                in_range &= d_iter_im >= 0 && d_iter_im < v_imsi_1;
+                tiledIndex = tiledIndex * v_imsi_1 + d_iter_im / v_s_1;
+                in_range &= d_iter_im >= 0 && d_iter_im < v_imsi_1 * v_s_1 && d_iter_im % v_s_1 == 0;
                 
                 if (in_range) {
                    Bsub[row][col] = Bptr[tiledIndex];
@@ -5630,7 +5661,6 @@ void deconv3_forward(
       }
     }
   } 
-
         
 )";
         

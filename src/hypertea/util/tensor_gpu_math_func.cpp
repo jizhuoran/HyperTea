@@ -363,6 +363,53 @@ template TensorGPU<half>& binary_scalar_math_gpu_inplace(
 );
 
 
+
+template <typename Dtype>
+TensorGPU<Dtype>& inplace_prelu(
+  TensorGPU<Dtype>& x, 
+  const TensorGPU<Dtype>& weight,
+  int channels,
+  int inner_dim) {
+  
+
+  int N = x.count();
+  auto data = x.mutable_data();
+  auto weight_ = weight.mutable_data();
+
+
+  opencl_launch_wrapper(
+    OpenCLHandler::Get().math_program,
+    "prelu_kernel",
+    std::vector<std::pair<size_t, const void *> > {
+      std::make_pair(sizeof(cl_mem), (void *)&data),
+      std::make_pair(sizeof(cl_mem), (void *)&data),
+      std::make_pair(sizeof(cl_int), (void *)&N),
+      std::make_pair(sizeof(cl_mem), (void *)&weight_),
+      std::make_pair(sizeof(cl_int), (void *)&channels),
+      std::make_pair(sizeof(cl_int), (void *)&inner_dim),
+
+    },
+    std::vector<size_t> {HYPERTEA_GET_BLOCKS(N)},
+    std::vector<size_t> {HYPERTEA_OPENCL_NUM_THREADS}
+  );
+
+}
+
+
+template TensorGPU<float>& inplace_prelu(
+  TensorGPU<float>& x, 
+  const TensorGPU<float>& weight,
+  int channels,
+  int inner_dim
+);
+
+template TensorGPU<half>& inplace_prelu(
+  TensorGPU<half>& x, 
+  const TensorGPU<half>& weight,
+  int channels,
+  int inner_dim
+);
+
 template <typename Dtype>
 TensorGPU<Dtype>& inplace_channeled_scal(
 

@@ -2,9 +2,13 @@ import torch.nn as nn
 import torch
 import itertools
 
+import sys
+sys.path.append('/home/zrji/hypertea_maker/pytorch')
+
+
 from fake_random import FakeRandomGenerator
 from oracle_util import *
-
+from hypertea_generator.hypertea_generator import HyperteaGenerator
 
 def conv_declare(module, input_data, output_data, op_name, opencl_collector):
 
@@ -190,6 +194,65 @@ def deconv_oracle_generator():
         print(code)
 
     save_oracle_result('deconv', deconv_oracle) 
+
+
+
+def libdnn_conv_oracle_generator():
+
+    conv_oracle = []
+ 
+
+    in_out_channels = [(2, 3), (4, 3)]
+    kernel_sizes = [1, 3]
+    spd_sizes = [(1, 0, 1), (2, 2, 3)]
+    
+    conv_settings = list(itertools.product(in_out_channels, kernel_sizes, spd_sizes))
+
+    for (in_channel, out_channel), kernel, (stride, padding, dilation) in conv_settings:
+
+        rg = FakeRandomGenerator()
+
+        conv = nn.Conv2d(in_channel, out_channel, kernel, stride=stride, padding=padding, dilation=dilation, bias=True)
+
+        conv.weight.data = torch.tensor(rg.rn(conv.weight.shape), dtype = torch.float)
+        conv.bias.data = torch.tensor(rg.rn(conv.bias.shape), dtype = torch.float)
+        intput_tensor = torch.tensor(rg.rn((2, in_channel, 8, 8)), dtype = torch.float)
+
+        conv_output = conv(intput_tensor)
+        conv_result = '{ ' + str(conv_output.reshape(-1).tolist())[1:-1] + ' };'
+
+
+        op_name = 'conv_{}_{}_{}_{}_{}_{}'.format(
+            in_channel, out_channel, 
+            kernel, stride, padding, dilation
+        )
+
+        conv_oracle.append(
+            'std::vector<float> {}_result{}'.format(op_name,conv_result)
+        )
+
+        
+        declare_info = conv_declare(conv, intput_tensor, conv_output, op_name, [])
+
+        code = generate_test_case(
+            op_name, declare_info['type'],
+            list(conv.weight.shape), 
+            list(conv.bias.shape), 
+            list(intput_tensor.shape), 
+            declare_info['cpu_signature']
+        )
+        
+        libdnn = Libdnn(op_name+'_forward', module.groups,
+                                conv_type, module.bias is not None, 
+                                input_shape, output_shape, 
+                                kernel_shape, padding, stride, dilation)
+
+        opencl_collector += libdnn.generate_libdnn_code()
+
+        
+        print(code)
+
+    save_oracle_result('conv', conv_oracle)
 
 
 conv_oracle_generator()

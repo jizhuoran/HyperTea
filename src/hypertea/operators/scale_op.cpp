@@ -19,5 +19,5 @@ DeviceTensor ScaleOp<DeviceTensor>::operator()(DeviceTensor input) {
 
 DEFINE_FORWARD_FUNC(ScaleOp);
 
-
+ 
 }  // namespace hypertea

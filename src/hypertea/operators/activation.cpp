@@ -3,6 +3,20 @@
 
 namespace hypertea {
 
+
+template<typename DeviceTensor>
+DeviceTensor PReLUOp<DeviceTensor>::operator()(DeviceTensor input) {
+
+	DeviceTensor output = inplace_? input : input.duplicate();
+
+	inplace_prelu(input, *weight_, channels_, inner_dim_);
+
+	return output;
+}
+DEFINE_FORWARD_FUNC(PReLUOp);
+
+
+
 template<typename DeviceTensor>
 DeviceTensor ReLUOp<DeviceTensor>::operator()(DeviceTensor input) {
 	return inplace_? DeviceTensor(inplace_relu(input, negative_slope_)) : outplace_relu(input, negative_slope_);

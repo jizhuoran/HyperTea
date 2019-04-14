@@ -5,6 +5,33 @@
 
 namespace hypertea {
 
+
+template <typename DeviceTensor>
+class PReLUOp : public TensorOperator<DeviceTensor>{
+
+public:
+    explicit PReLUOp(
+        DeviceTensor* weight, 
+        int channels,
+	    int inner_dim,
+        bool inplace = false) 
+    : TensorOperator<DeviceTensor>(), 
+    weight_(weight), 
+    channels_(channels),
+    inner_dim_(inner_dim),
+    inplace_(inplace) {}
+    
+    virtual inline const char* type() const override { return "PReLU"; }
+    virtual DeviceTensor operator()(DeviceTensor input) override;
+
+private:
+    DeviceTensor* weight_;
+    int channels_;
+	int inner_dim_;
+    bool inplace_;
+
+}; 
+
 template <typename DeviceTensor>
 class ReLUOp : public TensorOperator<DeviceTensor>{
 
