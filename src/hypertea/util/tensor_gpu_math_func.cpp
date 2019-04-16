@@ -662,6 +662,61 @@ template void mean_var(
   float eps
 );
 
+
+
+template <typename Dtype>
+std::vector<int> batched_argmax(
+  TensorGPU<Dtype>& x, 
+  int spatial_dim) {
+
+
+  size_t batch_size = static_cast<size_t>(x.count() / spatial_dim);
+
+  auto data = x.mutable_data();
+  
+  TensorGPU<Dtype> max_value(batch_size);
+  auto max_value_ = max_value.mutable_data();
+
+
+
+  cl_mem max_index_ = clCreateBuffer(OpenCLHandler::Get().context, CL_MEM_READ_WRITE, batch_size * sizeof(int), NULL, NULL);
+
+
+  opencl_launch_wrapper(
+    OpenCLHandler::Get().math_program,
+    "argmax_kernel",
+    std::vector<std::pair<size_t, const void *> > {
+      std::make_pair(sizeof(cl_mem), (void *)&data),
+      std::make_pair(sizeof(cl_mem), (void *)&max_value_),
+      std::make_pair(sizeof(cl_mem), (void *)&max_index_),
+      std::make_pair(sizeof(cl_int), (void *)&spatial_dim),
+    },
+    std::vector<size_t> {128, batch_size, 1},
+    std::vector<size_t> {128, 1, 1}
+  );
+
+
+  auto max_index = std::vector<int>(batch_size);
+
+  OPENCL_CHECK(clEnqueueReadBuffer(OpenCLHandler::Get().commandQueue, max_index_, CL_TRUE, 0, batch_size * sizeof(int), max_index.data(), 0, NULL, NULL));
+
+  clReleaseMemObject(max_index_);
+
+  return max_index;
+
+}
+
+template std::vector<int> batched_argmax(
+  TensorGPU<float>& x, 
+  int spatial_dim
+);
+
+template std::vector<int> batched_argmax(
+  TensorGPU<half>& x, 
+  int spatial_dim
+);
+
+
 }  // namespace hypertea
 
 #endif //USE_OPENCL

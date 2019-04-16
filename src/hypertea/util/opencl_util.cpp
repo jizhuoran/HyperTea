@@ -395,6 +395,9 @@ std::string OpenCLHandler::opencl_math_code(bool is_half) {
 
 		#undef FLT_MIN
 		#define FLT_MIN 0x1.0p-14h
+
+    #undef FLT_MAX
+    #define FLT_MAX 0x1.ffcp15h
 		
 	)"
 	:
@@ -627,7 +630,100 @@ std::string OpenCLHandler::opencl_math_code(bool is_half) {
 } // end spatial norm
 
 
+  
 
+
+  static inline void MaxReduceKernel(
+    __local Dtype* lcl_mem,
+    __local int* lcl_index,
+    unsigned int sum_stride,
+    unsigned int unit_id,
+    unsigned int unit_len) {
+
+      Dtype max_value = -FLT_MAX;
+      int max_index = -1;
+      unsigned int lcl_offset = unit_id * unit_len;
+
+      for(unsigned int i = 0; i < unit_len; i += sum_stride) {
+
+        if (lcl_mem[lcl_offset + i] > max_value) {
+          max_value = lcl_mem[lcl_offset + i];
+          max_index = lcl_index[lcl_offset + i];
+        }
+      }
+      lcl_mem[lcl_offset] = max_value;
+      lcl_index[lcl_offset] = max_index;
+  }
+          
+  static inline void
+  MaxregLDSreduce(
+    Dtype* value, int* pos,
+    __local Dtype* data, 
+    __local int* index, 
+    unsigned int localID)
+  {
+      data[localID] = *value;
+      index[localID] = *pos;
+
+      barrier(CLK_LOCAL_MEM_FENCE);
+      if(localID < (128 >> 2))
+          MaxReduceKernel(data, index, 1, localID, 4);
+      barrier(CLK_LOCAL_MEM_FENCE);
+      if(localID < (128 >> 4))
+          MaxReduceKernel(data, index, 4, localID, 16);
+      barrier(CLK_LOCAL_MEM_FENCE);
+      if(localID == 0)
+          MaxReduceKernel(data, index, 16, localID, 128);
+      barrier(CLK_LOCAL_MEM_FENCE);
+      *value = data[0];
+      *pos = index[0];
+  }
+
+
+  #define BUFFER_SIZE 128
+ 
+  __attribute__((reqd_work_group_size(BUFFER_SIZE, 1, 1))) 
+  __kernel void argmax_kernel(
+    const __global Dtype* __restrict in,
+    __global Dtype* __restrict out_value,
+    __global int* __restrict out_index,
+    const int spatial_dim) {
+
+
+    Dtype max_value = -FLT_MAX;
+    int max_index = -1;
+
+    uint index = 0;
+    uint lid   = get_local_id(0);
+    uint batch_index = get_global_id(1);
+    
+    Dtype read;
+    for(unsigned int k = lid; k < spatial_dim; k += BUFFER_SIZE) {
+      
+      index = batch_index * spatial_dim + k;
+
+      read = in[index];
+
+      if (read > max_value) {
+        max_value = read;
+        max_index = k;
+      }
+    }
+     
+    barrier(CLK_LOCAL_MEM_FENCE | CLK_GLOBAL_MEM_FENCE);
+
+    local Dtype lcl_data[BUFFER_SIZE];
+    local int lcl_index[BUFFER_SIZE];
+
+    MaxregLDSreduce(&max_value, &max_index, lcl_data, lcl_index, lid);
+    barrier(CLK_LOCAL_MEM_FENCE);
+    
+    if (lid == 0) {
+      out_value[batch_index] = max_value;
+      out_index[batch_index] = max_index;
+    }
+
+  } // end argmax_kernel
 
 
   __kernel void im2col_gpu_kernel(
@@ -708,6 +804,34 @@ std::string OpenCLHandler::opencl_math_code(bool is_half) {
   }
 }
 
+
+
+
+
+  __kernel void nearest_neighbor_3d_kernel(
+        const int n,
+        const __global Dtype* data1,
+        __global Dtype* data2,
+        const int batchsize,
+        const int channels,
+        const int width1,
+        const int width2,
+        const float scale) {
+
+    int index = 0; //threadIdx.x + blockIdx.x * blockDim.x;
+
+
+    if (index < n) {
+
+      const int w2 = index % width2;
+      const int w1 = 1; //min(floor(w2 * scale), width1 - 1);
+      for (int n = 0; n < batchsize; n++) {
+          for (int c = 0; c < channels; ++c) {
+              // data2[n][c][w2] = data1[n][c][w1];
+          }
+      }
+    }
+  }
 
   )";
 

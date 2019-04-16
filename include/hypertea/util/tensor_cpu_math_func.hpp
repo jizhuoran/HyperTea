@@ -516,6 +516,38 @@ void mean_var(
 	}
 }
 
+
+template <typename Dtype>
+std::vector<int> batched_argmax(
+	TensorCPU<Dtype>& x, 
+	int spatial_dim) {
+	
+	int batch_size = x.count() / spatial_dim;
+
+	auto x_data = x.mutable_data();
+	auto max_index = std::vector<int>(batch_size);
+
+	int index = 0;
+
+	for (int n = 0; n < batch_size; ++n) {
+
+		Dtype max_value = -std::numeric_limits<float>::max();
+		max_index[n] = -1;
+
+		for (int i = 0; i < spatial_dim; ++i) {
+			index = n * spatial_dim + i;
+			if(x_data[index] > max_value) {
+				max_value = x_data[index];
+				max_index[n] = i;
+			}
+		}
+
+	}
+
+	return max_index;
+
+}
+
  
 template<typename Dtype> 
 TensorCPU<Dtype> operator+ (const TensorCPU<Dtype>& lhs, const TensorCPU<Dtype>& rhs) {return outplace_add(lhs ,rhs); }

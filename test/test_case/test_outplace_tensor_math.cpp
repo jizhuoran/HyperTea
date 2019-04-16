@@ -507,4 +507,34 @@ TYPED_TEST(OUTPLACE_TENSOR_MATH_Test, test_outplace_avg_l128) {
 
 
 
+TYPED_TEST(OUTPLACE_TENSOR_MATH_Test, test_outplace_argmax_l128) {
+  
+  using DeviceTensor = TypeParam;
+  
+  fake_random_number random_generator;
+  const int N = 2*128;
+
+  auto input_data = random_generator.generate_random_vector(N);
+
+  auto a = DeviceTensor(input_data);
+
+  auto max_index = batched_argmax(a, 128);
+
+  int index_cpu[2];
+
+
+  auto result = std::max_element(input_data.begin(), input_data.begin() + 128);
+  index_cpu[0] = std::distance(input_data.begin(), result);
+
+  result = std::max_element(input_data.begin() + 128, input_data.end());
+  index_cpu[1] = std::distance(input_data.begin() + 128, result);
+
+
+  for (int i = 0; i < 2; ++i) {
+    EXPECT_NEAR(index_cpu[i], max_index[i], 1e-3);
+  }
+}
+
+
+
 }  // namespace caffe

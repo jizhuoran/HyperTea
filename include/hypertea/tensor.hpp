@@ -89,6 +89,7 @@ public:
 	TensorCPU& operator/=(const float other) {return inplace_div_scalar(*this, other); }
 
 	TensorCPU& set(const Dtype e) {return inplace_set(*this, e); }
+	std::vector<int> argmax() {return batched_argmax(*this, this->count()); }
 
 private:
 
@@ -163,6 +164,7 @@ public:
 	TensorGPU& operator/=(const float other) {return inplace_div_scalar(*this, other); }
 
 	TensorGPU& set(const Dtype e) {return inplace_set(*this, e); }
+	std::vector<int> argmax() {return batched_argmax(*this, this->count()); }
 
 private:
 	std::shared_ptr<void> data_;

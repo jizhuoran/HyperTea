@@ -5,7 +5,7 @@
 #include <chrono>
 
 #include "demo_net.hpp"
-#include "ppm_reader.hpp"
+#include "../ppm_reader.hpp"
 
 
 #ifdef USE_OPENCL
@@ -37,7 +37,7 @@ int main(int argc, char** argv) {
     
 
 
-    hypertea::new_net<DeviceTensor> style_transfer_net("./examples/style_transfer/pytorch_weight");
+    hypertea::new_net<DeviceTensor> style_transfer_net("./tools/style_transfer/pytorch_weight");
 
 
     Timer timer;

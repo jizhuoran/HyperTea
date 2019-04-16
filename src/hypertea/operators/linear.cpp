@@ -8,7 +8,6 @@ DeviceTensor LinearOp<DeviceTensor>::operator()(DeviceTensor input) {
 
 	auto batch_size = input.count() / in_features_;
 
-
 	DeviceTensor output = DeviceTensor(batch_size * out_features_);
 
 	if(bias_) {
@@ -20,15 +19,11 @@ DeviceTensor LinearOp<DeviceTensor>::operator()(DeviceTensor input) {
 	inplace_gemm(
 	 	CblasNoTrans, CblasTrans,
 	    batch_size, out_features_, in_features_, (float)1.,
-	    input, *weight_, (float)0., output
+	    input, *weight_, (float)1., output
 	);
 
 
 	return output;
-
-
-
-
 
 }
 

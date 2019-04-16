@@ -28,7 +28,7 @@ private:
     DeviceTensor* weight_;
     DeviceTensor* bias_;
 	int in_features_;
-    bool out_features_;
+    int out_features_;
 
 };
 

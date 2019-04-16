@@ -426,6 +426,13 @@ void mean_var(
 	int channels, int spatial_dim, float eps
 );
 
+
+template <typename Dtype>
+std::vector<int> batched_argmax(
+	TensorGPU<Dtype>& x, 
+	int spatial_dim
+);
+
  
 template<typename Dtype> 
 TensorGPU<Dtype> operator+ (const TensorGPU<Dtype>& lhs, const TensorGPU<Dtype>& rhs) {return outplace_add(lhs ,rhs); }

@@ -27,10 +27,6 @@ DeviceTensor LibDNNConvOp<DeviceTensor>::operator()(DeviceTensor input) {
     arg_list.push_back(std::make_pair(sizeof(cl_mem), (void *)&bias_data_));
   }
 
-
-  std::cout << this->local_size_[0] << " " << this->local_size_[1] << " " << this->local_size_[1] << std::endl;
-  std::cout << this->global_size_[0] << " " << this->global_size_[1] << " " << this->global_size_[1] << std::endl;
-
   opencl_launch_wrapper(
     OpenCLHandler::Get().conv_program,
     this->kernel_name_,

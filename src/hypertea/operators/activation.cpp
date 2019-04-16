@@ -9,7 +9,7 @@ DeviceTensor PReLUOp<DeviceTensor>::operator()(DeviceTensor input) {
 
 	DeviceTensor output = inplace_? input : input.duplicate();
 
-	inplace_prelu(input, *weight_, channels_, inner_dim_);
+	inplace_prelu(output, *weight_, channels_, inner_dim_);
 
 	return output;
 }
