@@ -7,6 +7,7 @@
 #include "hypertea/common.hpp"
 
 #include "hypertea/operators/activation.hpp"
+#include "hypertea/operators/sampling_op.hpp"
 #include "hypertea/operators/conv_op.hpp"
 #include "hypertea/operators/deconv_op.hpp"
 #include "hypertea/operators/libdnn_conv_op.hpp"

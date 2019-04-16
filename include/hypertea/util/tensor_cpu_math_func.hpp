@@ -548,7 +548,47 @@ std::vector<int> batched_argmax(
 
 }
 
- 
+
+
+template <typename Dtype>
+TensorCPU<Dtype> upsampling_2d(
+	TensorCPU<Dtype>& x,
+	int scale,
+	int height,
+	int width,
+	int spatial_dim) {
+
+
+	int nums = x.count() / spatial_dim;
+
+	TensorCPU<Dtype> y(x.count() * scale * scale);
+
+	auto x_data = x.mutable_data();
+	auto y_data = y.mutable_data();
+
+	int index = 0;
+
+	for (int n = 0; n < nums; ++n) {
+
+		for (int i = 0; i < height; ++i) {
+			for (int j = 0; j < width; ++j) {
+
+				auto val = x_data[n * spatial_dim + i * width + j];
+
+				for (int is = 0; is < scale; ++is) {
+					for (int js = 0; js < scale; ++js) {
+						y_data[n * spatial_dim * scale * scale + (i * scale + is) * width * scale + j * scale + js]= val;
+					}				
+				}		
+			}
+		}
+	}
+
+	return y;
+
+}
+
+
 template<typename Dtype> 
 TensorCPU<Dtype> operator+ (const TensorCPU<Dtype>& lhs, const TensorCPU<Dtype>& rhs) {return outplace_add(lhs ,rhs); }
 template<typename Dtype>

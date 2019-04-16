@@ -5,7 +5,7 @@
 
 namespace hypertea {
 
-
+ 
 template <typename DeviceTensor>
 class PReLUOp : public TensorOperator<DeviceTensor>{
 

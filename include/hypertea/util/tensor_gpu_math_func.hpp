@@ -433,6 +433,15 @@ std::vector<int> batched_argmax(
 	int spatial_dim
 );
 
+template <typename Dtype>
+TensorGPU<Dtype> upsampling_2d(
+	TensorGPU<Dtype>& x,
+	int scale,
+	int height,
+	int width,
+	int spatial_dim
+);
+
  
 template<typename Dtype> 
 TensorGPU<Dtype> operator+ (const TensorGPU<Dtype>& lhs, const TensorGPU<Dtype>& rhs) {return outplace_add(lhs ,rhs); }

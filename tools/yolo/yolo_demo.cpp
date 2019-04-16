@@ -20,27 +20,27 @@ int main(int argc, char** argv) {
 
 
 
-    std::vector<float> input_vector(3*112*96, 0.23);
+    std::vector<float> input_vector(3*416*416, 0.23);
 
     std::cout << "The size of the tensor is " << input_vector.size();
 
     std::vector<int> output_vector(1);
 
-
+ 
 
     
 
 
 
-    hypertea::facenet<DeviceTensor> face_net("/home/zrji/hypertea/tools/facenet/pytorch_weight");
+    hypertea::yolo_net<DeviceTensor> yolo3("/home/zrji/hypertea/examples/yolo/pytorch_weight");
 
 
     Timer timer;
 
     timer.Start();
     
-    for (int i = 0; i < 100; ++i) {
-        face_net.inference(input_vector, output_vector);
+    for (int i = 0; i < 1; ++i) {
+        yolo3.inference(input_vector, output_vector);
     }
     
     timer.Stop();

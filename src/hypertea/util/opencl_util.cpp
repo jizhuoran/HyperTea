@@ -808,28 +808,35 @@ std::string OpenCLHandler::opencl_math_code(bool is_half) {
 
 
 
-  __kernel void nearest_neighbor_3d_kernel(
-        const int n,
-        const __global Dtype* data1,
-        __global Dtype* data2,
-        const int batchsize,
-        const int channels,
-        const int width1,
-        const int width2,
-        const float scale) {
+  __kernel void up_sampling_nearest_neighbor_2d_kernel(
+        const __global Dtype* in,
+        __global Dtype* out,
+        const int num,
+        const int spatial_dim,
+        const int width,
+        const int scale) {
 
-    int index = 0; //threadIdx.x + blockIdx.x * blockDim.x;
+    int index = get_global_id(0);
 
 
-    if (index < n) {
+    if (index < spatial_dim) {
 
-      const int w2 = index % width2;
-      const int w1 = 1; //min(floor(w2 * scale), width1 - 1);
-      for (int n = 0; n < batchsize; n++) {
-          for (int c = 0; c < channels; ++c) {
-              // data2[n][c][w2] = data1[n][c][w1];
+      int h = index / width; 
+      int w = index % width; 
+
+      for (int n = 0; n < num; n++) {
+        
+        Dtype val = in[n * spatial_dim + index];
+
+        for (int i = 0; i < scale; ++i)
+        {
+          for (int j = 0; j < scale; ++j)
+          {
+            out[n * spatial_dim * scale * scale + (h * scale + i) * width * scale + (w * scale + j)] = val;
           }
+        }
       }
+
     }
   }
 

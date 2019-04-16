@@ -15,7 +15,7 @@ DeviceTensor PReLUOp<DeviceTensor>::operator()(DeviceTensor input) {
 }
 DEFINE_FORWARD_FUNC(PReLUOp);
 
-
+ 
 
 template<typename DeviceTensor>
 DeviceTensor ReLUOp<DeviceTensor>::operator()(DeviceTensor input) {

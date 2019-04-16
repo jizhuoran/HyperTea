@@ -536,5 +536,29 @@ TYPED_TEST(OUTPLACE_TENSOR_MATH_Test, test_outplace_argmax_l128) {
 }
 
 
+TYPED_TEST(OUTPLACE_TENSOR_MATH_Test, test_unsampling) {
+  
+  using DeviceTensor = TypeParam;
+  
+  fake_random_number random_generator;
+  const int N = 2*3*4*5;
+
+  auto input_data = random_generator.generate_random_vector(N);
+
+  auto a = DeviceTensor(input_data);
+  auto a_data = a.debug_gtest_cpu_data();
+
+  auto y = upsampling_2d(a, 2, 4, 5, 20);
+  auto y_data = y.debug_gtest_cpu_data();
+
+  for (int i = 0; i < 6; ++i) {
+    for (int j = 0; j < 4*2; ++j) {
+      for (int k = 0; k < 5*2; ++k) {
+        EXPECT_NEAR(y_data.get()[i*80 + j * 10 + k], a_data.get()[i*20 + j / 2 * 5 + k / 2], 1e-3);
+      }
+    }
+  }
+}
+
 
 }  // namespace caffe
