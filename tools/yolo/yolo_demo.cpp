@@ -5,7 +5,7 @@
 #include <chrono>
 
 #include "demo_net.hpp"
-// #include "../ppm_reader.hpp"
+#include "../ppm_reader.hpp"
 
 
 #ifdef USE_OPENCL
@@ -20,15 +20,28 @@ int main(int argc, char** argv) {
 
 
 
-    std::vector<float> input_vector(3*416*416, 0.23);
+    std::vector<float> input_vector(3*500*375);
+    std::vector<float> output_vector(3*500*375);
 
-    std::cout << "The size of the tensor is " << input_vector.size();
 
-    std::vector<int> output_vector(1);
 
- 
+    PPMImage *image;
+    image = readPPM("/home/zrji/hypertea/examples/yolo/img4.ppm");
 
-    
+
+    for (int y = 0; y < 375; y++) {
+      for (int x = 0; x < 500; x++) {
+        input_vector[y * 500 + x] = image->data[y * 500 + x].red;
+        input_vector[y * 500 + x + 500 * 500] = image->data[y * 500 + x].blue;
+        input_vector[y * 500 + x + 2 * 500 * 500] = image->data[y * 500 + x].green;
+
+      }
+    }
+
+
+    for (int i = 0; i < input_vector.size(); ++i) {
+        input_vector[i] /= 255.0;
+    }
 
 
 

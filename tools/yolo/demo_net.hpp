@@ -3,50 +3,113 @@
 
 namespace hypertea {
 
+using DeviceTensor = TensorGPU<float>;
 
 void predict_transform(
-    DeviceTensor& prediction, 
+    DeviceTensor prediction, 
     int batch_size, 
     int stride, 
     int grid_size, 
     int bbox_attrs, 
-    std::vector<float>& anchors, 
+    std::vector<float> anchors, 
     int num_classes,
     float confidence) {
 
     int num_anchors = anchors.size() / 2;
     
+    int grid_square = grid_size * grid_size;
+
     for (int i = 0; i < anchors.size(); ++i) {
         anchors[i] /= stride;
     }
 
-    prediction = transpose(grid_size*grid_size, bbox_attrs*num_anchors);
+    float confidence_inv_sigmoid = log(confidence / (1 - confidence));
+
+    std::cout << "the inverse sigmoid is " << confidence_inv_sigmoid << std::endl;
+
+    auto cpu_data = prediction.debug_gtest_cpu_data();
+
+    std::vector<int> index_i;
+    std::vector<int> index_n;
 
 
-    auto uname0 = prediction.sub_view(0, bbox_attrs); inplace_sigmoid(uname0);
-    auto uname1 = prediction.sub_view(bbox_attrs, bbox_attrs); inplace_sigmoid(uname1);
-    auto uname2 = prediction.sub_view(bbox_attrs*2, bbox_attrs); inplace_exp(uname2);
-    auto uname3 = prediction.sub_view(bbox_attrs*3, bbox_attrs); inplace_exp(uname3);
-    auto uname4 = prediction.sub_view(bbox_attrs*4, bbox_attrs); inplace_sigmoid(uname4);
-
-    auto uname_remain = prediction.sub_view(bbox_attrs*5, bbox_attrs*num_classes); inplace_sigmoid(uname_remain);
-
-
-    for (int i = 0; i < grid_size; ++i) {
-        for (int j = 0; j < grid_size; ++j) {
-            for (int k = 0; k < num_anchors; ++k) {
-                uname0_data[i * grid_size * grid_size + j * grid_size + k] += j;
-                uname1_data[i * grid_size * grid_size + j * grid_size + k] += i;
-
-                uname2_data[i * grid_size * grid_size + j * grid_size + k] += anchors[k*2];
-                uname3_data[i * grid_size * grid_size + j * grid_size + k] += anchors[k*2 + 1];
+    for (int n = 0; n < num_anchors; ++n) {
+        for (int i = 0; i < grid_square; ++i) {
+            if (cpu_data.get()[(n * bbox_attrs + 4) * grid_square + i] > confidence_inv_sigmoid) {
+                index_i.push_back(i);
+                index_n.push_back(n);
             }
         }
     }
 
 
+    TensorCPU<float> output(index_i.size() * bbox_attrs);
+    auto output_data = output.mutable_data();
 
-    DeviceTensor box_a = uname0 - uname2 / 2;
+    for (int n = 0; n < index_i.size(); ++n) {
+        for (int i = 0; i < bbox_attrs; ++i) {
+            output_data[i * index_i.size() + n] = cpu_data.get()[(index_n[n] * bbox_attrs + i) * grid_square + index_i[n]];
+        }
+        
+    }
+
+
+    // prediction = prediction.transpose_hw(grid_size*grid_size, bbox_attrs*num_anchors);
+
+
+    // auto uname4 = prediction.sub_view(bbox_attrs*4, bbox_attrs); inplace_sigmoid(uname4);
+    // auto uname4_data = uname4.debug_gtest_cpu_data();
+
+
+    int out_num = index_i.size();
+    // for (int i = 0; i < uname4.size(); ++i) {
+    //     if (uname4_data.get()[i] > confidence) {
+    //         index.push_back(i);
+    //     }
+
+    // }
+
+
+    auto uname0 = output.sub_view(0, out_num); inplace_sigmoid(uname0);
+    auto uname1 = output.sub_view(out_num, out_num); inplace_sigmoid(uname1);
+    auto uname2 = output.sub_view(out_num*2, out_num); inplace_exp(uname2);
+    auto uname3 = output.sub_view(out_num*3, out_num); inplace_exp(uname3);
+    
+
+    auto uname_remain = output.sub_view(out_num*5, out_num*num_classes); inplace_sigmoid(uname_remain);
+
+
+    auto uname0_data = uname0.mutable_data();
+    auto uname1_data = uname1.mutable_data();
+    auto uname2_data = uname2.mutable_data();
+    auto uname3_data = uname3.mutable_data();
+
+
+    for (int i = 0; i < index_i.size(); ++i) {
+        uname0_data[i] += (index_i[i] % grid_size);
+        uname1_data[i] += (index_i[i] / grid_size);
+
+        uname2_data[i] += anchors[index_n[i] * 2];
+        uname3_data[i] += anchors[index_n[i] * 2 + 1];
+    }
+
+    // for (int i = 0; i < grid_size; ++i) {
+    //     for (int j = 0; j < grid_size; ++j) {
+    //         for (int k = 0; k < num_anchors; ++k) {
+    //             uname0_data[i * grid_size * grid_size + j * grid_size + k] += j;
+    //             uname1_data[i * grid_size * grid_size + j * grid_size + k] += i;
+
+    //             uname2_data[i * grid_size * grid_size + j * grid_size + k] += anchors[k*2];
+    //             uname3_data[i * grid_size * grid_size + j * grid_size + k] += anchors[k*2 + 1];
+    //         }
+    //     }
+    // }
+
+
+
+//-------------------------//
+
+    TensorCPU<float> box_a = uname0 - uname2 / 2;
     uname0.copy_data(box_a);
 
     box_a += uname2;
@@ -60,7 +123,17 @@ void predict_transform(
     uname3.copy_data(box_a);
 
 
+    uname_remain = uname_remain.transpose_hw(index_i.size(), num_classes);
 
+    auto max_conf = batched_argmax(uname_remain, num_classes);
+
+    for (int i = 0; i < max_conf.size(); ++i) {
+        std::cout << max_conf[i] << std::endl;
+    }
+
+    std::cout << "The size of the max_conf  is " << max_conf.size() << "and the bbox_attrs is " << bbox_attrs << std::endl; 
+
+    exit(0);
 
 }
     
@@ -166,9 +239,19 @@ public:
 
     }
 
-    void inference( std::vector<float> &data_from_user, std::vector<int> &data_to_user) {
+    void inference( std::vector<float> &data_from_user, std::vector<float> &data_to_user) {
         
         DeviceTensor data(data_from_user);
+
+        std::cout << "The count is " << data.count() << std::endl;
+
+        auto temp_data = data.debug_gtest_cpu_data();
+
+        for (int i = 0; i < 10; ++i) {
+            std::cout << temp_data.get()[i] << " ";
+        }
+        std::cout << " " << std::endl;
+        exit(0);
 
         auto x0 = (conv_0(batch_norm_0(leaky_0(data))));
         auto x1 = (conv_1(batch_norm_1(leaky_1(x0))));
@@ -254,7 +337,16 @@ public:
         auto x80 = (conv_80(batch_norm_80(leaky_80(x79))));
         auto x81 = conv_81(x80);
 
-        std::cout << "The count is " << x81.count() << std::endl;
+
+
+
+        predict_transform(
+            x81.duplicate(), 
+            1, 32, 13, 85, 
+            std::vector<float> {116, 90, 156, 198, 373, 326}, 
+            80, 0.4
+        );
+
 
         auto x82 = x81;    //x82 is a yolo layer
         auto x83 = x79;
