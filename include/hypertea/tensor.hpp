@@ -63,10 +63,10 @@ public:
 
 	virtual ~TensorCPU() {}
 
-
 	TensorCPU<Dtype> sub_view(unsigned int offset, unsigned int size);
 	std::vector<TensorCPU<Dtype> > chunked_tensors(int chunck_num);
 
+	TensorCPU<Dtype> transpose_hw(int old_last_dim, int new_last_dim);
 
 	Dtype* mutable_data() const {return data_.get();}
 	const Dtype* immutable_data() const {return data_.get();}
@@ -92,6 +92,7 @@ public:
 	std::vector<int> argmax() {return batched_argmax(*this, this->count()); }
 
 private:
+
 
 	std::shared_ptr<Dtype> data_;
 
@@ -152,6 +153,9 @@ public:
 	TensorGPU<Dtype> sub_view(unsigned int offset, unsigned int size, cl_mem_flags flags = CL_MEM_READ_WRITE);
 	std::vector<TensorGPU<Dtype> > chunked_tensors(int chunck_num, cl_mem_flags flags = CL_MEM_READ_WRITE);
 
+	TensorGPU<Dtype> transpose_hw(int old_last_dim, int new_last_dim);
+
+
 	std::shared_ptr<Dtype> debug_gtest_cpu_data() const;
 
 	TensorGPU& operator+=(const TensorGPU & other) {return inplace_add(other, *this); }
@@ -167,6 +171,7 @@ public:
 	std::vector<int> argmax() {return batched_argmax(*this, this->count()); }
 
 private:
+
 	std::shared_ptr<void> data_;
 
 };

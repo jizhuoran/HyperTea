@@ -840,6 +840,34 @@ std::string OpenCLHandler::opencl_math_code(bool is_half) {
     }
   }
 
+
+  __kernel void transpose_hw_kernel(
+        const __global Dtype* in,
+        __global Dtype* out,
+        const int num,
+        const int spatial_dim,
+        const int old_last_dim,
+        const int new_last_dim) {
+
+    int x = get_global_id(0);
+    int y = get_global_id(1);
+
+    if (x < new_last_dim && y < old_last_dim) {
+
+      for (int i = 0; i < num; ++i) {
+        __global Dtype* per_in = in + i * spatial_dim;
+        __global Dtype* per_out = out + i * spatial_dim;
+
+        per_out[x * old_last_dim + y] = per_in[y * new_last_dim + x];
+
+      }
+    
+    }
+
+    
+
+  }
+
   )";
 
 

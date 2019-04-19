@@ -104,7 +104,34 @@ template std::vector<TensorCPU<float> > TensorCPU<float>::chunked_tensors(int ch
 template std::vector<TensorCPU<half> > TensorCPU<half>::chunked_tensors(int chunck_num);
 
 
+template <typename Dtype>
+TensorCPU<Dtype> TensorCPU<Dtype>::transpose_hw(int old_last_dim, int new_last_dim) {
 
+  auto spatial_dim = (old_last_dim * new_last_dim);
+  auto nums = this->count() / spatial_dim;
+
+  TensorCPU<Dtype> y(this->count());
+
+  auto x_data = this->immutable_data();
+  auto y_data = y.mutable_data();
+
+
+  for (int n = 0; n < nums; ++n) {
+    
+    for (int i = 0; i < spatial_dim; ++i) {
+      y_data[i] = x_data[(i % old_last_dim) * new_last_dim + i / old_last_dim];
+    }
+
+    x_data += spatial_dim;
+    y_data += spatial_dim;
+  
+  }
+
+  return y;
+
+}
+
+template TensorCPU<float> TensorCPU<float>::transpose_hw(int old_last_dim, int new_last_dim);
 
 
 #ifdef USE_OPENCL
@@ -235,6 +262,42 @@ template std::vector<TensorGPU<float> > TensorGPU<float>::chunked_tensors(int ch
 template std::vector<TensorGPU<half> > TensorGPU<half>::chunked_tensors(int chunck_num, cl_mem_flags flags);
 
 
+
+
+template <typename Dtype>
+TensorGPU<Dtype> TensorGPU<Dtype>::transpose_hw(int old_last_dim, int new_last_dim) {
+
+  auto spatial_dim = (old_last_dim * new_last_dim);
+  auto nums = this->count() / spatial_dim;
+
+  TensorGPU<Dtype> y(this->count());
+
+  auto x_data = this->immutable_data();
+  auto y_data = y.mutable_data();
+
+
+    opencl_launch_wrapper(
+    OpenCLHandler::Get().math_program,
+    "transpose_hw_kernel",
+    std::vector<std::pair<size_t, const void *> > {
+      std::make_pair(sizeof(cl_mem), (void *)&x_data),
+      std::make_pair(sizeof(cl_mem), (void *)&y_data),
+      std::make_pair(sizeof(cl_int), (void *)&nums),
+      std::make_pair(sizeof(cl_int), (void *)&spatial_dim),
+      std::make_pair(sizeof(cl_int), (void *)&old_last_dim),
+      std::make_pair(sizeof(cl_int), (void *)&new_last_dim)
+    },
+    std::vector<size_t> {(static_cast<size_t>(new_last_dim) + 31) / 32 * 32, (static_cast<size_t>(old_last_dim) + 31) / 32 * 32},
+    std::vector<size_t> {32, 32}
+  );
+
+
+  return y;
+
+}
+
+template TensorGPU<float> TensorGPU<float>::transpose_hw(int old_last_dim, int new_last_dim);
+template TensorGPU<half> TensorGPU<half>::transpose_hw(int old_last_dim, int new_last_dim);
 
 
 
