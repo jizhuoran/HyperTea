@@ -5,6 +5,32 @@ namespace hypertea {
 
 using DeviceTensor = TensorGPU<float>;
 
+class DetectedInfo
+{
+public:
+    DetectedInfo(
+        float x1, float y1, 
+        float x2, float y2,
+        float object_conf,
+        float pos_conf,
+        int object_index
+    ) : x1_(x1), y1_(y1), 
+        x2_(x2), y2_(y2), 
+        object_conf_(object_conf), 
+        pos_conf_(pos_conf), 
+        object_index_(object_index) {}
+   
+
+    float x1_;
+    float y1_; 
+    float x2_;
+    float y2_;
+    float object_conf_;
+    float pos_conf_;
+    int object_index_;
+};
+
+
 void predict_transform(
     DeviceTensor prediction, 
     int batch_size, 
@@ -13,7 +39,10 @@ void predict_transform(
     int bbox_attrs, 
     std::vector<float> anchors, 
     int num_classes,
-    float confidence) {
+    float confidence,
+    std::vector<DetectedInfo>& results) {
+
+
 
     int num_anchors = anchors.size() / 2;
     
@@ -25,204 +54,130 @@ void predict_transform(
 
     float confidence_inv_sigmoid = log(confidence / (1 - confidence));
 
-    std::cout << "the inverse sigmoid is " << confidence_inv_sigmoid << std::endl;
 
     auto cpu_data = prediction.debug_gtest_cpu_data();
 
-    std::vector<int> index_i;
-    std::vector<int> index_n;
+    std::vector<int> pos_index;
+    std::vector<int> anchor_index;
 
 
     for (int n = 0; n < num_anchors; ++n) {
         for (int i = 0; i < grid_square; ++i) {
             if (cpu_data.get()[(n * bbox_attrs + 4) * grid_square + i] > confidence_inv_sigmoid) {
-                index_i.push_back(i);
-                index_n.push_back(n);
+                pos_index.push_back(i);
+                anchor_index.push_back(n);
             }
         }
     }
 
+    int out_num = pos_index.size();
 
-    TensorCPU<float> output(index_i.size() * bbox_attrs);
+
+    if (out_num == 0) { return; }
+
+
+    TensorCPU<float> output(out_num * bbox_attrs);
     auto output_data = output.mutable_data();
 
-    for (int n = 0; n < index_i.size(); ++n) {
-        for (int i = 0; i < bbox_attrs; ++i) {
-            output_data[i * index_i.size() + n] = cpu_data.get()[(index_n[n] * bbox_attrs + i) * grid_square + index_i[n]];
+
+    for (int i = 0; i < bbox_attrs; ++i) {
+        for (int n = 0; n < out_num; ++n) {
+            output_data[i * out_num + n] = cpu_data.get()[(anchor_index[n] * bbox_attrs + i) * grid_square + pos_index[n]];
         }
         
     }
 
 
-    // prediction = prediction.transpose_hw(grid_size*grid_size, bbox_attrs*num_anchors);
-
-
-    // auto uname4 = prediction.sub_view(bbox_attrs*4, bbox_attrs); inplace_sigmoid(uname4);
-    // auto uname4_data = uname4.debug_gtest_cpu_data();
-
-
-    int out_num = index_i.size();
-    // for (int i = 0; i < uname4.size(); ++i) {
-    //     if (uname4_data.get()[i] > confidence) {
-    //         index.push_back(i);
-    //     }
-
-    // }
-
-
-    auto uname0 = output.sub_view(0, out_num); inplace_sigmoid(uname0);
-    auto uname1 = output.sub_view(out_num, out_num); inplace_sigmoid(uname1);
-    auto uname2 = output.sub_view(out_num*2, out_num); inplace_exp(uname2);
-    auto uname3 = output.sub_view(out_num*3, out_num); inplace_exp(uname3);
+    auto x1 = output.sub_view(0, out_num); inplace_sigmoid(x1);
+    auto y1 = output.sub_view(out_num, out_num); inplace_sigmoid(y1);
+    auto x2 = output.sub_view(out_num*2, out_num); inplace_exp(x2);
+    auto y2 = output.sub_view(out_num*3, out_num); inplace_exp(y2);
+    auto uname4 = output.sub_view(out_num*4, out_num); inplace_sigmoid(uname4);
     
 
-    auto uname_remain = output.sub_view(out_num*5, out_num*num_classes); inplace_sigmoid(uname_remain);
+    auto uname_remain = output.sub_view(out_num*5, out_num*num_classes); //inplace_sigmoid(uname_remain);
 
 
-    auto uname0_data = uname0.mutable_data();
-    auto uname1_data = uname1.mutable_data();
-    auto uname2_data = uname2.mutable_data();
-    auto uname3_data = uname3.mutable_data();
+    auto x1_data = x1.mutable_data();
+    auto y1_data = y1.mutable_data();
+    auto x2_data = x2.mutable_data();
+    auto y2_data = y2.mutable_data();
 
 
-    for (int i = 0; i < index_i.size(); ++i) {
-        uname0_data[i] += (index_i[i] % grid_size);
-        uname1_data[i] += (index_i[i] / grid_size);
+    for (int i = 0; i < out_num; ++i) {
 
-        uname2_data[i] += anchors[index_n[i] * 2];
-        uname3_data[i] += anchors[index_n[i] * 2 + 1];
+        x1_data[i] = (x1_data[i] + (pos_index[i] % grid_size))*stride;
+        y1_data[i] = (y1_data[i] + (pos_index[i] / grid_size))*stride;
+
+        x2_data[i] *= (stride * anchors[anchor_index[i] * 2]);
+        y2_data[i] *= (stride * anchors[anchor_index[i] * 2 + 1]);
+
     }
 
-    // for (int i = 0; i < grid_size; ++i) {
-    //     for (int j = 0; j < grid_size; ++j) {
-    //         for (int k = 0; k < num_anchors; ++k) {
-    //             uname0_data[i * grid_size * grid_size + j * grid_size + k] += j;
-    //             uname1_data[i * grid_size * grid_size + j * grid_size + k] += i;
-
-    //             uname2_data[i * grid_size * grid_size + j * grid_size + k] += anchors[k*2];
-    //             uname3_data[i * grid_size * grid_size + j * grid_size + k] += anchors[k*2 + 1];
-    //         }
-    //     }
-    // }
 
 
+    TensorCPU<float> box_a = x1 - x2 / 2;
+    x1.copy_data(box_a);
 
-//-------------------------//
+    box_a += x2;
+    x2.copy_data(box_a);
 
-    TensorCPU<float> box_a = uname0 - uname2 / 2;
-    uname0.copy_data(box_a);
+    box_a.copy_data(y1);
+    box_a -= y2 / 2;
+    y1.copy_data(box_a);
 
-    box_a += uname2;
-    uname2.copy_data(box_a);
-
-    box_a.copy_data(uname1);
-    box_a -= uname3 / 2;
-    uname1.copy_data(box_a);
-
-    box_a += uname3;
-    uname3.copy_data(box_a);
+    box_a += y2;
+    y2.copy_data(box_a);
 
 
-    uname_remain = uname_remain.transpose_hw(index_i.size(), num_classes);
 
+
+
+
+
+    uname_remain = uname_remain.transpose_hw(pos_index.size(), num_classes);
+
+
+
+
+
+
+    std::cout << "-------------" << std::endl;
+    
+    auto output_to_print = output.debug_gtest_cpu_data();
+
+    for (int i = 0; i < 5; ++i) {
+        std::cout << output_to_print.get()[i] << " ";
+    }
+
+    std::cout << "-------------" << std::endl;
+
+
+    auto uname_remain_data = uname_remain.debug_gtest_cpu_data();
     auto max_conf = batched_argmax(uname_remain, num_classes);
 
     for (int i = 0; i < max_conf.size(); ++i) {
-        std::cout << max_conf[i] << std::endl;
+        std::cout << max_conf[i] << " " << uname_remain_data.get()[i*num_classes + int(max_conf[i])] << std::endl;
     }
 
     std::cout << "The size of the max_conf  is " << max_conf.size() << "and the bbox_attrs is " << bbox_attrs << std::endl; 
 
-    exit(0);
+
+    for (int i = 0; i < out_num; ++i) {
+        results.push_back(DetectedInfo(
+            output_to_print.get()[0 * out_num + i], 
+            output_to_print.get()[1 * out_num + i], 
+            output_to_print.get()[2 * out_num + i], 
+            output_to_print.get()[3 * out_num + i], 
+            output_to_print.get()[4 * out_num + i],
+            output_to_print.get()[5 * out_num + i + max_conf[i]],
+            max_conf[i]));
+    }
+    
+
+    // exit(0);
 
 }
-    
-    // int batch_size = prediction.size(0)
-    // int stride =  inp_dim / prediction.size(2)
-    // int grid_size = inp_dim / stride
-    // int bbox_attrs = 5 + num_classes
-    
-
-
-    // prediction = prediction.view(batch_size, bbox_attrs*num_anchors, grid_size*grid_size)
-    // prediction = prediction.transpose(1,2).contiguous()
-    // prediction = prediction.view(batch_size, grid_size*grid_size*num_anchors, bbox_attrs)
-
-
-    // #Sigmoid the  centre_X, centre_Y. and object confidencce
-    
-    // prediction[:,:,0] = torch.sigmoid(prediction[:,:,0])
-    // prediction[:,:,1] = torch.sigmoid(prediction[:,:,1])
-    // prediction[:,:,4] = torch.sigmoid(prediction[:,:,4])
-    
-
-    
-    // #Add the center offsets
-    // grid_len = np.arange(grid_size)
-    // a,b = np.meshgrid(grid_len, grid_len)
-    
-    // x_offset = torch.FloatTensor(a).view(-1,1)
-    // y_offset = torch.FloatTensor(b).view(-1,1)
-    
-
-    
-    // x_y_offset = torch.cat((x_offset, y_offset), 1).repeat(1,num_anchors).view(-1,2).unsqueeze(0)
-    
-    // prediction[:,:,:2] += x_y_offset
-      
-    // #log space transform height and the width
-    // anchors = torch.FloatTensor(anchors)
-    
-
-    // anchors = anchors.repeat(grid_size*grid_size, 1).unsqueeze(0)
-    // prediction[:,:,2:4] = torch.exp(prediction[:,:,2:4])*anchors
-
-    // #Softmax the class scores
-    // prediction[:,:,5: 5 + num_classes] = torch.sigmoid((prediction[:,:, 5 : 5 + num_classes]))
-
-   
-    
-    // return prediction
-
-
-
-// template <typename DeviceTensor>
-// class Yolo_op {
-
-// public:
-//     explicit Yolo_op(std::vector<int> anchors, int in_dim, int class_num) 
-//     : anchors_(anchors), in_dim_(in_dim), class_num_(class_num) {}
-    
-//     virtual inline const char* type() const override { return "Yolo_op"; }
-//     DeviceTensor& operator()(DeviceTensor& input) {
-
-//         return input;
-//     }
-
-// private:
-//     std::vector<int> anchors_;
-//     int in_dim_;
-//     int class_num_;
-// };
-
-// void yolo_layer(DeviceTensor& x) {
-
-//     x = predict_transform(x, inp_dim, anchors, num_classes, CUDA)
-    
-//     if type(x) == int:
-//         continue
-
-    
-//     if not write:
-//         detections = x
-//         write = 1
-    
-//     else:
-//         detections = torch.cat((detections, x), 1)
-    
-//     outputs[i] = outputs[i-1] 
-// }
-
 
 
 
@@ -241,146 +196,228 @@ public:
 
     void inference( std::vector<float> &data_from_user, std::vector<float> &data_to_user) {
         
+        std::vector<DetectedInfo> detected_result;
+
+
         DeviceTensor data(data_from_user);
 
-        std::cout << "The count is " << data.count() << std::endl;
 
-        auto temp_data = data.debug_gtest_cpu_data();
 
-        for (int i = 0; i < 10; ++i) {
-            std::cout << temp_data.get()[i] << " ";
-        }
-        std::cout << " " << std::endl;
-        exit(0);
+        auto x0 = (leaky_0(batch_norm_0(conv_0(data))));
 
-        auto x0 = (conv_0(batch_norm_0(leaky_0(data))));
-        auto x1 = (conv_1(batch_norm_1(leaky_1(x0))));
-        auto x2 = (conv_2(batch_norm_2(leaky_2(x1))));
-        auto x3 = (conv_3(batch_norm_3(leaky_3(x2))));
+        auto x1 = (leaky_1(batch_norm_1(conv_1(x0))));
+        auto x2 = (leaky_2(batch_norm_2(conv_2(x1))));
+        auto x3 = (leaky_3(batch_norm_3(conv_3(x2))));
 
         auto x4 = x1 + x3;
-        auto x5 = (conv_5(batch_norm_5(leaky_5(x4))));
-        auto x6 = (conv_6(batch_norm_6(leaky_6(x5))));
-        auto x7 = (conv_7(batch_norm_7(leaky_7(x6))));
+
+
+        auto x5 = (leaky_5(batch_norm_5(conv_5(x4))));
+        auto x6 = (leaky_6(batch_norm_6(conv_6(x5))));
+        auto x7 = (leaky_7(batch_norm_7(conv_7(x6))));
         auto x8 = x5 + x7;
-        auto x9 = (conv_9(batch_norm_9(leaky_9(x8))));
-        auto x10 = (conv_10(batch_norm_10(leaky_10(x9))));
+        auto x9 = (leaky_9(batch_norm_9(conv_9(x8))));
+        auto x10 = (leaky_10(batch_norm_10(conv_10(x9))));
         auto x11 = x8 + x10;
-        auto x12 = (conv_12(batch_norm_12(leaky_12(x11))));
-        auto x13 = (conv_13(batch_norm_13(leaky_13(x12))));
-        auto x14 = (conv_14(batch_norm_14(leaky_14(x13))));
+        auto x12 = (leaky_12(batch_norm_12(conv_12(x11))));
+        auto x13 = (leaky_13(batch_norm_13(conv_13(x12))));
+        auto x14 = (leaky_14(batch_norm_14(conv_14(x13))));
         auto x15 = x12 + x14;
-        auto x16 = (conv_16(batch_norm_16(leaky_16(x15))));
-        auto x17 = (conv_17(batch_norm_17(leaky_17(x16))));
+        auto x16 = (leaky_16(batch_norm_16(conv_16(x15))));
+        auto x17 = (leaky_17(batch_norm_17(conv_17(x16))));
         auto x18 = x15 + x17;
-        auto x19 = (conv_19(batch_norm_19(leaky_19(x18))));
-        auto x20 = (conv_20(batch_norm_20(leaky_20(x19))));
+        auto x19 = (leaky_19(batch_norm_19(conv_19(x18))));
+        auto x20 = (leaky_20(batch_norm_20(conv_20(x19))));
         auto x21 = x18 + x20;
-        auto x22 = (conv_22(batch_norm_22(leaky_22(x21))));
-        auto x23 = (conv_23(batch_norm_23(leaky_23(x22))));
+        auto x22 = (leaky_22(batch_norm_22(conv_22(x21))));
+        auto x23 = (leaky_23(batch_norm_23(conv_23(x22))));
         auto x24 = x21 + x23;
-        auto x25 = (conv_25(batch_norm_25(leaky_25(x24))));
-        auto x26 = (conv_26(batch_norm_26(leaky_26(x25))));
+
+
+        auto x25 = (leaky_25(batch_norm_25(conv_25(x24))));
+        auto x26 = (leaky_26(batch_norm_26(conv_26(x25))));
         auto x27 = x24 + x26;
-        auto x28 = (conv_28(batch_norm_28(leaky_28(x27))));
-        auto x29 = (conv_29(batch_norm_29(leaky_29(x28))));
+        auto x28 = (leaky_28(batch_norm_28(conv_28(x27))));
+        auto x29 = (leaky_29(batch_norm_29(conv_29(x28))));
         auto x30 = x27 + x29;
-        auto x31 = (conv_31(batch_norm_31(leaky_31(x30))));
-        auto x32 = (conv_32(batch_norm_32(leaky_32(x31))));
+        auto x31 = (leaky_31(batch_norm_31(conv_31(x30))));
+        auto x32 = (leaky_32(batch_norm_32(conv_32(x31))));
         auto x33 = x30 + x32;
-        auto x34 = (conv_34(batch_norm_34(leaky_34(x33))));
-        auto x35 = (conv_35(batch_norm_35(leaky_35(x34))));
+        auto x34 = (leaky_34(batch_norm_34(conv_34(x33))));
+        auto x35 = (leaky_35(batch_norm_35(conv_35(x34))));
         auto x36 = x33 + x35;
-        auto x37 = (conv_37(batch_norm_37(leaky_37(x36))));
-        auto x38 = (conv_38(batch_norm_38(leaky_38(x37))));
-        auto x39 = (conv_39(batch_norm_39(leaky_39(x38))));
+        auto x37 = (leaky_37(batch_norm_37(conv_37(x36))));
+        auto x38 = (leaky_38(batch_norm_38(conv_38(x37))));
+        auto x39 = (leaky_39(batch_norm_39(conv_39(x38))));
         auto x40 = x37 + x39;
-        auto x41 = (conv_41(batch_norm_41(leaky_41(x40))));
-        auto x42 = (conv_42(batch_norm_42(leaky_42(x41))));
+
+
+
+
+
+        auto x41 = (leaky_41(batch_norm_41(conv_41(x40))));
+        auto x42 = (leaky_42(batch_norm_42(conv_42(x41))));
         auto x43 = x40 + x42;
-        auto x44 = (conv_44(batch_norm_44(leaky_44(x43))));
-        auto x45 = (conv_45(batch_norm_45(leaky_45(x44))));
+        auto x44 = (leaky_44(batch_norm_44(conv_44(x43))));
+        auto x45 = (leaky_45(batch_norm_45(conv_45(x44))));
         auto x46 = x43 + x45;
-        auto x47 = (conv_47(batch_norm_47(leaky_47(x46))));
-        auto x48 = (conv_48(batch_norm_48(leaky_48(x47))));
+        auto x47 = (leaky_47(batch_norm_47(conv_47(x46))));
+        auto x48 = (leaky_48(batch_norm_48(conv_48(x47))));
         auto x49 = x46 + x48;
-        auto x50 = (conv_50(batch_norm_50(leaky_50(x49))));
-        auto x51 = (conv_51(batch_norm_51(leaky_51(x50))));
+
+
+
+
+        auto x50 = (leaky_50(batch_norm_50(conv_50(x49))));
+        auto x51 = (leaky_51(batch_norm_51(conv_51(x50))));
         auto x52 = x49 + x51;
-        auto x53 = (conv_53(batch_norm_53(leaky_53(x52))));
-        auto x54 = (conv_54(batch_norm_54(leaky_54(x53))));
+        auto x53 = (leaky_53(batch_norm_53(conv_53(x52))));
+        auto x54 = (leaky_54(batch_norm_54(conv_54(x53))));
         auto x55 = x52 + x54;
-        auto x56 = (conv_56(batch_norm_56(leaky_56(x55))));
-        auto x57 = (conv_57(batch_norm_57(leaky_57(x56))));
+        auto x56 = (leaky_56(batch_norm_56(conv_56(x55))));
+        auto x57 = (leaky_57(batch_norm_57(conv_57(x56))));
         auto x58 = x55 + x57;
-        auto x59 = (conv_59(batch_norm_59(leaky_59(x58))));
-        auto x60 = (conv_60(batch_norm_60(leaky_60(x59))));
+        
+
+
+
+
+        auto x59 = (leaky_59(batch_norm_59(conv_59(x58))));
+        auto x60 = (leaky_60(batch_norm_60(conv_60(x59))));
         auto x61 = x58 + x60;
-        auto x62 = (conv_62(batch_norm_62(leaky_62(x61))));
-        auto x63 = (conv_63(batch_norm_63(leaky_63(x62))));
-        auto x64 = (conv_64(batch_norm_64(leaky_64(x63))));
+
+
+        
+
+
+        auto x62 = (leaky_62(batch_norm_62(conv_62(x61))));
+        auto x63 = (leaky_63(batch_norm_63(conv_63(x62))));
+        auto x64 = (leaky_64(batch_norm_64(conv_64(x63))));
         auto x65 = x62 + x64;
-        auto x66 = (conv_66(batch_norm_66(leaky_66(x65))));
-        auto x67 = (conv_67(batch_norm_67(leaky_67(x66))));
+        auto x66 = (leaky_66(batch_norm_66(conv_66(x65))));
+        auto x67 = (leaky_67(batch_norm_67(conv_67(x66))));
         auto x68 = x65 + x67;
-        auto x69 = (conv_69(batch_norm_69(leaky_69(x68))));
-        auto x70 = (conv_70(batch_norm_70(leaky_70(x69))));
+        auto x69 = (leaky_69(batch_norm_69(conv_69(x68))));
+        auto x70 = (leaky_70(batch_norm_70(conv_70(x69))));
         auto x71 = x68 + x70;
-        auto x72 = (conv_72(batch_norm_72(leaky_72(x71))));
-        auto x73 = (conv_73(batch_norm_73(leaky_73(x72))));
+        auto x72 = (leaky_72(batch_norm_72(conv_72(x71))));
+        auto x73 = (leaky_73(batch_norm_73(conv_73(x72))));
         auto x74 = x71 + x73;
-        auto x75 = (conv_75(batch_norm_75(leaky_75(x74))));
-        auto x76 = (conv_76(batch_norm_76(leaky_76(x75))));
-        auto x77 = (conv_77(batch_norm_77(leaky_77(x76))));
-        auto x78 = (conv_78(batch_norm_78(leaky_78(x77))));
-        auto x79 = (conv_79(batch_norm_79(leaky_79(x78))));
-        auto x80 = (conv_80(batch_norm_80(leaky_80(x79))));
+        auto x75 = (leaky_75(batch_norm_75(conv_75(x74))));
+        auto x76 = (leaky_76(batch_norm_76(conv_76(x75))));
+        auto x77 = (leaky_77(batch_norm_77(conv_77(x76))));
+        auto x78 = (leaky_78(batch_norm_78(conv_78(x77))));
+        auto x79 = (leaky_79(batch_norm_79(conv_79(x78))));
+        auto x80 = (leaky_80(batch_norm_80(conv_80(x79))));
         auto x81 = conv_81(x80);
 
 
+       
 
 
         predict_transform(
             x81.duplicate(), 
             1, 32, 13, 85, 
             std::vector<float> {116, 90, 156, 198, 373, 326}, 
-            80, 0.4
+            80, 0.4, detected_result
         );
 
 
         auto x82 = x81;    //x82 is a yolo layer
         auto x83 = x79;
-        auto x84 = (conv_84(batch_norm_84(leaky_84(x83))));
+
+        //---------
+
+
+
+
+
+        auto x84 = (leaky_84(batch_norm_84(conv_84(x83))));
             
+
+ 
+
+
         auto x85 = upsampling_85(x84);
 
-        auto x86 = x61 + x85;
-        auto x87 = (conv_87(batch_norm_87(leaky_87(x86))));
-        auto x88 = (conv_88(batch_norm_88(leaky_88(x87))));
-        auto x89 = (conv_89(batch_norm_89(leaky_89(x88))));
-        auto x90 = (conv_90(batch_norm_90(leaky_90(x89))));
-        auto x91 = (conv_91(batch_norm_91(leaky_91(x90))));
-        auto x92 = (conv_92(batch_norm_92(leaky_92(x91))));
+
+
+
+        auto x86 = concate(std::vector<DeviceTensor *> {&x85, &x61}); //x61 + x85;
+
+
+        // std::cout << "The count is " << x86.count() << std::endl;
+
+        // auto temp_data = x86.debug_gtest_cpu_data();
+
+        // for (int i = 0; i < 10; ++i) {
+        //     std::cout << temp_data.get()[i] << " ";
+        // }
+        // std::cout << " " << std::endl;
+        // exit(0);
+
+
+
+        auto x87 = (leaky_87(batch_norm_87(conv_87(x86))));
+        auto x88 = (leaky_88(batch_norm_88(conv_88(x87))));
+        auto x89 = (leaky_89(batch_norm_89(conv_89(x88))));
+        auto x90 = (leaky_90(batch_norm_90(conv_90(x89))));
+        auto x91 = (leaky_91(batch_norm_91(conv_91(x90))));
+        auto x92 = (leaky_92(batch_norm_92(conv_92(x91))));
         auto x93 = conv_93(x92);
+
+
+
+
+
+        predict_transform(
+            x93.duplicate(), 
+            1, 16, 26, 85, 
+            std::vector<float> {30, 61, 62, 45, 59, 119}, 
+            80, 0.4, detected_result
+        );
+
+
         auto x94 = x93;//    x94 is a yolo layer
         auto x95 = x91;
-        auto x96 = (conv_96(batch_norm_96(leaky_96(x95))));
+        auto x96 = (leaky_96(batch_norm_96(conv_96(x95))));
             
         auto x97 = upsampling_97(x96);
 
-        auto x98 = x36 + x97;
-        auto x99 = (conv_99(batch_norm_99(leaky_99(x98))));
-        auto x100 = (conv_100(batch_norm_100(leaky_100(x99))));
-        auto x101 = (conv_101(batch_norm_101(leaky_101(x100))));
-        auto x102 = (conv_102(batch_norm_102(leaky_102(x101))));
-        auto x103 = (conv_103(batch_norm_103(leaky_103(x102))));
-        auto x104 = (conv_104(batch_norm_104(leaky_104(x103))));
+        auto x98 = concate(std::vector<DeviceTensor *> {&x97, &x36}); //x36 + x97;
+        auto x99 = (leaky_99(batch_norm_99(conv_99(x98))));
+        auto x100 = (leaky_100(batch_norm_100(conv_100(x99))));
+        auto x101 = (leaky_101(batch_norm_101(conv_101(x100))));
+        auto x102 = (leaky_102(batch_norm_102(conv_102(x101))));
+        auto x103 = (leaky_103(batch_norm_103(conv_103(x102))));
+        auto x104 = (leaky_104(batch_norm_104(conv_104(x103))));
         auto x105 = (conv_105(x104));
+
+        predict_transform(
+            x105.duplicate(), 
+            1, 8, 52, 85, 
+            std::vector<float> {10, 13, 16, 30, 33, 23}, 
+            80, 0.4, detected_result
+        );
+
         auto x106 = x105;//    x106 is a yolo layer
 
 
 
+        for (int i = 0; i < detected_result.size(); ++i){
 
+
+
+            std::cout << "This is "<< i << "-th " 
+                     << detected_result[i].x1_ << " "
+                        << detected_result[i].y1_ << " "
+                        << detected_result[i].x2_ << " "
+                        << detected_result[i].y2_ << " "
+                        << detected_result[i].object_conf_ << " "
+                        << detected_result[i].pos_conf_ << " "
+                        << detected_result[i].object_index_ << std::endl;
+
+        }
 
 
         

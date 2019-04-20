@@ -566,20 +566,20 @@ TYPED_TEST(OUTPLACE_TENSOR_MATH_Test, test_transpose) {
   using DeviceTensor = TypeParam;
   
   fake_random_number random_generator;
-  const int N = 2*4*17;
+  const int N = 1 * 80 * 10;
 
   auto input_data = random_generator.generate_random_vector(N);
 
   auto a = DeviceTensor(input_data);
   auto a_data = a.debug_gtest_cpu_data();
 
-  auto y = a.transpose_hw(4, 17);
+  auto y = a.transpose_hw(10, 80);
   auto y_data = y.debug_gtest_cpu_data();
 
-  for (int i = 0; i < 2; ++i) {
-    for (int j = 0; j < 4; ++j) {
-      for (int k = 0; k < 17; ++k) {
-        EXPECT_NEAR(y_data.get()[i*(4*17) + k * 4 + j], a_data.get()[i*(4*17) + j * 17 + k], 1e-3);
+  for (int i = 0; i < 1; ++i) {
+    for (int j = 0; j < 80; ++j) {
+      for (int k = 0; k < 10; ++k) {
+        EXPECT_NEAR(y_data.get()[i*(800) + k * 80 + j], a_data.get()[i*(800) + j * 10 + k], 1e-3);
       }
     }
   }

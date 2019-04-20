@@ -589,6 +589,33 @@ TensorCPU<Dtype> upsampling_2d(
 }
 
 
+template <typename Dtype>
+TensorCPU<Dtype> concate(std::vector<TensorCPU<Dtype>* > xs) {
+
+	int total_count = 0;
+
+	for (auto const&x: xs) {
+		total_count += x->count();
+	}
+
+
+	TensorCPU<Dtype> y(total_count);
+
+
+	int pos = 0;
+	for (auto const&x: xs) {
+
+		y.sub_view(pos, x->count()).copy_data(*x);
+
+		pos += x->count();
+	}
+
+	return y;
+
+
+}
+
+
 template<typename Dtype> 
 TensorCPU<Dtype> operator+ (const TensorCPU<Dtype>& lhs, const TensorCPU<Dtype>& rhs) {return outplace_add(lhs ,rhs); }
 template<typename Dtype>

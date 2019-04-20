@@ -20,8 +20,8 @@ int main(int argc, char** argv) {
 
 
 
-    std::vector<float> input_vector(3*500*375);
-    std::vector<float> output_vector(3*500*375);
+    std::vector<float> input_vector(3*416*416);
+    std::vector<float> output_vector(3*416*416);
 
 
 
@@ -29,11 +29,11 @@ int main(int argc, char** argv) {
     image = readPPM("/home/zrji/hypertea/examples/yolo/img4.ppm");
 
 
-    for (int y = 0; y < 375; y++) {
-      for (int x = 0; x < 500; x++) {
-        input_vector[y * 500 + x] = image->data[y * 500 + x].red;
-        input_vector[y * 500 + x + 500 * 500] = image->data[y * 500 + x].blue;
-        input_vector[y * 500 + x + 2 * 500 * 500] = image->data[y * 500 + x].green;
+    for (int y = 0; y < 416; y++) {
+      for (int x = 0; x < 416; x++) {
+        input_vector[y * 416 + x] = image->data[y * 416 + x].red;
+        input_vector[y * 416 + x + 416 * 416] = image->data[y * 416 + x].green;
+        input_vector[y * 416 + x + 2 * 416 * 416] = image->data[y * 416 + x].blue;
 
       }
     }
@@ -61,10 +61,10 @@ int main(int argc, char** argv) {
     std::cout << "Time difference = " << timer.MilliSeconds() << "ms" <<std::endl;
     
 
-    for (auto const&x: output_vector) {
-        std::cout << x << " " << std::endl;
-    }
-    std::cout << " " << std::endl;
+    // for (auto const&x: output_vector) {
+    //     std::cout << x << " " << std::endl;
+    // }
+    // std::cout << " " << std::endl;
 
 
     

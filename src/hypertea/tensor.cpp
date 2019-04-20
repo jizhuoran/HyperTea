@@ -119,7 +119,7 @@ TensorCPU<Dtype> TensorCPU<Dtype>::transpose_hw(int old_last_dim, int new_last_d
   for (int n = 0; n < nums; ++n) {
     
     for (int i = 0; i < spatial_dim; ++i) {
-      y_data[i] = x_data[(i % old_last_dim) * new_last_dim + i / old_last_dim];
+      y_data[i] = x_data[(i % new_last_dim) * old_last_dim + i / new_last_dim];
     }
 
     x_data += spatial_dim;
@@ -284,10 +284,10 @@ TensorGPU<Dtype> TensorGPU<Dtype>::transpose_hw(int old_last_dim, int new_last_d
       std::make_pair(sizeof(cl_mem), (void *)&y_data),
       std::make_pair(sizeof(cl_int), (void *)&nums),
       std::make_pair(sizeof(cl_int), (void *)&spatial_dim),
-      std::make_pair(sizeof(cl_int), (void *)&old_last_dim),
-      std::make_pair(sizeof(cl_int), (void *)&new_last_dim)
+      std::make_pair(sizeof(cl_int), (void *)&new_last_dim),
+      std::make_pair(sizeof(cl_int), (void *)&old_last_dim)
     },
-    std::vector<size_t> {(static_cast<size_t>(new_last_dim) + 31) / 32 * 32, (static_cast<size_t>(old_last_dim) + 31) / 32 * 32},
+    std::vector<size_t> {(static_cast<size_t>(old_last_dim) + 31) / 32 * 32, (static_cast<size_t>(new_last_dim) + 31) / 32 * 32},
     std::vector<size_t> {32, 32}
   );
 

@@ -442,6 +442,32 @@ TensorGPU<Dtype> upsampling_2d(
 	int spatial_dim
 );
 
+
+template <typename Dtype>
+TensorGPU<Dtype> concate(std::vector<TensorGPU<Dtype>* > xs) {
+
+	int total_count = 0;
+
+	for (auto const&x: xs) {
+		total_count += x->count();
+	}
+
+
+	TensorGPU<Dtype> y(total_count);
+
+
+	int pos = 0;
+	for (auto const&x: xs) {
+
+		y.sub_view(pos, x->count()).copy_data(*x);
+
+		pos += x->count();
+	}
+
+	return y;
+
+
+}
  
 template<typename Dtype> 
 TensorGPU<Dtype> operator+ (const TensorGPU<Dtype>& lhs, const TensorGPU<Dtype>& rhs) {return outplace_add(lhs ,rhs); }
