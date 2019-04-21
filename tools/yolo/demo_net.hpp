@@ -36,13 +36,13 @@ void predict_transform(
     int batch_size, 
     int stride, 
     int grid_size, 
-    int bbox_attrs, 
     std::vector<float> anchors, 
     int num_classes,
     float confidence,
     std::vector<DetectedInfo>& results) {
 
 
+    int bbox_attrs = num_classes + 5;
 
     int num_anchors = anchors.size() / 2;
     
@@ -156,199 +156,91 @@ public:
         std::vector<DetectedInfo> detected_result;
 
 
-        DeviceTensor data(data_from_user);
+        DeviceTensor x(data_from_user);
 
-
-
-         // x0 = ();
-
-        auto x0 = (leaky_1(bn_1(conv_1(leaky_0(bn_0(conv_0(data)))))));
-        x0 += leaky_3(bn_3(conv_3(leaky_2(bn_2(conv_2(x0))))));
-
-        x0 = (leaky_5(bn_5(conv_5(x0))));
+        x = leaky_1(bn_1(conv_1(leaky_0(bn_0(conv_0(x))))));
+        x += leaky_3(bn_3(conv_3(leaky_2(bn_2(conv_2(x))))));
+        x = leaky_5(bn_5(conv_5(x)));
+        x += leaky_7(bn_7(conv_7(leaky_6(bn_6(conv_6(x))))));
+        x += leaky_10(bn_10(conv_10(leaky_9(bn_9(conv_9(x))))));
+        x = leaky_12(bn_12(conv_12(x)));
+        x += leaky_14(bn_14(conv_14(leaky_13(bn_13(conv_13(x))))));
+        x += leaky_17(bn_17(conv_17(leaky_16(bn_16(conv_16(x))))));
+        x += leaky_20(bn_20(conv_20(leaky_19(bn_19(conv_19(x))))));
+        x += leaky_23(bn_23(conv_23(leaky_22(bn_22(conv_22(x))))));
+        x += leaky_26(bn_26(conv_26(leaky_25(bn_25(conv_25(x))))));
+        x += leaky_29(bn_29(conv_29(leaky_28(bn_28(conv_28(x))))));
+        x += leaky_32(bn_32(conv_32(leaky_31(bn_31(conv_31(x))))));
+        x += leaky_35(bn_35(conv_35(leaky_34(bn_34(conv_34(x)))))); auto x1 = x;
+        x = leaky_37(bn_37(conv_37(x)));
+        x += leaky_39(bn_39(conv_39(leaky_38(bn_38(conv_38(x))))));
+        x += leaky_42(bn_42(conv_42(leaky_41(bn_41(conv_41(x))))));
+        x += leaky_45(bn_45(conv_45(leaky_44(bn_44(conv_44(x))))));
+        x += leaky_48(bn_48(conv_48(leaky_47(bn_47(conv_47(x))))));
+        x += leaky_51(bn_51(conv_51(leaky_50(bn_50(conv_50(x))))));
+        x += leaky_54(bn_54(conv_54(leaky_53(bn_53(conv_53(x))))));
+        x += leaky_57(bn_57(conv_57(leaky_56(bn_56(conv_56(x))))));
+        x += leaky_60(bn_60(conv_60(leaky_59(bn_59(conv_59(x)))))); auto x2 = x;
+        x = leaky_62(bn_62(conv_62(x)));
+        x += leaky_64(bn_64(conv_64(leaky_63(bn_63(conv_63(x))))));
+        x += leaky_67(bn_67(conv_67(leaky_66(bn_66(conv_66(x))))));
+        x += leaky_70(bn_70(conv_70(leaky_69(bn_69(conv_69(x))))));
+        x += leaky_73(bn_73(conv_73(leaky_72(bn_72(conv_72(x))))));
+        x = leaky_75(bn_75(conv_75(x)));
+        x = leaky_76(bn_76(conv_76(x)));
+        x = leaky_77(bn_77(conv_77(x)));
+        x = leaky_78(bn_78(conv_78(x)));
+        x = leaky_79(bn_79(conv_79(x)));
         
-        x0 += leaky_7(bn_7(conv_7(leaky_6(bn_6(conv_6(x0))))));
-
-
-        x0 += leaky_10(bn_10(conv_10(leaky_9(bn_9(conv_9(x0))))));
-
-
-        x0 = (leaky_12(bn_12(conv_12(x0))));
-
-        x0 += leaky_14(bn_14(conv_14(leaky_13(bn_13(conv_13(x0))))));
-        // auto x13 = (leaky_13(bn_13(conv_13(x0))));
-        // auto x14 = (leaky_14(bn_14(conv_14(x13))));
-        
-        auto x0 = x0;//x8 + x14;
-        x0 += leaky_17(bn_17(conv_17(leaky_16(bn_16(conv_16(x0))))));
-        x0 += leaky_20(bn_20(conv_20(leaky_19(bn_19(conv_19(x0))))));
-        x0 += leaky_23(bn_23(conv_23(leaky_22(bn_22(conv_22(x0))))));
-        x0 += leaky_26(bn_26(conv_26(leaky_25(bn_25(conv_25(x0))))));
-        x0 += leaky_29(bn_29(conv_29(leaky_28(bn_28(conv_28(x0))))));
-        x0 += leaky_32(bn_32(conv_32(leaky_31(bn_31(conv_31(x0))))));
-        x0 += leaky_35(bn_35(conv_35(leaky_34(bn_34(conv_34(x0))))));
-
-
-        auto x36 = x0;
-
-        x0 = (leaky_37(bn_37(conv_37(x0))));
-        x0 += leaky_39(bn_39(conv_39(leaky_38(bn_38(conv_38(x0))))));
-
-        x0 += leaky_42(bn_42(conv_42(leaky_41(bn_41(conv_41(x0))))));
-        x0 += leaky_45(bn_45(conv_45(leaky_44(bn_44(conv_44(x0))))));
-        x0 += leaky_48(bn_48(conv_48(leaky_47(bn_47(conv_47(x0))))));
-        x0 += leaky_51(bn_51(conv_51(leaky_50(bn_50(conv_50(x0))))));
-        x0 += leaky_54(bn_54(conv_54(leaky_53(bn_53(conv_53(x0))))));
-        x0 += leaky_57(bn_57(conv_57(leaky_56(bn_56(conv_56(x0))))));
-        x0 += leaky_60(bn_60(conv_60(leaky_59(bn_59(conv_59(x0))))));
-
-
-
-        // auto x38 = (leaky_38(bn_38(conv_38(x0))));
-        // auto x39 = (leaky_39(bn_39(conv_39(x38))));
-        // auto x40 = x0 + x39;
-
-
-
-
-        // auto x41 = (leaky_41(bn_41(conv_41(x0))));
-        // auto x42 = (leaky_42(bn_42(conv_42(x41))));
-        // auto x43 = x0 + x42;
-        // auto x44 = (leaky_44(bn_44(conv_44(x43))));
-        // auto x45 = (leaky_45(bn_45(conv_45(x44))));
-        // auto x46 = x43 + x45;
-        // auto x47 = (leaky_47(bn_47(conv_47(x46))));
-        // auto x48 = (leaky_48(bn_48(conv_48(x47))));
-        // auto x49 = x46 + x48;
-
-
-
-
-        // auto x50 = (leaky_50(bn_50(conv_50(x49))));
-        // auto x51 = (leaky_51(bn_51(conv_51(x50))));
-        // auto x52 = x49 + x51;
-        // auto x53 = (leaky_53(bn_53(conv_53(x52))));
-        // auto x54 = (leaky_54(bn_54(conv_54(x53))));
-        // auto x55 = x52 + x54;
-        // auto x56 = (leaky_56(bn_56(conv_56(x55))));
-        // auto x57 = (leaky_57(bn_57(conv_57(x56))));
-        // auto x58 = x55 + x57;
-        
-
-
-
-
-        // auto x59 = (leaky_59(bn_59(conv_59(x0))));
-        // auto x60 = (leaky_60(bn_60(conv_60(x59))));
-        auto x61 = x0;// + x60;
-
-
-        
-
-
-        x0 = (leaky_62(bn_62(conv_62(x0))));
-        x0 += leaky_64(bn_64(conv_64(leaky_63(bn_63(conv_63(x0))))));
-
-        // auto x63 = (leaky_63(bn_63(conv_63(x0))));
-        // auto x64 = (leaky_64(bn_64(conv_64(x63))));
-        // auto x65 = x0 + x64;
-
-        x0 += leaky_67(bn_67(conv_67(leaky_66(bn_66(conv_66(x0))))));
-        x0 += leaky_70(bn_70(conv_70(leaky_69(bn_69(conv_69(x0))))));
-        x0 += leaky_73(bn_73(conv_73(leaky_72(bn_72(conv_72(x0))))));
-
-
-        // auto x66 = (leaky_66(bn_66(conv_66(x0))));
-        // auto x67 = (leaky_67(bn_67(conv_67(x66))));
-        // auto x68 = x0 + x67;
-        // auto x69 = (leaky_69(bn_69(conv_69(x68))));
-        // auto x70 = (leaky_70(bn_70(conv_70(x69))));
-        // auto x71 = x68 + x70;
-        // auto x72 = (leaky_72(bn_72(conv_72(x71))));
-        // auto x73 = (leaky_73(bn_73(conv_73(x72))));
-        // auto x74 = x71 + x73;
-
-
-        x0 = (leaky_75(bn_75(conv_75(x0))));
-        x0 = (leaky_76(bn_76(conv_76(x0))));
-        x0 = (leaky_77(bn_77(conv_77(x0))));
-        x0 = (leaky_78(bn_78(conv_78(x0))));
-        x0 = (leaky_79(bn_79(conv_79(x0))));
-        
-
-        auto x79 = x0;
-
-
-        x0 = conv_81(leaky_80(bn_80(conv_80(x0))));
-        // auto x0 = conv_81(x0);
-
-
-       
 
 
         predict_transform(
-            x0.duplicate(), 
-            1, 32, 13, 85, 
+            conv_81(leaky_80(bn_80(conv_80(x)))), 
+            1, 32, 13, 
             std::vector<float> {116, 90, 156, 198, 373, 326}, 
             80, 0.4, detected_result
         );
 
 
-        // auto x82 = x81;    //x82 is a yolo layer
-        // auto x83 = x79;
 
 
+        x = leaky_84(bn_84(conv_84(x)));
+        x = upsampling_85(x);
 
-        x79 = (leaky_84(bn_84(conv_84(x79))));
-        auto x85 = upsampling_85(x79);
+        x = concate(std::vector<DeviceTensor *> {&x, &x2});
 
-
-        x0 = concate(std::vector<DeviceTensor *> {&x85, &x61}); //x61 + x85;
-       
-
-        x0 = (leaky_87(bn_87(conv_87(x0))));
-        x0 = (leaky_88(bn_88(conv_88(x0))));
-        x0 = (leaky_89(bn_89(conv_89(x0))));
-        x0 = (leaky_90(bn_90(conv_90(x0))));
-        x0 = (leaky_91(bn_91(conv_91(x0))));
-
-        auto x91 = x0;
-
-        auto x92 = (leaky_92(bn_92(conv_92(x91))));
-        auto x93 = conv_93(x92);
+        x = leaky_87(bn_87(conv_87(x)));
+        x = leaky_88(bn_88(conv_88(x)));
+        x = leaky_89(bn_89(conv_89(x)));
+        x = leaky_90(bn_90(conv_90(x)));
+        x = leaky_91(bn_91(conv_91(x)));
 
 
         predict_transform(
-            x93.duplicate(), 
-            1, 16, 26, 85, 
+            conv_93(leaky_92(bn_92(conv_92(x)))), 
+            1, 16, 26, 
             std::vector<float> {30, 61, 62, 45, 59, 119}, 
             80, 0.4, detected_result
         );
 
 
-        // auto x94 = x93;//    x94 is a yolo layer
-        // auto x95 = x91;
-        x0 = (leaky_96(bn_96(conv_96(x91))));
-            
-        auto x97 = upsampling_97(x0);
+        x = leaky_96(bn_96(conv_96(x)));
+        x = upsampling_97(x);
+        x = concate(std::vector<DeviceTensor *> {&x, &x1}); //x1 + x;
+        x = leaky_99(bn_99(conv_99(x)));
+        x = leaky_100(bn_100(conv_100(x)));
+        x = leaky_101(bn_101(conv_101(x)));
+        x = leaky_102(bn_102(conv_102(x)));
+        x = leaky_103(bn_103(conv_103(x)));
 
-        x0 = concate(std::vector<DeviceTensor *> {&x97, &x36}); //x36 + x97;
-        x0 = (leaky_99(bn_99(conv_99(x0))));
-        x0 = (leaky_100(bn_100(conv_100(x0))));
-        x0 = (leaky_101(bn_101(conv_101(x0))));
-        x0 = (leaky_102(bn_102(conv_102(x0))));
-        x0 = (leaky_103(bn_103(conv_103(x0))));
-        x0 = conv_105(leaky_104(bn_104(conv_104(x0))));
-        // x0 = (conv_105(x0));
 
         predict_transform(
-            x0.duplicate(), 
-            1, 8, 52, 85, 
+            conv_105(leaky_104(bn_104(conv_104(x)))), 
+            1, 8, 52, 
             std::vector<float> {10, 13, 16, 30, 33, 23}, 
             80, 0.4, detected_result
         );
 
-        
         
 
         for (int i = 0; i < detected_result.size(); ++i){
