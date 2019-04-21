@@ -408,6 +408,11 @@ inline TensorGPU<Dtype> outplace_powx(const TensorGPU<Dtype>& x, const float a) 
 }
 
 template <typename Dtype>
+inline TensorGPU<Dtype> outplace_inv(const TensorGPU<Dtype>& x, const float a) {
+	return unary_scalar_math_gpu(x, a, "inv_kernel");
+}
+
+template <typename Dtype>
 inline TensorGPU<Dtype> outplace_elu(const TensorGPU<Dtype>& x, const float a = 1.) {
 	return unary_scalar_math_gpu(x, a, "elu_kernel");
 }

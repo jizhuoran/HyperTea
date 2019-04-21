@@ -52,7 +52,7 @@ int main(int argc, char** argv) {
 
     timer.Start();
     
-    for (int i = 0; i < 1; ++i) {
+    for (int i = 0; i < 2; ++i) {
         yolo3.inference(input_vector, output_vector);
     }
     

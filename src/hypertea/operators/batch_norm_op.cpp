@@ -13,11 +13,16 @@ DeviceTensor BatchNormOp<DeviceTensor>::operator()(DeviceTensor input) {
 
   DeviceTensor output = inplace_? input : input.duplicate();
 
+  DeviceTensor variance(channels_);
+
   if (!use_global_stats_) {
-    mean_var(input, *mean_, *variance_, channels_, spatial_dim_, eps_);
+    mean_var(input, *mean_, variance, channels_, spatial_dim_, eps_);
   } else {
-    *variance_ += eps_;
-    inplace_sqrt(*variance_);
+
+    variance.copy_data(*variance_);
+    variance += eps_;
+    inplace_sqrt(variance);
+    
   }
 
 
@@ -25,15 +30,15 @@ DeviceTensor BatchNormOp<DeviceTensor>::operator()(DeviceTensor input) {
 
 
   if(weight_ != nullptr) {
-    auto weight_with_var = *weight_ / *variance_;
+    auto weight_with_var = *weight_ / variance;
     if (bias_ != nullptr) {
       inplace_channeled_scaladd(output, weight_with_var, *bias_, channels_, spatial_dim_);
     } else {
       inplace_channeled_scal(output, weight_with_var, channels_, spatial_dim_);
     }
   } else {
-    inplace_inv(*variance_);
-    inplace_channeled_scal(output, *variance_, channels_, spatial_dim_);
+    inplace_inv(variance);
+    inplace_channeled_scal(output, variance, channels_, spatial_dim_);
   }
 
   return output;

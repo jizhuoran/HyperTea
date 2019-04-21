@@ -223,7 +223,7 @@ TensorGPU<Dtype> TensorGPU<Dtype>::sub_view(unsigned int offset, unsigned int si
   cl_buffer_region region{offset * sizeof(Dtype), size * sizeof(Dtype)};
   auto temp = clCreateSubBuffer((cl_mem)data_.get(), flags, CL_BUFFER_CREATE_TYPE_REGION, &region, &ret); 
   OPENCL_CHECK(ret);
-  return TensorGPU<Dtype>(temp, size, true);
+  return TensorGPU<Dtype>(temp, size, false);
 }
 template TensorGPU<float> TensorGPU<float>::sub_view(unsigned int offset, unsigned int size, cl_mem_flags flags);
 template TensorGPU<half> TensorGPU<half>::sub_view(unsigned int offset, unsigned int size, cl_mem_flags flags);
@@ -247,7 +247,7 @@ std::vector<TensorGPU<Dtype> > TensorGPU<Dtype>::chunked_tensors(int chunck_num,
       TensorGPU<Dtype>(
         clCreateSubBuffer((cl_mem)data_.get(), flags, CL_BUFFER_CREATE_TYPE_REGION, &region, &ret),
         chunck_count,
-        true
+        false
       )
     );
         OPENCL_CHECK(ret);
