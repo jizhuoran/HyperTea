@@ -283,6 +283,50 @@ TensorGPU<Dtype>& inplace_channeled_scaladd(
 
 
 
+template <typename Dtype>
+TensorGPU<Dtype> outplace_gemm(
+	const CBLAS_TRANSPOSE TransA,
+	const CBLAS_TRANSPOSE TransB,
+	const int M, const int N, const int K,
+    const float alpha, 
+    const TensorGPU<Dtype>& A, 
+    const TensorGPU<Dtype>& B, 
+    const float beta) {
+
+
+	TensorGPU<Dtype> nC(M*N, 0);
+
+
+	size_t lda = (TransA == CblasNoTrans) ? K : M;
+  	size_t ldb = (TransB == CblasNoTrans) ? N : K;
+  	size_t ldc = N;
+
+	Dtype alpha_(to_dtype<Dtype>(alpha));
+  	Dtype beta_(to_dtype<Dtype>(beta));
+
+	auto A_data = A.immutable_data();
+  	auto B_data = B.immutable_data();
+  	auto C_data = nC.immutable_data();
+
+	auto blastTransA =
+      (TransA == CblasNoTrans) ? clblast::Transpose::kNo : clblast::Transpose::kYes;
+  	auto blastTransB =
+      (TransB == CblasNoTrans) ? clblast::Transpose::kNo : clblast::Transpose::kYes;
+
+	CLBLAST_CPP_CHECK(clblast::Gemm<Dtype>(
+    clblast::Layout::kRowMajor,
+    blastTransA, blastTransB,
+    M, N, K,
+    alpha_,
+    (cl_mem) A_data, 0, lda,
+    (cl_mem) B_data, 0, ldb,
+    beta_,
+    (cl_mem) C_data, 0, ldc,
+    &OpenCLHandler::Get().commandQueue, NULL)
+  );
+
+	return nC;
+}
 
 
 
@@ -473,6 +517,32 @@ TensorGPU<Dtype> concate(std::vector<TensorGPU<Dtype>* > xs) {
 
 
 }
+
+
+template <typename Dtype>
+TensorGPU<Dtype> hconcate(std::vector<TensorGPU<Dtype>* > xs, int top_dim) {
+
+	int total_count = 0;
+
+	for (auto const&x: xs) {
+		total_count += x->count();
+	}
+
+	TensorGPU<Dtype> y(total_count);
+
+	int pos = 0;
+
+	for (int i = 0; i < top_dim; ++i) {
+		for (auto const&x: xs) {
+			y.sub_view(pos, x->count() / top_dim).copy_data(x->sub_view(x->count() / top_dim * i, x->count() / top_dim));
+			pos += (x->count() / top_dim);
+		}
+	}
+
+	return y;
+}
+
+
  
 template<typename Dtype> 
 TensorGPU<Dtype> operator+ (const TensorGPU<Dtype>& lhs, const TensorGPU<Dtype>& rhs) {return outplace_add(lhs ,rhs); }

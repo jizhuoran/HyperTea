@@ -332,6 +332,33 @@ TensorCPU<Dtype>& inplace_channeled_scaladd(
 
 
 
+
+template <typename Dtype>
+TensorCPU<Dtype> outplace_gemm(
+	const CBLAS_TRANSPOSE TransA,
+	const CBLAS_TRANSPOSE TransB,
+	const int M, const int N, const int K,
+    const float alpha, 
+    const TensorCPU<Dtype>& A, 
+    const TensorCPU<Dtype>& B, 
+    const float beta) {
+
+	TensorCPU<Dtype> nC(M*N, 0);
+
+	auto A_data = A.immutable_data();
+  	auto B_data = B.immutable_data();
+  	auto C_data = nC.mutable_data();
+
+
+  	int lda = (TransA == CblasNoTrans) ? K : M;
+  	int ldb = (TransB == CblasNoTrans) ? N : K;
+  	cblas_sgemm(CblasRowMajor, TransA, TransB, M, N, K, alpha, A_data, lda, B_data,
+      ldb, beta, C_data, N);
+
+	return nC;
+}
+
+
 template <typename Dtype>
 TensorCPU<Dtype> outplace_gemv(
 	const CBLAS_TRANSPOSE TransA, 
@@ -598,21 +625,39 @@ TensorCPU<Dtype> concate(std::vector<TensorCPU<Dtype>* > xs) {
 		total_count += x->count();
 	}
 
-
 	TensorCPU<Dtype> y(total_count);
-
 
 	int pos = 0;
 	for (auto const&x: xs) {
-
 		y.sub_view(pos, x->count()).copy_data(*x);
-
 		pos += x->count();
 	}
 
 	return y;
+}
 
 
+template <typename Dtype>
+TensorCPU<Dtype> hconcate(std::vector<TensorCPU<Dtype>* > xs, int top_dim) {
+
+	int total_count = 0;
+
+	for (auto const&x: xs) {
+		total_count += x->count();
+	}
+
+	TensorCPU<Dtype> y(total_count);
+
+	int pos = 0;
+
+	for (int i = 0; i < top_dim; ++i) {
+		for (auto const&x: xs) {
+			y.sub_view(pos, x->count() / top_dim).copy_data(x->sub_view(x->count() / top_dim * i, x->count() / top_dim));
+			pos += (x->count() / top_dim);
+		}
+	}
+
+	return y;
 }
 
 

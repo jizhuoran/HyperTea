@@ -257,8 +257,11 @@ public:
     }
   }
 
-  // DeviceTensor operator()(DeviceTensor &input, const std::vector<DeviceTensor >& hidden_tensors);
-  DeviceTensor Forward(DeviceTensor &input, std::vector<DeviceTensor > hidden_tensors);
+  DeviceTensor operator()(DeviceTensor &input, std::vector<DeviceTensor >& hidden_tensors) {
+    Forward(input, hidden_tensors);
+  }
+  DeviceTensor Forward(DeviceTensor &input, std::vector<DeviceTensor >& hidden_tensors);
+
   
 
 private:

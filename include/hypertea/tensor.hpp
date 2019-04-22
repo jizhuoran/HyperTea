@@ -24,7 +24,8 @@ public:
 	
 	const int size() const {return count_ * sizeof(Dtype); }
 	const int count() const {return count_; }
-
+	constexpr static size_t type_size() { return sizeof(Dtype); }
+	
 protected:
 
 	int count_ = 0;
@@ -47,7 +48,6 @@ public:
 	explicit TensorCPU(int count, Dtype value);
 	explicit TensorCPU(std::vector<Dtype> data);
 	explicit TensorCPU(Dtype* data_ptr, int count, bool shared = false);
-
 
 
 	TensorCPU& copy_data(const TensorCPU & other);

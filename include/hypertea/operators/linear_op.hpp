@@ -33,6 +33,31 @@ private:
 };
 
 
+
+template <typename DeviceTensor>
+class EmbeddingOp : public TensorOperator<DeviceTensor>{
+
+public:
+    explicit EmbeddingOp(
+        DeviceTensor* weight,
+        int embedding_dim) 
+    : TensorOperator<DeviceTensor>(), 
+    weight_(weight), 
+    embedding_dim_(embedding_dim) {}
+    
+    virtual inline const char* type() const override { return "Embedding"; }
+    virtual DeviceTensor operator()(DeviceTensor input) override {};
+
+    DeviceTensor operator()(std::vector<int> input);
+
+private:
+    DeviceTensor* weight_;
+    DeviceTensor* bias_;
+    int embedding_dim_;
+
+};
+
+
 }  // namespace hypertea
 
 #endif  // HYPERTEA_LINEAR_OP_HPP_

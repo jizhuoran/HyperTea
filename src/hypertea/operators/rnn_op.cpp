@@ -134,7 +134,7 @@ DeviceTensor BidirectionalRNN<DeviceTensor>::Forward(
 template <typename DeviceTensor>
 DeviceTensor StackedRNN<DeviceTensor>::Forward(
     DeviceTensor &input_tensor, 
-    std::vector<DeviceTensor> hidden_tensors) {
+    std::vector<DeviceTensor>& hidden_tensors) {
 
     for (int i = 0; i < rnn_layers_.size(); ++i) {
         input_tensor = rnn_layers_[i]->Forward(input_tensor, hidden_tensors[i]);
@@ -152,7 +152,7 @@ template void GRUCell<TensorCPU<float>>::Forward(TensorCPU<float>& input, Tensor
 template void LSTMCell<TensorCPU<float>>::Forward(TensorCPU<float>& input, TensorCPU<float>& hidden, TensorCPU<float>& output);
 template TensorCPU<float> UnidirectionalRNN<TensorCPU<float>>::Forward(TensorCPU<float>& input, TensorCPU<float>& hidden);
 template TensorCPU<float> BidirectionalRNN<TensorCPU<float>>::Forward(TensorCPU<float>& input, TensorCPU<float>& hidden);
-template TensorCPU<float> StackedRNN<TensorCPU<float>>::Forward(TensorCPU<float>& input, std::vector<TensorCPU<float>> hidden);
+template TensorCPU<float> StackedRNN<TensorCPU<float>>::Forward(TensorCPU<float>& input, std::vector<TensorCPU<float>> &hidden);
 
 
 
@@ -169,8 +169,8 @@ template TensorGPU<half> UnidirectionalRNN<TensorGPU<half>>::Forward(TensorGPU<h
 template TensorGPU<float> BidirectionalRNN<TensorGPU<float>>::Forward(TensorGPU<float>& input, TensorGPU<float>& hidden);
 template TensorGPU<half> BidirectionalRNN<TensorGPU<half>>::Forward(TensorGPU<half>& input, TensorGPU<half>& hidden);
 
-template TensorGPU<float> StackedRNN<TensorGPU<float>>::Forward(TensorGPU<float>& input, std::vector<TensorGPU<float>> hidden);
-template TensorGPU<half> StackedRNN<TensorGPU<half>>::Forward(TensorGPU<half>& input, std::vector<TensorGPU<half>>hidden);
+template TensorGPU<float> StackedRNN<TensorGPU<float>>::Forward(TensorGPU<float>& input, std::vector<TensorGPU<float>> &hidden);
+template TensorGPU<half> StackedRNN<TensorGPU<half>>::Forward(TensorGPU<half>& input, std::vector<TensorGPU<half>> &hidden);
 #endif //USE_OPENCL
  
 

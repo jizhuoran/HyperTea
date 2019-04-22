@@ -30,4 +30,37 @@ DeviceTensor LinearOp<DeviceTensor>::operator()(DeviceTensor input) {
 DEFINE_FORWARD_FUNC(LinearOp);
 
 
+
+
+
+template<typename DeviceTensor>
+DeviceTensor EmbeddingOp<DeviceTensor>::operator()(std::vector<int> input) {
+
+
+	DeviceTensor output = DeviceTensor(input.size() * embedding_dim_);
+
+	auto embedding_weight = (cl_mem) weight_->immutable_data();
+	auto output_data = (cl_mem) output.mutable_data();
+	
+
+	for (int i = 0; i < input.size(); ++i) {
+
+		OPENCL_CHECK(clEnqueueCopyBuffer(OpenCLHandler::Get().commandQueue, 
+    		embedding_weight, 
+    		output_data, 
+    		output.type_size() * embedding_dim_ * input[i], output.type_size() * embedding_dim_ * i, 
+    		output.type_size() * embedding_dim_, 0, NULL, NULL)
+		);
+	}
+
+
+	return output;
+
+}
+
+template TensorCPU<float> EmbeddingOp<TensorCPU<float>>::operator()(std::vector<int> input);
+template TensorGPU<float> EmbeddingOp<TensorGPU<float>>::operator()(std::vector<int> input);
+template TensorGPU<half> EmbeddingOp<TensorGPU<half>>::operator()(std::vector<int> input);
+
+
 }  // namespace hypertea
