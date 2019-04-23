@@ -80,6 +80,23 @@ private:
     float alpha_;
     bool inplace_;
 
+};
+
+
+template <typename DeviceTensor>
+class SoftMaxOp : public TensorOperator<DeviceTensor>{
+
+public:
+
+    explicit SoftMaxOp(int spatial_dim, bool inplace = false)
+    : TensorOperator<DeviceTensor>(), spatial_dim_(spatial_dim), inplace_(inplace) {}
+
+    virtual inline const char* type() const override { return "SoftMax"; }
+    virtual DeviceTensor operator()(DeviceTensor input) override;
+
+private:
+    int spatial_dim_;
+    bool inplace_;
 
 };
 

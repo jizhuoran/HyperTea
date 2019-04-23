@@ -726,6 +726,78 @@ std::string OpenCLHandler::opencl_math_code(bool is_half) {
   } // end argmax_kernel
 
 
+
+static inline void SumReduceKernel(
+    __local Dtype* lcl_mem,
+    unsigned int sum_stride,
+    unsigned int unit_id,
+    unsigned int unit_len) {
+
+      Dtype sum = 0.0;
+      unsigned int lcl_offset = unit_id * unit_len;
+
+      for(unsigned int i = 0; i < unit_len; i += sum_stride) {
+          sum += lcl_mem[lcl_offset + i];
+      }
+
+      lcl_mem[lcl_offset] = sum;
+  }
+          
+  static inline void
+  SumregLDSreduce(
+    Dtype* value,
+    __local Dtype* data, 
+    unsigned int localID)
+  {
+      data[localID] = *value;
+
+      barrier(CLK_LOCAL_MEM_FENCE);
+      if(localID < (128 >> 2))
+          SumReduceKernel(data, 1, localID, 4);
+      barrier(CLK_LOCAL_MEM_FENCE);
+      if(localID < (128 >> 4))
+          SumReduceKernel(data, 4, localID, 16);
+      barrier(CLK_LOCAL_MEM_FENCE);
+      if(localID == 0)
+          SumReduceKernel(data, 16, localID, 128);
+      barrier(CLK_LOCAL_MEM_FENCE);
+      *value = data[0];
+  }
+
+
+ 
+  __attribute__((reqd_work_group_size(BUFFER_SIZE, 1, 1))) 
+  __kernel void reduce_sum_kernel(
+    const __global Dtype* __restrict in,
+    __global Dtype* __restrict out,
+    const int spatial_dim) {
+
+
+    Dtype sum = 0.0;
+
+    uint index = 0;
+    uint lid   = get_local_id(0);
+    uint batch_index = get_global_id(1);
+    
+    Dtype read;
+    for(unsigned int k = lid; k < spatial_dim; k += BUFFER_SIZE) {      
+      sum += in[batch_index * spatial_dim + k];
+    }
+     
+    barrier(CLK_LOCAL_MEM_FENCE | CLK_GLOBAL_MEM_FENCE);
+
+    local Dtype lcl_data[BUFFER_SIZE];
+
+    SumregLDSreduce(&sum, lcl_data, lid);
+    barrier(CLK_LOCAL_MEM_FENCE);
+    
+    if (lid == 0) {
+      out[batch_index] = sum;
+    }
+
+  } // end argmax_kernel
+
+
   __kernel void im2col_gpu_kernel(
     const int n, 
     __global Dtype* data_im,
@@ -855,7 +927,7 @@ std::string OpenCLHandler::opencl_math_code(bool is_half) {
     if (x < new_last_dim && y < old_last_dim) {
 
       for (int i = 0; i < num; ++i) {
-        __global Dtype* per_in = in + i * spatial_dim;
+        const __global Dtype* per_in = in + i * spatial_dim;
         __global Dtype* per_out = out + i * spatial_dim;
 
         per_out[x * old_last_dim + y] = per_in[y * new_last_dim + x];

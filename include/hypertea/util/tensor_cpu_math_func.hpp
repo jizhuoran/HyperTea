@@ -545,6 +545,29 @@ void mean_var(
 
 
 template <typename Dtype>
+TensorCPU<Dtype> channeled_sum(
+	TensorCPU<Dtype>& x, 
+	int spatial_dim) {
+	
+	int nums = x.count() / spatial_dim;
+	TensorCPU<Dtype> sum(nums);
+
+	auto x_data = x.mutable_data();
+	auto sum_data = sum.mutable_data();
+
+	for (int n = 0; n < nums; ++n) {
+		sum_data[n * spatial_dim] = 0;
+		for (int i = 0; i < spatial_dim; ++i) {
+			sum_data[n * spatial_dim] += x_data[n * spatial_dim + i];
+		}
+	}
+
+	return sum;
+
+}
+
+
+template <typename Dtype>
 std::vector<int> batched_argmax(
 	TensorCPU<Dtype>& x, 
 	int spatial_dim) {
@@ -665,21 +688,31 @@ template<typename Dtype>
 TensorCPU<Dtype> operator+ (const TensorCPU<Dtype>& lhs, const TensorCPU<Dtype>& rhs) {return outplace_add(lhs ,rhs); }
 template<typename Dtype>
 TensorCPU<Dtype> operator+ (const TensorCPU<Dtype>& lhs, const float rhs) {return outplace_add_scalar(lhs, rhs); }
+template<typename Dtype>
+TensorCPU<Dtype> operator+ (const float lhs, const TensorCPU<Dtype>& rhs) {return outplace_add_scalar(rhs, lhs); }
 
 template<typename Dtype>
 TensorCPU<Dtype> operator- (const TensorCPU<Dtype>& lhs, const TensorCPU<Dtype>& rhs) {return outplace_sub(lhs ,rhs); }
 template<typename Dtype>
 TensorCPU<Dtype> operator- (const TensorCPU<Dtype>& lhs, const float rhs) {return outplace_sub_scalar(lhs, rhs); }
+template<typename Dtype>
+TensorCPU<Dtype> operator- (const float lhs, const TensorCPU<Dtype>& rhs) {return outplace_sub_scalar(rhs, lhs); }
 
 template<typename Dtype>
 TensorCPU<Dtype> operator* (const TensorCPU<Dtype>& lhs, const TensorCPU<Dtype>& rhs) {return outplace_mul(lhs ,rhs); }
 template<typename Dtype>
 TensorCPU<Dtype> operator* (const TensorCPU<Dtype>& lhs, const float rhs) {return outplace_mul_scalar(lhs, rhs); }
+template<typename Dtype>
+TensorCPU<Dtype> operator* (const float lhs, const TensorCPU<Dtype>& rhs) {return outplace_mul_scalar(rhs, lhs); }
+
+
 
 template<typename Dtype>
 TensorCPU<Dtype> operator/ (const TensorCPU<Dtype>& lhs, const TensorCPU<Dtype>& rhs) {return outplace_div(lhs ,rhs); }
 template<typename Dtype> 
 TensorCPU<Dtype> operator/ (const TensorCPU<Dtype>& lhs, const float rhs) {return outplace_div_scalar(lhs, rhs); }
+template<typename Dtype>
+TensorCPU<Dtype> operator/ (const float lhs, const TensorCPU<Dtype>& rhs) {return outplace_div_scalar(rhs, lhs); }
 
 
 

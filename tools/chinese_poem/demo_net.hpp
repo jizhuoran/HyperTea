@@ -49,10 +49,8 @@ public:
             0.0
         );
 
-        // attn_weights = inplace_softmax(attn_weights, 24)
+        attn_weights = attn_softmax(attn_weights);
         
-
-
 
         auto attn_applied = outplace_gemm(
             CblasNoTrans, CblasNoTrans, 
@@ -108,6 +106,8 @@ private:
                 new hypertea::UnidirectionalRNN<DeviceTensor> ( 128, 128, decoder_weight_ih_l0, decoder_weight_hh_l0, decoder_bias_ih_l0, decoder_bias_hh_l0, hypertea::RNN_CELL_TYPE::GRU_CELL )
             }
             );
+
+    SoftMaxOp<DeviceTensor> attn_softmax = SoftMaxOp<DeviceTensor>(24);
     LinearOp<DeviceTensor> attn_mul = LinearOp<DeviceTensor> ( &attn_mul_weight, nullptr, 128, 128 );
     LinearOp<DeviceTensor> out = LinearOp<DeviceTensor> ( &out_weight, &out_bias, 256, 4975 );
 

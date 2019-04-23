@@ -38,4 +38,25 @@ DeviceTensor ELUOp<DeviceTensor>::operator()(DeviceTensor input) {
 DEFINE_FORWARD_FUNC(ELUOp);
 
 
+template<typename DeviceTensor>
+DeviceTensor SoftMaxOp<DeviceTensor>::operator()(DeviceTensor input) {
+
+	auto output = inplace_? input : DeviceTensor(input.count());
+
+	inplace_exp(output);
+
+	inplace_channeled_scal(
+		output, 
+		float(1) / channeled_sum(output, spatial_dim_), 
+		input.count() / spatial_dim_,
+		spatial_dim_
+	);
+
+
+	return output;
+
+}
+DEFINE_FORWARD_FUNC(SoftMaxOp);
+
+
 }  // namespace hypertea

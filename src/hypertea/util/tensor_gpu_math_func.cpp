@@ -665,6 +665,51 @@ template void mean_var(
 
 
 template <typename Dtype>
+TensorGPU<Dtype> channeled_sum(
+  TensorGPU<Dtype>& x, 
+  int spatial_dim) {
+  
+  int nums = x.count() / spatial_dim;
+  TensorGPU<Dtype> sum(nums);
+
+
+  auto x_data = x.mutable_data();
+  auto sum_data = sum.mutable_data();
+
+  opencl_launch_wrapper(
+    OpenCLHandler::Get().math_program,
+    "reduce_sum_kernel",
+    std::vector<std::pair<size_t, const void *> > {
+      std::make_pair(sizeof(cl_mem), (void *)&x_data),
+      std::make_pair(sizeof(cl_mem), (void *)&sum_data),
+      std::make_pair(sizeof(cl_int), (void *)&nums),
+      std::make_pair(sizeof(cl_int), (void *)&spatial_dim),
+
+    },
+    std::vector<size_t> {128, static_cast<size_t>(nums), 1},
+    std::vector<size_t> {128, 1, 1}
+  );
+
+  return sum;
+
+}
+
+
+template TensorGPU<float> channeled_sum(
+  TensorGPU<float>& x, 
+  int spatial_dim
+);
+
+template TensorGPU<half> channeled_sum(
+  TensorGPU<half>& x, 
+  int spatial_dim
+);
+
+
+
+
+
+template <typename Dtype>
 std::vector<int> batched_argmax(
   TensorGPU<Dtype>& x, 
   int spatial_dim) {

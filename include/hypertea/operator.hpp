@@ -5,18 +5,20 @@
 
 namespace hypertea {
 
-template <
-  typename DeviceTensor, 
-  typename = typename std::enable_if<
-      std::is_base_of<Tensor<float>, 
-        typename std::decay<DeviceTensor>::type
-      >::value 
-      || 
-      std::is_base_of<Tensor<half>, 
-        typename std::decay<DeviceTensor>::type
-      >::value
-  >::type
->
+// template <
+//   typename DeviceTensor, 
+//   typename = typename std::enable_if<
+//       std::is_base_of<Tensor<float>, 
+//         typename std::decay<DeviceTensor>::type
+//       >::value 
+//       || 
+//       std::is_base_of<Tensor<half>, 
+//         typename std::decay<DeviceTensor>::type
+//       >::value
+//   >::type
+// >
+
+template <typename DeviceTensor>
 class TensorOperator {
 
 public:

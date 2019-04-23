@@ -477,10 +477,19 @@ void mean_var(
 
 
 template <typename Dtype>
+TensorGPU<Dtype> channeled_sum(
+	TensorGPU<Dtype>& x, 
+	int spatial_dim
+);
+
+
+template <typename Dtype>
 std::vector<int> batched_argmax(
 	TensorGPU<Dtype>& x, 
 	int spatial_dim
 );
+
+
 
 template <typename Dtype>
 TensorGPU<Dtype> upsampling_2d(
@@ -548,21 +557,31 @@ template<typename Dtype>
 TensorGPU<Dtype> operator+ (const TensorGPU<Dtype>& lhs, const TensorGPU<Dtype>& rhs) {return outplace_add(lhs ,rhs); }
 template<typename Dtype>
 TensorGPU<Dtype> operator+ (const TensorGPU<Dtype>& lhs, const float rhs) {return outplace_add_scalar(lhs, rhs); }
+template<typename Dtype>
+TensorGPU<Dtype> operator+ (const float lhs, const TensorGPU<Dtype>& rhs) {return outplace_add_scalar(rhs, lhs); }
 
 template<typename Dtype>
 TensorGPU<Dtype> operator- (const TensorGPU<Dtype>& lhs, const TensorGPU<Dtype>& rhs) {return outplace_sub(lhs ,rhs); }
 template<typename Dtype>
 TensorGPU<Dtype> operator- (const TensorGPU<Dtype>& lhs, const float rhs) {return outplace_sub_scalar(lhs, rhs); }
+template<typename Dtype>
+TensorGPU<Dtype> operator- (const float lhs, const TensorGPU<Dtype>& rhs) {return outplace_sub_scalar(rhs, lhs); }
+
 
 template<typename Dtype>
 TensorGPU<Dtype> operator* (const TensorGPU<Dtype>& lhs, const TensorGPU<Dtype>& rhs) {return outplace_mul(lhs ,rhs); }
 template<typename Dtype>
 TensorGPU<Dtype> operator* (const TensorGPU<Dtype>& lhs, const float rhs) {return outplace_mul_scalar(lhs, rhs); }
+template<typename Dtype>
+TensorGPU<Dtype> operator* (const float lhs, const TensorGPU<Dtype>& rhs) {return outplace_mul_scalar(rhs, lhs); }
+
 
 template<typename Dtype>
 TensorGPU<Dtype> operator/ (const TensorGPU<Dtype>& lhs, const TensorGPU<Dtype>& rhs) {return outplace_div(lhs ,rhs); }
 template<typename Dtype> 
 TensorGPU<Dtype> operator/ (const TensorGPU<Dtype>& lhs, const float rhs) {return outplace_div_scalar(lhs, rhs); }
+template<typename Dtype>
+TensorGPU<Dtype> operator/ (const float lhs, const TensorGPU<Dtype>& rhs) {return outplace_div_scalar(rhs, lhs); }
 
 #endif  // USE_OPENCL
 
