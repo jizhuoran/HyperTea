@@ -69,7 +69,7 @@ TensorGPU<Dtype>& inplace_gemm(
 
 	auto A_data = A.immutable_data();
   	auto B_data = B.immutable_data();
-  	auto C_data = C.immutable_data();
+  	auto C_data = C.mutable_data();
 
 	auto blastTransA =
       (TransA == CblasNoTrans) ? clblast::Transpose::kNo : clblast::Transpose::kYes;

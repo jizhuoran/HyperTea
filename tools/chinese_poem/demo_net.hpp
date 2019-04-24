@@ -17,7 +17,7 @@ public:
 
     
     
-    void inference( std::vector<int> &data_from_user, std::vector<float> &data_to_user) {
+    void inference( std::vector<int> &data_from_user, std::vector<int> &data_to_user) {
         
         // TensorCPU<float> data(data_from_user);
         auto hidden = std::vector<DeviceTensor>{DeviceTensor(128, 0)};
@@ -25,19 +25,32 @@ public:
 
         auto embeds = embedding(data_from_user);
 
+
         auto encoder_inputs = embeds.sub_view(128, 128 * 24);
         auto decoder_inputs = embeds.sub_view(0, 128 * 24);
 
-
+        
 
         auto encoder_out = encoder.Forward(encoder_inputs, hidden);
         auto decoder_out = decoder.Forward(decoder_inputs, hidden);
+
+
+
 
         auto encoder_outs = encoder_out.chunked_tensors(24);
 
         encoder_out = concate(std::vector<DeviceTensor*> { &encoder_outs[0], &encoder_outs[6], &encoder_outs[12], &encoder_outs[18]});
 
         auto attn_mid = attn_mul(encoder_out);
+
+
+        auto debug_temp = attn_mid.debug_gtest_cpu_data();
+        for (int i = 0; i < attn_mid.count(); ++i) {
+            std::cout << debug_temp.get()[i] << " ";
+        }
+        std::cout << " " << std::endl;
+        std::cout << "The size is " << attn_mid.count() << std::endl;
+
 
 
         auto attn_weights = outplace_gemm(
@@ -65,7 +78,14 @@ public:
 
         auto output = hconcate(std::vector<DeviceTensor*> {&attn_applied, &decoder_out}, 24);
 
+        output = out(output);
 
+        data_to_user = batched_argmax(output, 4975);
+
+        for (int i = 0; i < data_from_user.size(); ++i) {
+            std::cout << data_to_user[i] << " ";
+        }
+        std::cout << " " << std::endl;
         // std::cout << " " << std::endl;
 
         // auto temp = model(data);

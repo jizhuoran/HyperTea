@@ -682,9 +682,7 @@ TensorGPU<Dtype> channeled_sum(
     std::vector<std::pair<size_t, const void *> > {
       std::make_pair(sizeof(cl_mem), (void *)&x_data),
       std::make_pair(sizeof(cl_mem), (void *)&sum_data),
-      std::make_pair(sizeof(cl_int), (void *)&nums),
-      std::make_pair(sizeof(cl_int), (void *)&spatial_dim),
-
+      std::make_pair(sizeof(cl_int), (void *)&spatial_dim)
     },
     std::vector<size_t> {128, static_cast<size_t>(nums), 1},
     std::vector<size_t> {128, 1, 1}
