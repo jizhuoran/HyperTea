@@ -216,7 +216,7 @@ inline TensorGPU<Dtype>& inplace_sqrt(TensorGPU<Dtype>& x) {
 }
 
 template <typename Dtype>
-inline TensorGPU<Dtype>& inplace_inv(TensorGPU<Dtype>& x, const float eps = 1e-5) {
+inline TensorGPU<Dtype>& inplace_inv(TensorGPU<Dtype>& x) {
 	return unary_math_gpu_inplace(x, "inv_kernel");
 }
 
@@ -447,14 +447,16 @@ inline TensorGPU<Dtype> outplace_sqrt(const TensorGPU<Dtype>& x) {
 }
 
 template <typename Dtype>
+inline TensorGPU<Dtype> outplace_inv(const TensorGPU<Dtype>& x) {
+	return unary_math_gpu(x, "inv_kernel");
+}
+
+
+template <typename Dtype>
 inline TensorGPU<Dtype> outplace_powx(const TensorGPU<Dtype>& x, const float a) {
 	return unary_scalar_math_gpu(x, a, "powx_kernel");
 }
 
-template <typename Dtype>
-inline TensorGPU<Dtype> outplace_inv(const TensorGPU<Dtype>& x, const float a) {
-	return unary_scalar_math_gpu(x, a, "inv_kernel");
-}
 
 template <typename Dtype>
 inline TensorGPU<Dtype> outplace_elu(const TensorGPU<Dtype>& x, const float a = 1.) {
@@ -565,7 +567,7 @@ TensorGPU<Dtype> operator- (const TensorGPU<Dtype>& lhs, const TensorGPU<Dtype>&
 template<typename Dtype>
 TensorGPU<Dtype> operator- (const TensorGPU<Dtype>& lhs, const float rhs) {return outplace_sub_scalar(lhs, rhs); }
 template<typename Dtype>
-TensorGPU<Dtype> operator- (const float lhs, const TensorGPU<Dtype>& rhs) {return outplace_sub_scalar(rhs, lhs); }
+TensorGPU<Dtype> operator- (const float lhs, const TensorGPU<Dtype>& rhs) {return outplace_add_scalar(rhs, -lhs); }
 
 
 template<typename Dtype>
@@ -580,8 +582,8 @@ template<typename Dtype>
 TensorGPU<Dtype> operator/ (const TensorGPU<Dtype>& lhs, const TensorGPU<Dtype>& rhs) {return outplace_div(lhs ,rhs); }
 template<typename Dtype> 
 TensorGPU<Dtype> operator/ (const TensorGPU<Dtype>& lhs, const float rhs) {return outplace_div_scalar(lhs, rhs); }
-template<typename Dtype>
-TensorGPU<Dtype> operator/ (const float lhs, const TensorGPU<Dtype>& rhs) {return outplace_div_scalar(rhs, lhs); }
+// template<typename Dtype>
+// TensorGPU<Dtype> operator/ (const float lhs, const TensorGPU<Dtype>& rhs) {return outplace_div_scalar(rhs, lhs); }
 
 #endif  // USE_OPENCL
 

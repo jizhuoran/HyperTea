@@ -46,8 +46,6 @@ DeviceTensor BatchNormOp<DeviceTensor>::operator()(DeviceTensor input) {
 }
 
 
-// template TensorCPU<float> BatchNormOp<TensorCPU<float> >::operator()(TensorCPU<float> && input);
-// template TensorGPU<float> BatchNormOp<TensorGPU<float> >::operator()(TensorGPU<float> && input);
 DEFINE_FORWARD_FUNC(BatchNormOp);
 
 }  // namespace hypertea

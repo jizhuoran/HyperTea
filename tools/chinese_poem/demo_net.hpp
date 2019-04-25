@@ -37,19 +37,13 @@ public:
 
 
 
+
         auto encoder_outs = encoder_out.chunked_tensors(24);
 
         encoder_out = concate(std::vector<DeviceTensor*> { &encoder_outs[0], &encoder_outs[6], &encoder_outs[12], &encoder_outs[18]});
 
         auto attn_mid = attn_mul(encoder_out);
 
-
-        auto debug_temp = attn_mid.debug_gtest_cpu_data();
-        for (int i = 0; i < attn_mid.count(); ++i) {
-            std::cout << debug_temp.get()[i] << " ";
-        }
-        std::cout << " " << std::endl;
-        std::cout << "The size is " << attn_mid.count() << std::endl;
 
 
 
@@ -63,7 +57,7 @@ public:
         );
 
         attn_weights = attn_softmax(attn_weights);
-        
+
 
         auto attn_applied = outplace_gemm(
             CblasNoTrans, CblasNoTrans, 
@@ -74,23 +68,11 @@ public:
             0.0
         );
 
-        // attn_applied = torch.bmm(attn_weights, encoder_outputs)
-
         auto output = hconcate(std::vector<DeviceTensor*> {&attn_applied, &decoder_out}, 24);
 
         output = out(output);
 
         data_to_user = batched_argmax(output, 4975);
-
-        for (int i = 0; i < data_from_user.size(); ++i) {
-            std::cout << data_to_user[i] << " ";
-        }
-        std::cout << " " << std::endl;
-        // std::cout << " " << std::endl;
-
-        // auto temp = model(data);
-
-        // hypertea_copy(data_to_user.size(), temp.data(), data_to_user.data());
 
     }
 
@@ -127,7 +109,7 @@ private:
             }
             );
 
-    SoftMaxOp<DeviceTensor> attn_softmax = SoftMaxOp<DeviceTensor>(24);
+    SoftMaxOp<DeviceTensor> attn_softmax = SoftMaxOp<DeviceTensor>(4);
     LinearOp<DeviceTensor> attn_mul = LinearOp<DeviceTensor> ( &attn_mul_weight, nullptr, 128, 128 );
     LinearOp<DeviceTensor> out = LinearOp<DeviceTensor> ( &out_weight, &out_bias, 256, 4975 );
 

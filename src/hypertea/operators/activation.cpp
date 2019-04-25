@@ -41,13 +41,13 @@ DEFINE_FORWARD_FUNC(ELUOp);
 template<typename DeviceTensor>
 DeviceTensor SoftMaxOp<DeviceTensor>::operator()(DeviceTensor input) {
 
-	auto output = inplace_? input : DeviceTensor(input.count());
+	auto output = inplace_? input : input.duplicate();
 
 	inplace_exp(output);
 
 	inplace_channeled_scal(
 		output, 
-		float(1) / channeled_sum(output, spatial_dim_), 
+		outplace_inv(channeled_sum(output, spatial_dim_)), 
 		input.count() / spatial_dim_,
 		spatial_dim_
 	);

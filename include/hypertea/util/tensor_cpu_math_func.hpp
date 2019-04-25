@@ -125,7 +125,6 @@ inline TensorCPU<Dtype>& inplace_sqrt(TensorCPU<Dtype>& x) {
 
 template <typename Dtype>
 inline TensorCPU<Dtype>& inplace_inv(TensorCPU<Dtype>& x) {
-
 	vsInv(x.count(), x.mutable_data());
 	return x;
 }
@@ -488,6 +487,14 @@ inline TensorCPU<Dtype> outplace_sqrt(const TensorCPU<Dtype>& x) {
 }
 
 template <typename Dtype>
+inline TensorCPU<Dtype> outplace_inv(const TensorCPU<Dtype>& x) {
+	auto y = x.duplicate();
+	inplace_inv(y);
+	return y;
+}
+
+
+template <typename Dtype>
 inline TensorCPU<Dtype> outplace_powx(const TensorCPU<Dtype>& x, const float a) {
 	auto y = x.duplicate();
 	inplace_powx(y, a);
@@ -696,7 +703,7 @@ TensorCPU<Dtype> operator- (const TensorCPU<Dtype>& lhs, const TensorCPU<Dtype>&
 template<typename Dtype>
 TensorCPU<Dtype> operator- (const TensorCPU<Dtype>& lhs, const float rhs) {return outplace_sub_scalar(lhs, rhs); }
 template<typename Dtype>
-TensorCPU<Dtype> operator- (const float lhs, const TensorCPU<Dtype>& rhs) {return outplace_sub_scalar(rhs, lhs); }
+TensorCPU<Dtype> operator- (const float lhs, const TensorCPU<Dtype>& rhs) {return outplace_add_scalar(rhs, lhs); }
 
 template<typename Dtype>
 TensorCPU<Dtype> operator* (const TensorCPU<Dtype>& lhs, const TensorCPU<Dtype>& rhs) {return outplace_mul(lhs ,rhs); }
@@ -711,8 +718,8 @@ template<typename Dtype>
 TensorCPU<Dtype> operator/ (const TensorCPU<Dtype>& lhs, const TensorCPU<Dtype>& rhs) {return outplace_div(lhs ,rhs); }
 template<typename Dtype> 
 TensorCPU<Dtype> operator/ (const TensorCPU<Dtype>& lhs, const float rhs) {return outplace_div_scalar(lhs, rhs); }
-template<typename Dtype>
-TensorCPU<Dtype> operator/ (const float lhs, const TensorCPU<Dtype>& rhs) {return outplace_div_scalar(rhs, lhs); }
+// template<typename Dtype>
+// TensorCPU<Dtype> operator/ (const float lhs, const TensorCPU<Dtype>& rhs) {return outplace_div_scalar(rhs, lhs); }
 
 
 

@@ -17,7 +17,7 @@ DeviceTensor LinearOp<DeviceTensor>::operator()(DeviceTensor input) {
 	}
 
 	inplace_gemm(
-	 	CblasNoTrans, CblasNoTrans,
+	 	CblasNoTrans, CblasTrans,
 	    batch_size, out_features_, in_features_, (float)1.,
 	    input, *weight_, (float)1., output
 	);
@@ -41,16 +41,8 @@ DeviceTensor EmbeddingOp<DeviceTensor>::operator()(std::vector<int> input) {
 
 	auto embedding_weight = (cl_mem) weight_->immutable_data();
 	auto output_data = (cl_mem) output.mutable_data();
-	
-
-	// std::cout << "The embedding dim is " << embedding_dim_ << std::endl;
-	// std::cout << "The size dim is " << output.type_size() << std::endl;
-	// std::cout << "The input size is " << input.size() << std::endl;
-
 
 	for (int i = 0; i < input.size(); ++i) {
-		
-		// std::cout << "we are going to copy " << input[i] << "'s input" << std::endl;
 
 		OPENCL_CHECK(clEnqueueCopyBuffer(OpenCLHandler::Get().commandQueue, 
     		embedding_weight, 
@@ -60,7 +52,6 @@ DeviceTensor EmbeddingOp<DeviceTensor>::operator()(std::vector<int> input) {
 		);
 	}
 
-	// exit(0);
 
 	return output;
 
