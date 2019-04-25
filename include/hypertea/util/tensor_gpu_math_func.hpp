@@ -50,7 +50,7 @@ TensorGPU<Dtype>& binary_scalar_math_gpu_inplace(const TensorGPU<Dtype> &x, Tens
 
 
 template <typename Dtype>
-TensorGPU<Dtype>& inplace_gemm(
+TensorGPU<Dtype> inplace_gemm(
 	const CBLAS_TRANSPOSE TransA,
 	const CBLAS_TRANSPOSE TransB,
 	const int M, const int N, const int K,
@@ -58,7 +58,7 @@ TensorGPU<Dtype>& inplace_gemm(
     const TensorGPU<Dtype>& A, 
     const TensorGPU<Dtype>& B, 
     const float beta,
-    TensorGPU<Dtype>& C) {
+    TensorGPU<Dtype> C) {
 
 	size_t lda = (TransA == CblasNoTrans) ? K : M;
   	size_t ldb = (TransB == CblasNoTrans) ? N : K;
@@ -94,14 +94,14 @@ TensorGPU<Dtype>& inplace_gemm(
 
 
 template <typename Dtype>
-TensorGPU<Dtype>& inplace_gemv(
+TensorGPU<Dtype> inplace_gemv(
 	const CBLAS_TRANSPOSE TransA, 
 	const int M, const int N,
     const float alpha, 
     const TensorGPU<Dtype>& A, 
     const TensorGPU<Dtype>& x, 
     const float beta,
-    TensorGPU<Dtype>& y) {
+    TensorGPU<Dtype> y) {
 
 	Dtype alpha_(to_dtype<Dtype>(alpha));
   	Dtype beta_(to_dtype<Dtype>(beta));
@@ -131,7 +131,7 @@ TensorGPU<Dtype>& inplace_gemv(
 
 
 template <typename Dtype>
-inline TensorGPU<Dtype>& inplace_set(TensorGPU<Dtype> &x, const Dtype alpha) {
+inline TensorGPU<Dtype> inplace_set(TensorGPU<Dtype> &x, const Dtype alpha) {
 	size_t x_size = x.count() * sizeof(Dtype);
 	auto x_data = x.mutable_data();
 	OPENCL_CHECK(clEnqueueFillBuffer(OpenCLHandler::Get().commandQueue, x_data, &alpha, sizeof(Dtype), 0, x_size, 0, NULL, NULL));
@@ -140,115 +140,134 @@ inline TensorGPU<Dtype>& inplace_set(TensorGPU<Dtype> &x, const Dtype alpha) {
 
 
 template <typename Dtype>
-inline TensorGPU<Dtype>& inplace_add(const TensorGPU<Dtype>& x, TensorGPU<Dtype> &y) {
-	return binary_math_gpu_inplace(x, y, "add_kernel");
+inline TensorGPU<Dtype> inplace_add(const TensorGPU<Dtype>& x, TensorGPU<Dtype> y) {
+	binary_math_gpu_inplace(x, y, "add_kernel");
+	return y;
 }
 
 template <typename Dtype>
-inline TensorGPU<Dtype>& inplace_sub(const TensorGPU<Dtype>& x, TensorGPU<Dtype> &y) {
-	return binary_math_gpu_inplace(x, y, "sub_kernel");
+inline TensorGPU<Dtype> inplace_sub(const TensorGPU<Dtype>& x, TensorGPU<Dtype> y) {
+	binary_math_gpu_inplace(x, y, "sub_kernel");
+	return y;
 }
 
 template <typename Dtype>
-inline TensorGPU<Dtype>& inplace_mul(const TensorGPU<Dtype>& x, TensorGPU<Dtype> &y) {
-	return binary_math_gpu_inplace(x, y, "mul_kernel");
+inline TensorGPU<Dtype> inplace_mul(const TensorGPU<Dtype>& x, TensorGPU<Dtype> y) {
+	binary_math_gpu_inplace(x, y, "mul_kernel");
+	return y;
 }
 
 template <typename Dtype>
-inline TensorGPU<Dtype>& inplace_div(const TensorGPU<Dtype>& x, TensorGPU<Dtype> &y) {
-	return binary_math_gpu_inplace(x, y, "div_kernel");
+inline TensorGPU<Dtype> inplace_div(const TensorGPU<Dtype>& x, TensorGPU<Dtype> y) {
+	binary_math_gpu_inplace(x, y, "div_kernel");
+	return y;
 }
 
 template <typename Dtype>
-inline TensorGPU<Dtype>& inplace_add_scalar(TensorGPU<Dtype> &y, const float a) {
-	return unary_scalar_math_gpu_inplace(y, a, "add_scalar_kernel");
+inline TensorGPU<Dtype> inplace_add_scalar(TensorGPU<Dtype> y, const float a) {
+	unary_scalar_math_gpu_inplace(y, a, "add_scalar_kernel");
+	return y;
 }
 
 template <typename Dtype>
-inline TensorGPU<Dtype>& inplace_sub_scalar(TensorGPU<Dtype> &y, const float a) {
-	return unary_scalar_math_gpu_inplace(y, static_cast<float>(-a), "add_scalar_kernel");
+inline TensorGPU<Dtype> inplace_sub_scalar(TensorGPU<Dtype> y, const float a) {
+	unary_scalar_math_gpu_inplace(y, static_cast<float>(-a), "add_scalar_kernel");
+	return y;
 }
 
 template <typename Dtype>
-inline TensorGPU<Dtype>& inplace_mul_scalar(TensorGPU<Dtype> &y, const float a) {
-	return unary_scalar_math_gpu_inplace(y, a, "scal_scalar_kernel");
+inline TensorGPU<Dtype> inplace_mul_scalar(TensorGPU<Dtype> y, const float a) {
+	unary_scalar_math_gpu_inplace(y, a, "scal_scalar_kernel");
+	return y;
 }
 
 template <typename Dtype>
-inline TensorGPU<Dtype>& inplace_div_scalar(TensorGPU<Dtype> &y, const float a) {
-	return unary_scalar_math_gpu_inplace(y, static_cast<float>(1/a), "scal_scalar_kernel");
-}
-
-
-template <typename Dtype>
-inline TensorGPU<Dtype>& inplace_sigmoid(TensorGPU<Dtype>& x) {
-  return unary_math_gpu_inplace(x, "sigmoid_kernel");
-}
-
-template <typename Dtype>
-inline TensorGPU<Dtype>& inplace_tanh(TensorGPU<Dtype>& x) {
-  return unary_math_gpu_inplace(x, "tanh_kernel");
-}
-
-template <typename Dtype>
-inline TensorGPU<Dtype>& inplace_abs(TensorGPU<Dtype>& x) {
-	return unary_math_gpu_inplace(x, "abs_kernel");
-}
-
-template <typename Dtype>
-inline TensorGPU<Dtype>& inplace_exp(TensorGPU<Dtype>& x) {
-	return unary_math_gpu_inplace(x, "exp_kernel");
-}
-
-template <typename Dtype>
-inline TensorGPU<Dtype>& inplace_log(TensorGPU<Dtype>& x) {
-	return unary_math_gpu_inplace(x, "log_kernel");
-}
-
-template <typename Dtype>
-inline TensorGPU<Dtype>& inplace_sqr(TensorGPU<Dtype>& x) {
-	return unary_math_gpu_inplace(x, "sqr_kernel");
-}
-
-template <typename Dtype>
-inline TensorGPU<Dtype>& inplace_sqrt(TensorGPU<Dtype>& x) {
-	return unary_math_gpu_inplace(x, "sqrt_kernel");
-}
-
-template <typename Dtype>
-inline TensorGPU<Dtype>& inplace_inv(TensorGPU<Dtype>& x) {
-	return unary_math_gpu_inplace(x, "inv_kernel");
-}
-
-template <typename Dtype>
-inline TensorGPU<Dtype>& inplace_powx(TensorGPU<Dtype>& x, const float a) {
-	return unary_scalar_math_gpu_inplace(x, a, "powx_kernel");
-}
-
-template <typename Dtype>
-inline TensorGPU<Dtype>& inplace_elu(TensorGPU<Dtype>& x, const float a = 1.) {
-	return unary_scalar_math_gpu_inplace(x, a, "elu_kernel");
+inline TensorGPU<Dtype> inplace_div_scalar(TensorGPU<Dtype> y, const float a) {
+	unary_scalar_math_gpu_inplace(y, static_cast<float>(1/a), "scal_scalar_kernel");
+	return y;
 }
 
 
 template <typename Dtype>
-inline TensorGPU<Dtype>& inplace_relu(TensorGPU<Dtype>& x, const float a = .0) {
-	return unary_scalar_math_gpu_inplace(x, a, "relu_kernel");
+inline TensorGPU<Dtype> inplace_sigmoid(TensorGPU<Dtype> x) {
+  unary_math_gpu_inplace(x, "sigmoid_kernel");
+  return x;
+}
+
+template <typename Dtype>
+inline TensorGPU<Dtype> inplace_tanh(TensorGPU<Dtype> x) {
+  unary_math_gpu_inplace(x, "tanh_kernel");
+  return x;
+}
+
+template <typename Dtype>
+inline TensorGPU<Dtype> inplace_abs(TensorGPU<Dtype> x) {
+	unary_math_gpu_inplace(x, "abs_kernel");
+	return x;
+}
+
+template <typename Dtype>
+inline TensorGPU<Dtype> inplace_exp(TensorGPU<Dtype> x) {
+	unary_math_gpu_inplace(x, "exp_kernel");
+	return x;
+}
+
+template <typename Dtype>
+inline TensorGPU<Dtype> inplace_log(TensorGPU<Dtype> x) {
+	unary_math_gpu_inplace(x, "log_kernel");
+	return x;
+}
+
+template <typename Dtype>
+inline TensorGPU<Dtype> inplace_sqr(TensorGPU<Dtype> x) {
+	unary_math_gpu_inplace(x, "sqr_kernel");
+	return x;
+}
+
+template <typename Dtype>
+inline TensorGPU<Dtype> inplace_sqrt(TensorGPU<Dtype> x) {
+	unary_math_gpu_inplace(x, "sqrt_kernel");
+	return x;
+}
+
+template <typename Dtype>
+inline TensorGPU<Dtype> inplace_inv(TensorGPU<Dtype> x) {
+	unary_math_gpu_inplace(x, "inv_kernel");
+	return x;
+}
+
+template <typename Dtype>
+inline TensorGPU<Dtype> inplace_powx(TensorGPU<Dtype> x, const float a) {
+	unary_scalar_math_gpu_inplace(x, a, "powx_kernel");
+	return x;
+}
+
+template <typename Dtype>
+inline TensorGPU<Dtype> inplace_elu(TensorGPU<Dtype> x, const float a = 1.) {
+	unary_scalar_math_gpu_inplace(x, a, "elu_kernel");
+	return x;
+}
+
+
+template <typename Dtype>
+inline TensorGPU<Dtype> inplace_relu(TensorGPU<Dtype> x, const float a = .0) {
+	unary_scalar_math_gpu_inplace(x, a, "relu_kernel");
+	return x;
 }
 
 
 
 template <typename Dtype>
-TensorGPU<Dtype>& inplace_prelu(
-	TensorGPU<Dtype>& x, 
+TensorGPU<Dtype> inplace_prelu(
+	TensorGPU<Dtype> x, 
 	const TensorGPU<Dtype>& weight,
 	int channels,
 	int inner_dim
 );
 
 template <typename Dtype>
-TensorGPU<Dtype>& inplace_channeled_scal(
-	TensorGPU<Dtype>& x, 
+TensorGPU<Dtype> inplace_channeled_scal(
+	TensorGPU<Dtype> x, 
 	const TensorGPU<Dtype>& weight,
 	int channels,
 	int inner_dim
@@ -256,24 +275,24 @@ TensorGPU<Dtype>& inplace_channeled_scal(
 
 
 template <typename Dtype>
-TensorGPU<Dtype>& inplace_channeled_add(
-	TensorGPU<Dtype>& x, 
+TensorGPU<Dtype> inplace_channeled_add(
+	TensorGPU<Dtype> x, 
 	const TensorGPU<Dtype>& bias,
 	int channels,
 	int inner_dim
 );
 
 template <typename Dtype>
-TensorGPU<Dtype>& inplace_channeled_sub(
-	TensorGPU<Dtype>& x, 
+TensorGPU<Dtype> inplace_channeled_sub(
+	TensorGPU<Dtype> x, 
 	const TensorGPU<Dtype>& bias,
 	int channels,
 	int inner_dim
 );
 
 template <typename Dtype>
-TensorGPU<Dtype>& inplace_channeled_scaladd(
-	TensorGPU<Dtype>& x, 
+TensorGPU<Dtype> inplace_channeled_scaladd(
+	TensorGPU<Dtype> x, 
 	const TensorGPU<Dtype>& weight,
 	const TensorGPU<Dtype>& bias,
 	int channels,
@@ -480,25 +499,14 @@ void mean_var(
 
 template <typename Dtype>
 TensorGPU<Dtype> channeled_sum(
-	TensorGPU<Dtype>& x, 
+	TensorGPU<Dtype> x, 
 	int spatial_dim
 );
 
 
 template <typename Dtype>
 std::vector<int> batched_argmax(
-	TensorGPU<Dtype>& x, 
-	int spatial_dim
-);
-
-
-
-template <typename Dtype>
-TensorGPU<Dtype> upsampling_2d(
-	TensorGPU<Dtype>& x,
-	int scale,
-	int height,
-	int width,
+	TensorGPU<Dtype> x, 
 	int spatial_dim
 );
 

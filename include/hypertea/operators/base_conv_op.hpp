@@ -14,7 +14,7 @@ template <typename DeviceTensor>
 class BaseConvolutionOp : public TensorOperator<DeviceTensor>{
  public:
 
-    
+     
 
   explicit BaseConvolutionOp(
     DeviceTensor* weight, 

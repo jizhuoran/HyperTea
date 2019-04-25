@@ -365,8 +365,8 @@ template TensorGPU<half>& binary_scalar_math_gpu_inplace(
 
 
 template <typename Dtype>
-TensorGPU<Dtype>& inplace_prelu(
-  TensorGPU<Dtype>& x, 
+TensorGPU<Dtype> inplace_prelu(
+  TensorGPU<Dtype> x, 
   const TensorGPU<Dtype>& weight,
   int channels,
   int inner_dim) {
@@ -396,24 +396,24 @@ TensorGPU<Dtype>& inplace_prelu(
 }
 
 
-template TensorGPU<float>& inplace_prelu(
-  TensorGPU<float>& x, 
+template TensorGPU<float> inplace_prelu(
+  TensorGPU<float> x, 
   const TensorGPU<float>& weight,
   int channels,
   int inner_dim
 );
 
-template TensorGPU<half>& inplace_prelu(
-  TensorGPU<half>& x, 
+template TensorGPU<half> inplace_prelu(
+  TensorGPU<half> x, 
   const TensorGPU<half>& weight,
   int channels,
   int inner_dim
 );
 
 template <typename Dtype>
-TensorGPU<Dtype>& inplace_channeled_scal(
+TensorGPU<Dtype> inplace_channeled_scal(
 
-  TensorGPU<Dtype>& x, 
+  TensorGPU<Dtype> x, 
   const TensorGPU<Dtype>& weight,
   int channels,
   int inner_dim) {
@@ -442,15 +442,15 @@ TensorGPU<Dtype>& inplace_channeled_scal(
 
 }
 
-template TensorGPU<float>& inplace_channeled_scal(
-  TensorGPU<float>& x, 
+template TensorGPU<float> inplace_channeled_scal(
+  TensorGPU<float> x, 
   const TensorGPU<float>& weight,
   int channels,
   int inner_dim
 );
 
-template TensorGPU<half>& inplace_channeled_scal(
-  TensorGPU<half>& x, 
+template TensorGPU<half> inplace_channeled_scal(
+  TensorGPU<half> x, 
   const TensorGPU<half>& weight,
   int channels,
   int inner_dim
@@ -459,9 +459,9 @@ template TensorGPU<half>& inplace_channeled_scal(
 
 
 template <typename Dtype>
-TensorGPU<Dtype>& inplace_channeled_add(
+TensorGPU<Dtype> inplace_channeled_add(
 
-  TensorGPU<Dtype>& x, 
+  TensorGPU<Dtype> x, 
   const TensorGPU<Dtype>& bias,
   int channels,
   int inner_dim) {
@@ -490,15 +490,15 @@ TensorGPU<Dtype>& inplace_channeled_add(
 
 }
 
-template TensorGPU<float>& inplace_channeled_add(
-  TensorGPU<float>& x, 
+template TensorGPU<float> inplace_channeled_add(
+  TensorGPU<float> x, 
   const TensorGPU<float>& bias,
   int channels,
   int inner_dim
 );
 
-template TensorGPU<half>& inplace_channeled_add(
-  TensorGPU<half>& x, 
+template TensorGPU<half> inplace_channeled_add(
+  TensorGPU<half> x, 
   const TensorGPU<half>& bias,
   int channels,
   int inner_dim
@@ -506,8 +506,8 @@ template TensorGPU<half>& inplace_channeled_add(
 
 
 template <typename Dtype>
-TensorGPU<Dtype>& inplace_channeled_sub(
-  TensorGPU<Dtype>& x, 
+TensorGPU<Dtype> inplace_channeled_sub(
+  TensorGPU<Dtype> x, 
   const TensorGPU<Dtype>& bias,
   int channels,
   int inner_dim) {
@@ -536,15 +536,15 @@ TensorGPU<Dtype>& inplace_channeled_sub(
 
 }
 
-template TensorGPU<float>& inplace_channeled_sub(
-  TensorGPU<float>& x, 
+template TensorGPU<float> inplace_channeled_sub(
+  TensorGPU<float> x, 
   const TensorGPU<float>& bias,
   int channels,
   int inner_dim
 );
 
-template TensorGPU<half>& inplace_channeled_sub(
-  TensorGPU<half>& x, 
+template TensorGPU<half> inplace_channeled_sub(
+  TensorGPU<half> x, 
   const TensorGPU<half>& bias,
   int channels,
   int inner_dim
@@ -552,8 +552,8 @@ template TensorGPU<half>& inplace_channeled_sub(
 
 
 template <typename Dtype>
-TensorGPU<Dtype>& inplace_channeled_scaladd(
-  TensorGPU<Dtype>& x, 
+TensorGPU<Dtype> inplace_channeled_scaladd(
+  TensorGPU<Dtype> x, 
   const TensorGPU<Dtype>& weight,
   const TensorGPU<Dtype>& bias,
   int channels,
@@ -585,15 +585,15 @@ TensorGPU<Dtype>& inplace_channeled_scaladd(
 
 }
 
-template TensorGPU<float>& inplace_channeled_scaladd(
-  TensorGPU<float>& x, 
+template TensorGPU<float> inplace_channeled_scaladd(
+  TensorGPU<float> x, 
   const TensorGPU<float>& weight,
   const TensorGPU<float>& bias,
   int channels,
   int inner_dim
 );
-template TensorGPU<half>& inplace_channeled_scaladd(
-  TensorGPU<half>& x, 
+template TensorGPU<half> inplace_channeled_scaladd(
+  TensorGPU<half> x, 
   const TensorGPU<half>& weight,
   const TensorGPU<half>& bias,
   int channels,
@@ -666,7 +666,7 @@ template void mean_var(
 
 template <typename Dtype>
 TensorGPU<Dtype> channeled_sum(
-  TensorGPU<Dtype>& x, 
+  TensorGPU<Dtype> x, 
   int spatial_dim) {
   
   int nums = x.count() / spatial_dim;
@@ -694,12 +694,12 @@ TensorGPU<Dtype> channeled_sum(
 
 
 template TensorGPU<float> channeled_sum(
-  TensorGPU<float>& x, 
+  TensorGPU<float> x, 
   int spatial_dim
 );
 
 template TensorGPU<half> channeled_sum(
-  TensorGPU<half>& x, 
+  TensorGPU<half> x, 
   int spatial_dim
 );
 
@@ -709,7 +709,7 @@ template TensorGPU<half> channeled_sum(
 
 template <typename Dtype>
 std::vector<int> batched_argmax(
-  TensorGPU<Dtype>& x, 
+  TensorGPU<Dtype> x, 
   int spatial_dim) {
 
 
@@ -750,68 +750,17 @@ std::vector<int> batched_argmax(
 }
 
 template std::vector<int> batched_argmax(
-  TensorGPU<float>& x, 
+  TensorGPU<float> x, 
   int spatial_dim
 );
 
 template std::vector<int> batched_argmax(
-  TensorGPU<half>& x, 
+  TensorGPU<half> x, 
   int spatial_dim
 );
 
 
-template <typename Dtype>
-TensorGPU<Dtype> upsampling_2d(
-  TensorGPU<Dtype>& x,
-  int scale,
-  int height,
-  int width,
-  int spatial_dim
-) {
 
-  size_t num = static_cast<size_t>(x.count() / spatial_dim);
-
-  TensorGPU<Dtype> y(x.count() * scale * scale);
-
-  auto x_data = x.mutable_data();
-  auto y_data = y.mutable_data();
-
-
-
-  opencl_launch_wrapper(
-    OpenCLHandler::Get().math_program,
-    "up_sampling_nearest_neighbor_2d_kernel",
-    std::vector<std::pair<size_t, const void *> > {
-      std::make_pair(sizeof(cl_mem), (void *)&x_data),
-      std::make_pair(sizeof(cl_mem), (void *)&y_data),
-      std::make_pair(sizeof(cl_int), (void *)&num),
-      std::make_pair(sizeof(cl_int), (void *)&spatial_dim),
-      std::make_pair(sizeof(cl_int), (void *)&width),
-      std::make_pair(sizeof(cl_int), (void *)&scale),
-    },
-    std::vector<size_t> {HYPERTEA_GET_BLOCKS(spatial_dim)},
-    std::vector<size_t> {HYPERTEA_OPENCL_NUM_THREADS}
-  );
-
-
-  return y;
-}
-
-template TensorGPU<float> upsampling_2d(
-  TensorGPU<float>& x,
-  int scale,
-  int height,
-  int width,
-  int spatial_dim
-);
-
-template TensorGPU<half> upsampling_2d(
-  TensorGPU<half>& x,
-  int scale,
-  int height,
-  int width,
-  int spatial_dim
-);
 
 }  // namespace hypertea
 

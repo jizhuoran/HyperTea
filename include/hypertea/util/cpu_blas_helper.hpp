@@ -57,4 +57,20 @@ DEFINE_VSL_BINARY_FUNC(Mul, y[i] *= a[i])
 DEFINE_VSL_BINARY_FUNC(Div, y[i] /= a[i])
 
 
+
+#define DEFINE_VSL_CHANNEL_FUNC(operation) \
+auto data = x.mutable_data(); \
+for (int n = 0; n < x.count() / (channels * spatial_dim); ++n) { \
+  for (int c = 0; c < channels; ++c) { \
+    for (int i = 0; i < spatial_dim; ++i) { \
+      operation; \
+    } \
+  } \
+}
+
+
+
+
+
+
 #endif  // HYPERTEA_UTIL_CPU_BLAS_HELPER_H_

@@ -55,14 +55,14 @@ void LSTMCell<DeviceTensor>::Forward(
     this->intermediate_i += this->intermediate_h;
 
     auto gates = this->intermediate_i.chunked_tensors(4);
-    DeviceTensor& ingate = inplace_sigmoid(gates[0]);
-    DeviceTensor& forgetgate = inplace_sigmoid(gates[1]);
-    DeviceTensor& cellgate = inplace_tanh(gates[2]);
-    DeviceTensor& outgate = inplace_sigmoid(gates[3]);
+    DeviceTensor ingate = inplace_sigmoid(gates[0]);
+    DeviceTensor forgetgate = inplace_sigmoid(gates[1]);
+    DeviceTensor cellgate = inplace_tanh(gates[2]);
+    DeviceTensor outgate = inplace_sigmoid(gates[3]);
 
     auto hiddens = hidden.chunked_tensors(2);
-    DeviceTensor& cy = (hiddens[1] *= forgetgate) += (ingate *= cellgate); //cy = cx * forgetgate + (ingate * cellgate)
-    DeviceTensor& hy = inplace_tanh(hiddens[0].copy_data(cy)) *= outgate; //hy = cy.tanh() * outgate
+    DeviceTensor cy = (hiddens[1] *= forgetgate) += (ingate *= cellgate); //cy = cx * forgetgate + (ingate * cellgate)
+    DeviceTensor hy = inplace_tanh(hiddens[0].copy_data(cy)) *= outgate; //hy = cy.tanh() * outgate
 
     output.copy_data(hy);
 }

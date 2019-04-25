@@ -6,11 +6,8 @@ namespace hypertea {
 
 template<typename DeviceTensor>
 DeviceTensor PReLUOp<DeviceTensor>::operator()(DeviceTensor input) {
-
 	DeviceTensor output = inplace_? input : input.duplicate();
-
 	inplace_prelu(output, *weight_, channels_, inner_dim_);
-
 	return output;
 }
 DEFINE_FORWARD_FUNC(PReLUOp);
@@ -19,21 +16,27 @@ DEFINE_FORWARD_FUNC(PReLUOp);
 
 template<typename DeviceTensor>
 DeviceTensor ReLUOp<DeviceTensor>::operator()(DeviceTensor input) {
-	return inplace_? DeviceTensor(inplace_relu(input, negative_slope_)) : outplace_relu(input, negative_slope_);
+	auto output = inplace_? input : input.duplicate();
+	inplace_relu(output, negative_slope_);
+	return output;
 }
 DEFINE_FORWARD_FUNC(ReLUOp);
 
 
 template<typename DeviceTensor>
 DeviceTensor TanHOp<DeviceTensor>::operator()(DeviceTensor input) {
-	return inplace_? DeviceTensor(inplace_tanh(input)) : outplace_tanh(input);
+	auto output = inplace_? input : input.duplicate();
+	inplace_tanh(output);
+	return output;
 }
 DEFINE_FORWARD_FUNC(TanHOp);
 
 
 template<typename DeviceTensor>
 DeviceTensor ELUOp<DeviceTensor>::operator()(DeviceTensor input) {
-	return inplace_?DeviceTensor(inplace_elu(input, alpha_)) : outplace_elu(input, alpha_);
+	auto output = inplace_? input : input.duplicate();
+	inplace_elu(output, alpha_);
+	return output;
 }
 DEFINE_FORWARD_FUNC(ELUOp);
 
@@ -45,9 +48,11 @@ DeviceTensor SoftMaxOp<DeviceTensor>::operator()(DeviceTensor input) {
 
 	inplace_exp(output);
 
+	auto channed_sum = channeled_sum(output, spatial_dim_);
+
 	inplace_channeled_scal(
 		output, 
-		outplace_inv(channeled_sum(output, spatial_dim_)), 
+		inplace_inv(channed_sum), 
 		input.count() / spatial_dim_,
 		spatial_dim_
 	);

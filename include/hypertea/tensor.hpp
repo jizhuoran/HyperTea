@@ -79,16 +79,16 @@ public:
 
 
 
-	TensorCPU& operator+=(const TensorCPU & other) {return inplace_add(other, *this); }
-	TensorCPU& operator+=(const float other) {return inplace_add_scalar(*this, other); }
-	TensorCPU& operator-=(const TensorCPU & other) {return inplace_sub(other, *this); }
-	TensorCPU& operator-=(const float other) {return inplace_sub_scalar(*this, other); }
-	TensorCPU& operator*=(const TensorCPU & other) {return inplace_mul(other, *this); }
-	TensorCPU& operator*=(const float other) {return inplace_mul_scalar(*this, other); }
-	TensorCPU& operator/=(const TensorCPU & other) {return inplace_div(other, *this); }
-	TensorCPU& operator/=(const float other) {return inplace_div_scalar(*this, other); }
+	TensorCPU operator+=(const TensorCPU & other) {return inplace_add(other, *this); }
+	TensorCPU operator+=(const float other) {return inplace_add_scalar(*this, other); }
+	TensorCPU operator-=(const TensorCPU & other) {return inplace_sub(other, *this); }
+	TensorCPU operator-=(const float other) {return inplace_sub_scalar(*this, other); }
+	TensorCPU operator*=(const TensorCPU & other) {return inplace_mul(other, *this); }
+	TensorCPU operator*=(const float other) {return inplace_mul_scalar(*this, other); }
+	TensorCPU operator/=(const TensorCPU & other) {return inplace_div(other, *this); }
+	TensorCPU operator/=(const float other) {return inplace_div_scalar(*this, other); }
+	TensorCPU set(const Dtype e) {return inplace_set(*this, e); }
 
-	TensorCPU& set(const Dtype e) {return inplace_set(*this, e); }
 	std::vector<int> argmax() {return batched_argmax(*this, this->count()); }
 
 private:
@@ -158,16 +158,16 @@ public:
 
 	std::shared_ptr<Dtype> debug_gtest_cpu_data() const;
 
-	TensorGPU& operator+=(const TensorGPU & other) {return inplace_add(other, *this); }
-	TensorGPU& operator+=(const float other) {return inplace_add_scalar(*this, other); }
-	TensorGPU& operator-=(const TensorGPU & other) {return inplace_sub(other, *this); }
-	TensorGPU& operator-=(const float other) {return inplace_sub_scalar(*this, other); }
-	TensorGPU& operator*=(const TensorGPU & other) {return inplace_mul(other, *this); }
-	TensorGPU& operator*=(const float other) {return inplace_mul_scalar(*this, other); }
-	TensorGPU& operator/=(const TensorGPU & other) {return inplace_div(other, *this); }
-	TensorGPU& operator/=(const float other) {return inplace_div_scalar(*this, other); }
-
-	TensorGPU& set(const Dtype e) {return inplace_set(*this, e); }
+	TensorGPU operator+=(const TensorGPU & other) {return inplace_add(other, *this); }
+	TensorGPU operator+=(const float other) {return inplace_add_scalar(*this, other); }
+	TensorGPU operator-=(const TensorGPU & other) {return inplace_sub(other, *this); }
+	TensorGPU operator-=(const float other) {return inplace_sub_scalar(*this, other); }
+	TensorGPU operator*=(const TensorGPU & other) {return inplace_mul(other, *this); }
+	TensorGPU operator*=(const float other) {return inplace_mul_scalar(*this, other); }
+	TensorGPU operator/=(const TensorGPU & other) {return inplace_div(other, *this); }
+	TensorGPU operator/=(const float other) {return inplace_div_scalar(*this, other); }
+	TensorGPU set(const Dtype e) {return inplace_set(*this, e); }
+	
 	std::vector<int> argmax() {return batched_argmax(*this, this->count()); }
 
 private:
