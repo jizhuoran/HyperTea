@@ -22,22 +22,22 @@ public:
         
         auto data = DeviceTensor(data_from_user);
 
-        auto temp = bn1(outplace_elu(conv1(data)));
+        auto temp = bn1(inplace_elu(conv1(data)));
 
-        temp = bn2(outplace_elu(conv2(temp)));
-        temp = bn3(outplace_elu(conv3(temp)));
+        temp = bn2(inplace_elu(conv2(temp)));
+        temp = bn3(inplace_elu(conv3(temp)));
 
 
-        temp += res1_bn2(res1_conv2(outplace_relu(res1_bn1(res1_conv1(temp)))));
-        temp += res2_bn2(res2_conv2(outplace_relu(res2_bn1(res2_conv1(temp)))));
-        temp += res3_bn2(res3_conv2(outplace_relu(res3_bn1(res3_conv1(temp)))));
-        temp += res4_bn2(res4_conv2(outplace_relu(res4_bn1(res4_conv1(temp)))));
-        temp += res5_bn2(res5_conv2(outplace_relu(res5_bn1(res5_conv1(temp)))));
+        temp += res1_bn2(res1_conv2(inplace_relu(res1_bn1(res1_conv1(temp)))));
+        temp += res2_bn2(res2_conv2(inplace_relu(res2_bn1(res2_conv1(temp)))));
+        temp += res3_bn2(res3_conv2(inplace_relu(res3_bn1(res3_conv1(temp)))));
+        temp += res4_bn2(res4_conv2(inplace_relu(res4_bn1(res4_conv1(temp)))));
+        temp += res5_bn2(res5_conv2(inplace_relu(res5_bn1(res5_conv1(temp)))));
         
 
-        temp = de_bn1(outplace_elu(deconv1(temp)));
-        temp = de_bn2(outplace_elu(deconv2(temp)));
-        temp = outplace_tanh(deconv3(temp));
+        temp = de_bn1(inplace_elu(deconv1(temp)));
+        temp = de_bn2(inplace_elu(deconv2(temp)));
+        temp = inplace_tanh(deconv3(temp));
 
         temp = (temp + 1) * 127.5;
 

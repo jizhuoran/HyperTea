@@ -378,6 +378,140 @@ std::string binary_opencl_math_kernel(
 }
 
 
+std::string channel_opencl_math_kernel(
+  std::string name,
+  std::string operation,
+  bool has_bias) {
+
+  std::stringstream ss;
+
+  ss << std::endl << std::endl;
+  ss << "__kernel void " << name << "_kernel(" << std::endl;
+  ss << "  const __global Dtype *x," << std::endl;
+  ss << "  __global Dtype *y," << std::endl;
+  ss << "  int N," << std::endl;
+  ss << "  const __global Dtype *weight," << std::endl;
+  if (has_bias) {ss << "  const __global Dtype *bias," << std::endl;}
+  ss << " int scale_dim," << std::endl;
+  ss << "  int inner_dim) {" << std::endl;
+  ss << "  OPENCL_KERNEL_LOOP(index, N) {"  << std::endl;
+  ss << "    const int scale_index = (index / inner_dim) % scale_dim;" << std::endl;
+  ss << "    " << operation << std::endl;
+  ss << "  }" << std::endl;
+  ss << "}" << std::endl << std::endl << std::endl;
+
+  return ss.str();
+
+}
+
+
+
+std::string reduce_opencl_math_kernel(
+  std::string name,
+  std::string reduce_op,
+  std::string read_op) {
+
+  std::stringstream ss;
+
+  ss << std::endl << std::endl;
+  ss << " static inline void " << name << "_reduce_kernel( " << std::endl;
+  ss << "   __local Dtype* lcl_mem, " << std::endl;
+  ss << "   unsigned int stride, " << std::endl;
+  ss << "   unsigned int unit_id,  " << std::endl;
+  ss << "   unsigned int unit_len) { " << std::endl;
+  ss << "     Dtype value = 0.0; " << std::endl;
+  ss << "     unsigned int lcl_offset = unit_id * unit_len; " << std::endl;
+  ss << "     for(unsigned int i = 0; i < unit_len; i += stride) { " << std::endl;
+  ss << "         " << reduce_op << std::endl;
+  ss << "     } " << std::endl;
+  ss << "     lcl_mem[lcl_offset] = value; " << std::endl;
+  ss << " } " << std::endl << std::endl << std::endl;
+
+
+  ss << " static inline void " << name << "_LDS_reduce( " << std::endl;
+  ss << "   Dtype* value, " << std::endl;
+  ss << "   __local Dtype* data,  " << std::endl;
+  ss << "   unsigned int localID) { " << std::endl;
+  ss << "     data[localID] = *value; " << std::endl;
+  ss << "     barrier(CLK_LOCAL_MEM_FENCE); " << std::endl;
+  ss << "     if(localID < (128 >> 2)) " << std::endl;
+  ss << "          " << name << "_reduce_kernel(data, 1, localID, 4); " << std::endl;
+  ss << "     barrier(CLK_LOCAL_MEM_FENCE); " << std::endl;
+  ss << "     if(localID < (128 >> 4)) " << std::endl;
+  ss << "          " << name << "_reduce_kernel(data, 4, localID, 16); " << std::endl;
+  ss << "     barrier(CLK_LOCAL_MEM_FENCE); " << std::endl;
+  ss << "     if(localID == 0) " << std::endl;
+  ss << "          " << name << "_reduce_kernel(data, 16, localID, 128); " << std::endl;
+  ss << "     barrier(CLK_LOCAL_MEM_FENCE); " << std::endl;
+  ss << "     *value = data[0]; " << std::endl;
+  ss << " } " << std::endl << std::endl << std::endl;
+
+
+  ss << " __attribute__((reqd_work_group_size(128, 1, 1)))  " << std::endl;
+  ss << " __kernel void channeled_" << name << "_kernel( " << std::endl;
+  ss << "   const __global Dtype* __restrict in, " << std::endl;
+  ss << "   __global Dtype* __restrict out, " << std::endl;
+  ss << "   const int spatial_dim) { " << std::endl;
+  ss << "   Dtype red_value = 0.0; " << std::endl;
+  ss << "   uint lid = get_local_id(0); " << std::endl;
+  ss << "   uint batch_index = get_global_id(1); " << std::endl;
+  ss << "   for(unsigned int k = lid; k < spatial_dim; k += 128) {       " << std::endl;
+  ss << "     " << read_op << std::endl;
+  ss << "   } " << std::endl;
+  ss << "   barrier(CLK_LOCAL_MEM_FENCE | CLK_GLOBAL_MEM_FENCE); " << std::endl;
+  ss << "   local Dtype lcl_data[128]; " << std::endl;
+  ss << "   " << name << "_LDS_reduce(&red_value, lcl_data, lid); " << std::endl;
+  ss << "   barrier(CLK_LOCAL_MEM_FENCE); " << std::endl;
+  ss << "   if (lid == 0) { " << std::endl;
+  ss << "     out[batch_index] = red_value; " << std::endl;
+  ss << "   } " << std::endl;
+  ss << " } " << std::endl;
+
+  return ss.str();
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    
+
+
+
+
+
+
+
+
+            
+
+
+
+             
+
+
+
+
+            
+
+
+
+
+
+
+
 std::string OpenCLHandler::opencl_math_code(bool is_half) {
 	
 
@@ -438,98 +572,18 @@ std::string OpenCLHandler::opencl_math_code(bool is_half) {
    + binary_opencl_math_kernel("mul", "a[index] * b[index];")
    + binary_opencl_math_kernel("div", "a[index] / b[index];")
 
+   + channel_opencl_math_kernel("channel_add", "y[index] = x[index] + weight[scale_index];", false)
+   + channel_opencl_math_kernel("channel_sub", "y[index] = x[index] - weight[scale_index];", false)
+   + channel_opencl_math_kernel("channel_scal", "y[index] = x[index] * weight[scale_index];", false)
+   + channel_opencl_math_kernel("channel_scaladd", "y[index] = x[index] * weight[scale_index] + bias[scale_index];", true)
+   + channel_opencl_math_kernel("prelu", "y[index] = x[index] > 0? x[index] : x[index] * weight[scale_index];", true)
+
+   + reduce_opencl_math_kernel("sum", "value += lcl_mem[lcl_offset + i];", "red_value += in[batch_index * spatial_dim + k];")
 
   + R"(
 	__kernel void null_kernel_float(int alpha) {
     int a = get_local_id(0);
 	}
-
-
-	__kernel void PReLUForward(
-    const __global Dtype *in, 
-    __global Dtype *slope_data,
-	  __global Dtype *out,
-	  int N, 
-    int channels, 
-    int dim, 
-    int div_factor) {
-	    
-    OPENCL_KERNEL_LOOP(index, N) {
-      int c = (index / dim) % channels / div_factor;
-      out[index] = in[index] > 0 ? in[index] : in[index] * slope_data[c];
-    }
-	}
-
-
-	__kernel void ScaleForward(
-    const __global Dtype *in,
-	  __global Dtype *out,
-	  int N,
-    const __global Dtype *scale,
-    int scale_dim,
-    int inner_dim) {
-	  OPENCL_KERNEL_LOOP(index, N) {
-	    const int scale_index = (index / inner_dim) % scale_dim;
-	    out[index] = in[index] * scale[scale_index];
-	  }
-	}
-
-
-
-  __kernel void prelu_kernel(
-    const __global Dtype *in,
-	  __global Dtype *out,
-	  int N,
-    const __global Dtype *scale,
-    int scale_dim,
-    int inner_dim) {
-	  OPENCL_KERNEL_LOOP(index, N) {
-	    const int scale_index = (index / inner_dim) % scale_dim;
-	    out[index] = in[index] > 0? in[index] : in[index] * scale[scale_index];
-	  }
-	}
-
-
-  __kernel void ChanneledAddForward(
-    const __global Dtype *in,
-    __global Dtype *out,
-    int N, 
-    const __global Dtype *bias, 
-    int scale_dim, 
-    int inner_dim) {
-    OPENCL_KERNEL_LOOP(index, N) {
-      const int scale_index = (index / inner_dim) % scale_dim;
-      out[index] = in[index] + bias[scale_index];
-    }
-  }
-
-
-  __kernel void ChanneledSubForward(
-    const __global Dtype *in,
-    __global Dtype *out,
-    int N, 
-    const __global Dtype *bias, 
-    int scale_dim, 
-    int inner_dim) {
-    OPENCL_KERNEL_LOOP(index, N) {
-      const int scale_index = (index / inner_dim) % scale_dim;
-      out[index] = in[index] - bias[scale_index];
-    }
-  }
-
-  __kernel void ScaleBiasForward(
-    const __global Dtype *in,
-    __global Dtype *out,
-    int N, 
-    __global Dtype *scale,
-    const __global Dtype *bias, 
-    int scale_dim, 
-    int inner_dim) {
-    OPENCL_KERNEL_LOOP(index, N) {
-      const int scale_index = (index / inner_dim) % scale_dim;
-      out[index] = in[index] * scale[scale_index] + bias[scale_index];
-    }
-  }
 
 
 

@@ -79,13 +79,13 @@ public:
 
 
 
-	TensorCPU operator+=(const TensorCPU & other) {return inplace_add(other, *this); }
+	TensorCPU operator+=(const TensorCPU & other) {return inplace_add(*this, other); }
 	TensorCPU operator+=(const float other) {return inplace_add_scalar(*this, other); }
-	TensorCPU operator-=(const TensorCPU & other) {return inplace_sub(other, *this); }
+	TensorCPU operator-=(const TensorCPU & other) {return inplace_sub(*this, other); }
 	TensorCPU operator-=(const float other) {return inplace_sub_scalar(*this, other); }
-	TensorCPU operator*=(const TensorCPU & other) {return inplace_mul(other, *this); }
+	TensorCPU operator*=(const TensorCPU & other) {return inplace_mul(*this, other); }
 	TensorCPU operator*=(const float other) {return inplace_mul_scalar(*this, other); }
-	TensorCPU operator/=(const TensorCPU & other) {return inplace_div(other, *this); }
+	TensorCPU operator/=(const TensorCPU & other) {return inplace_div(*this, other); }
 	TensorCPU operator/=(const float other) {return inplace_div_scalar(*this, other); }
 	TensorCPU set(const Dtype e) {return inplace_set(*this, e); }
 
@@ -158,13 +158,13 @@ public:
 
 	std::shared_ptr<Dtype> debug_gtest_cpu_data() const;
 
-	TensorGPU operator+=(const TensorGPU & other) {return inplace_add(other, *this); }
+	TensorGPU operator+=(const TensorGPU & other) {return inplace_add(*this, other); }
 	TensorGPU operator+=(const float other) {return inplace_add_scalar(*this, other); }
-	TensorGPU operator-=(const TensorGPU & other) {return inplace_sub(other, *this); }
+	TensorGPU operator-=(const TensorGPU & other) {return inplace_sub(*this, other); }
 	TensorGPU operator-=(const float other) {return inplace_sub_scalar(*this, other); }
-	TensorGPU operator*=(const TensorGPU & other) {return inplace_mul(other, *this); }
+	TensorGPU operator*=(const TensorGPU & other) {return inplace_mul(*this, other); }
 	TensorGPU operator*=(const float other) {return inplace_mul_scalar(*this, other); }
-	TensorGPU operator/=(const TensorGPU & other) {return inplace_div(other, *this); }
+	TensorGPU operator/=(const TensorGPU & other) {return inplace_div(*this, other); }
 	TensorGPU operator/=(const float other) {return inplace_div_scalar(*this, other); }
 	TensorGPU set(const Dtype e) {return inplace_set(*this, e); }
 	

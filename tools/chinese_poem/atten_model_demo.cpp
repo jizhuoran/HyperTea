@@ -37,8 +37,6 @@ int main(int argc, char** argv) {
     timer.Start();
     
     for (int i = 0; i < 1; ++i) {
-        // std::cout << "This is the i th time " << std::endl;
-
         poem_net.inference(input_vector, output_vector);
     }
     
@@ -47,10 +45,10 @@ int main(int argc, char** argv) {
     std::cout << "Time difference = " << timer.MilliSeconds() << "ms" <<std::endl;
     
 
-    // for (auto const&x: output_vector) {
-    //     std::cout << x << " " << std::endl;
-    // }
-    // std::cout << " " << std::endl;
+    for (auto const&x: output_vector) {
+        std::cout << x << " ";
+    }
+    std::cout << " " << std::endl;
 
 
     

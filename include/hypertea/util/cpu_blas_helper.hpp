@@ -45,16 +45,16 @@ DEFINE_VSL_UNARY_FUNC_WITH_PARAM(ReLU, y[i] = std::max(y[i], float(0)) + b * std
 // be in the form e.g. y[i] = a[i] + b[i]
 #define DEFINE_VSL_BINARY_FUNC(name, operation) \
   inline float* vs##name( \
-    const int n, const float* a, float* y) { \
+    const int n, float* x, const float* y) { \
     for (int i = 0; i < n; ++i) { operation; } \
-    return y;\
+    return x;\
   }
 
 
-DEFINE_VSL_BINARY_FUNC(Add, y[i] += a[i])
-DEFINE_VSL_BINARY_FUNC(Sub, y[i] -= a[i])
-DEFINE_VSL_BINARY_FUNC(Mul, y[i] *= a[i])
-DEFINE_VSL_BINARY_FUNC(Div, y[i] /= a[i])
+DEFINE_VSL_BINARY_FUNC(Add, x[i] += y[i])
+DEFINE_VSL_BINARY_FUNC(Sub, x[i] -= y[i])
+DEFINE_VSL_BINARY_FUNC(Mul, x[i] *= y[i])
+DEFINE_VSL_BINARY_FUNC(Div, x[i] /= y[i])
 
 
 
