@@ -18,6 +18,8 @@ include(./cmake/Targets.cmake)
 
 # Set CXX_FLAGS for different platform
 
+
+
 SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -std=c++11") #-ansi -pedantic -Wall -Wextra -Weffc++
 SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -std=c++11")
 
@@ -70,8 +72,9 @@ hypertea_set_hypertea_link()
 
 add_subdirectory(src/hypertea)
 
+
 if(NOT ANDROID)
-    add_subdirectory(test/test_case)
     add_subdirectory(tools)
+    add_subdirectory(test/test_case)
 endif()
 

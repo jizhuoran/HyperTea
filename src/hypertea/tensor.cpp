@@ -250,8 +250,9 @@ std::vector<TensorGPU<Dtype> > TensorGPU<Dtype>::chunked_tensors(int chunck_num,
         false
       )
     );
-        OPENCL_CHECK(ret);
-        region.origin += chunck_size;
+    
+    OPENCL_CHECK(ret);
+    region.origin += chunck_size;
 
   }
 

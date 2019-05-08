@@ -27,13 +27,13 @@ namespace hypertea {
         void* all_weights = malloc(weight_size);
 
         FILE *f = fopen(path.c_str(), "rb");
-        
+
         size_t read_size = fread(all_weights, 1, weight_size, f);
         
         if (read_size != weight_size) { 
             LOG(ERROR) << "Weight File Size Mismatch" << read_size << " and " << weight_size << std::endl;
         }
-        
+
         fclose(f);
 
         param.copy_from_ptr((void*)all_weights);
@@ -48,9 +48,17 @@ namespace hypertea {
 #ifdef USE_OPENCL
         const std::string &conv_opencl_funcs,
         const std::string &bn_opencl_funcs) {
+        
         OpenCLHandler::Get().build_opencl_math_code(false);
-        OpenCLHandler::Get().build_opencl_program(conv_opencl_funcs, OpenCLHandler::Get().conv_program);
-        OpenCLHandler::Get().build_opencl_program(bn_opencl_funcs, OpenCLHandler::Get().bn_program);
+
+        if(conv_opencl_funcs.size() > 2) {
+            OpenCLHandler::Get().build_opencl_program(conv_opencl_funcs, OpenCLHandler::Get().conv_program);
+        }
+
+        if(bn_opencl_funcs.size() > 2) {
+            OpenCLHandler::Get().build_opencl_program(bn_opencl_funcs, OpenCLHandler::Get().bn_program);
+        }
+
 #endif //USE_OPENCL
 
     }

@@ -17,6 +17,7 @@ void GRUCell<DeviceTensor>::Forward(
 
     inplace_gemv(CblasNoTrans, 3 * this->hidden_dim_,
         this->input_dim_, 1, this->weight_ih_, input, 1, this->intermediate_i);
+
     inplace_gemv(CblasNoTrans, 3 * this->hidden_dim_,
         this->hidden_dim_, 1, this->weight_hh_, hidden, 1, this->intermediate_h);
 
@@ -75,7 +76,6 @@ DeviceTensor UnidirectionalRNN<DeviceTensor>::Forward(
 
     int input_length = input_tensor.count() / (this->batch_size_ * this->input_dim_);
     DeviceTensor output_tensor(this->batch_size_ * input_length * this->hidden_dim_);
-
     auto input_tensors = input_tensor.chunked_tensors(input_length);
     auto output_tensors = output_tensor.chunked_tensors(input_length);
 
@@ -138,7 +138,6 @@ DeviceTensor StackedRNN<DeviceTensor>::Forward(
 
     for (int i = 0; i < rnn_layers_.size(); ++i) {
         input_tensor = rnn_layers_[i]->Forward(input_tensor, hidden_tensors[i]);
-        
     }
 
 

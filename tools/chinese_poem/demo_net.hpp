@@ -9,8 +9,9 @@ public:
 
     AttenNet(const std::string &param_file) { 
 
+
+
         compile_opencl_kernels(" ", " ");
-        
         load_weight_to_tensor(param_file, param);
 
     }
@@ -22,30 +23,24 @@ public:
         // TensorCPU<float> data(data_from_user);
         auto hidden = std::vector<DeviceTensor>{DeviceTensor(128, 0)};
 
+        // std::cout << "inference 0" << std::endl;
 
         auto embeds = embedding(data_from_user);
+        // std::cout << "inference 0" << std::endl;
 
 
-        auto encoder_inputs = embeds.sub_view(128, 128 * 24);
-        auto decoder_inputs = embeds.sub_view(0, 128 * 24);
+        auto encoder_inputs = embeds.sub_view(128, 128 * 24).duplicate();
+        auto decoder_inputs = embeds.sub_view(0, 128 * 24).duplicate();
 
         
-
         auto encoder_out = encoder.Forward(encoder_inputs, hidden);
         auto decoder_out = decoder.Forward(decoder_inputs, hidden);
-
-
-
-
 
         auto encoder_outs = encoder_out.chunked_tensors(24);
 
         encoder_out = concate(std::vector<DeviceTensor*> { &encoder_outs[0], &encoder_outs[6], &encoder_outs[12], &encoder_outs[18]});
 
         auto attn_mid = attn_mul(encoder_out);
-
-
-
 
         auto attn_weights = outplace_gemm(
             CblasNoTrans, CblasTrans, 
@@ -57,7 +52,6 @@ public:
         );
 
         attn_weights = attn_softmax(attn_weights);
-
 
         auto attn_applied = outplace_gemm(
             CblasNoTrans, CblasNoTrans, 

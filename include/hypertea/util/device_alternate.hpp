@@ -4,6 +4,11 @@
 
 #ifndef __ANDROID__
 #include <execinfo.h>
+#else
+#include <unwind.h>
+#include <dlfcn.h>
+#include <iostream>
+#include <iomanip>
 #endif
 
 
@@ -48,7 +53,7 @@
   do { \
     cl_int error = condition; \
     if(error != CL_SUCCESS) { \
-      LOG(ERROR) << "This is a error for OpenCL " << error; \
+      std::cout << "This is a error for OpenCL " << error; \
       exit(1); \
     } \
   } while (0)
@@ -59,6 +64,17 @@
     CLBlastStatusCode status = condition; \
     if(status != CLBlastSuccess) { \
       LOG(ERROR) << "This is a error for CLBlast " << status; \
+      std::cout << "This is a error for CLBlast " << status; \
+      exit(1); \
+    } \
+  } while (0)
+
+
+#define CLBLAST_CPP_CHECK(condition) \
+  do { \
+    auto status = condition; \
+    if(status != clblast::StatusCode::kSuccess) { \
+      LOG(ERROR) << "This is a error for CLBlast " << static_cast<int>(status); \
       exit(1); \
     } \
   } while (0)

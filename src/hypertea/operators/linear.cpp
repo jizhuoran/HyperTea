@@ -11,8 +11,12 @@ DeviceTensor LinearOp<DeviceTensor>::operator()(DeviceTensor input) {
 	DeviceTensor output = DeviceTensor(batch_size * out_features_, 0);
 
 	if(bias_ != nullptr) {
-		for(auto& x : output.chunked_tensors(batch_size)) {
-			x.copy_data(*bias_);
+		for (int i = 0; i < batch_size; ++i) {
+			OPENCL_CHECK(clEnqueueCopyBuffer(OpenCLHandler::Get().commandQueue, 
+		    	(cl_mem) bias_->immutable_data(), 
+		    	(cl_mem) output.mutable_data(), 
+		    	0, output.type_size() * out_features_ * i, output.type_size() * out_features_, 0, NULL, NULL)
+			);
 		}
 	}
 

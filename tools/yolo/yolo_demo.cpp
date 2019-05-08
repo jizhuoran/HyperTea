@@ -26,7 +26,11 @@ int main(int argc, char** argv) {
 
 
     PPMImage *image;
+#ifdef __ANDROID__
+    image = readPPM("/sdcard/hypertea_ws/yolo/img4.ppm");
+#else
     image = readPPM("/home/zrji/hypertea/examples/yolo/img4.ppm");
+#endif
 
 
     for (int y = 0; y < 416; y++) {
@@ -44,21 +48,32 @@ int main(int argc, char** argv) {
     }
 
 
+    hypertea::CPUTimer load_timer;
 
+    load_timer.Start();
+
+#ifdef __ANDROID__
+    hypertea::yolo_net<DeviceTensor> yolo3("/sdcard/hypertea_ws/yolo/pytorch_weight");
+#else
     hypertea::yolo_net<DeviceTensor> yolo3("/home/zrji/hypertea/examples/yolo/pytorch_weight");
+#endif
+
+    load_timer.Stop();
+
+    std::cout << "LOAD Time difference = " << load_timer.MilliSeconds() << "ms" <<std::endl;
 
 
-    Timer timer;
+    Timer inference_timer;
 
-    timer.Start();
+    inference_timer.Start();
     
-    for (int i = 0; i < 500; ++i) {
+    for (int i = 0; i < 1; ++i) {
         yolo3.inference(input_vector, output_vector);
     }
     
-    timer.Stop();
+    inference_timer.Stop();
 
-    std::cout << "Time difference = " << timer.MilliSeconds() << "ms" <<std::endl;
+    std::cout << "INFERENCE Time difference = " << inference_timer.MilliSeconds() << "ms" <<std::endl;
     
 
     // for (auto const&x: output_vector) {

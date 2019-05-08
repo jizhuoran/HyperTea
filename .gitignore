@@ -2,3 +2,4 @@ build/
 build_arm64-v8a/
 third_party/
 examples/
+android/
