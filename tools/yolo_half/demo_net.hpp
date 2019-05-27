@@ -3,7 +3,7 @@
 
 namespace hypertea {
 
-using DeviceTensor = TensorGPU<float>;
+using DeviceTensor = TensorGPU<half>;
 
 class DetectedInfo
 {
@@ -64,7 +64,7 @@ void predict_transform(
     for (int n = 0; n < num_anchors; ++n) {
         int anchor_offset = (n * bbox_attrs + 4) * grid_square;
         for (int i = 0; i < grid_square; ++i) {
-            if (cpu_data.get()[anchor_offset + i] > confidence_inv_sigmoid) {
+            if (half2float_impl(cpu_data.get()[anchor_offset + i]) > confidence_inv_sigmoid) {
                 pos_index.push_back(i);
                 anchor_index.push_back(n);
             }
@@ -83,7 +83,7 @@ void predict_transform(
 
     for (int i = 0; i < bbox_attrs; ++i) {
         for (int n = 0; n < out_num; ++n) {
-            output_data[i * out_num + n] = cpu_data.get()[(anchor_index[n] * bbox_attrs + i) * grid_square + pos_index[n]];
+            output_data[i * out_num + n] = half2float_impl(cpu_data.get()[(anchor_index[n] * bbox_attrs + i) * grid_square + pos_index[n]]);
         }
         
     }
@@ -145,12 +145,11 @@ public:
 
     yolo_net(const std::string &param_file) { 
 
-        compile_opencl_kernels(conv_opencl_funcs, " ");
-        // compile_opencl_kernels(conv_opencl_funcs, " ", "/sdcard/hypertea_ws/yolo/");
+        // compile_opencl_kernels(conv_opencl_funcs, " ", true, "/sdcard/hypertea_ws/yolo_half/");
+        
+        load_opencl_kernels("/sdcard/hypertea_ws/yolo_half/prebuilt_math_program", "/sdcard/hypertea_ws/yolo_half/prebuilt_conv_program", " ");
 
-        // load_opencl_kernels("/sdcard/hypertea_ws/yolo/prebuilt_math_program", "/sdcard/hypertea_ws/yolo/prebuilt_conv_program", " ");
-
-        auto all_weights = load_weights<float>(param_file, 62001757);
+        auto all_weights = load_weights<half>(param_file, 62001757);
 
         std::cout << "we are go here !!" << std::endl;
 
@@ -526,27 +525,27 @@ public:
         free(all_weights);
     }
 
-    void inference( const std::vector<float> &data_from_user, std::vector<float> &data_to_user) {
+    void inference( const std::vector<half> &data_from_user, std::vector<half> &data_to_user) {
         
         std::vector<DetectedInfo> detected_result;
 
 
         DeviceTensor x(data_from_user);
 
-        x = leaky_1.debug_fw(bn_1.debug_fw(conv_1.debug_fw(leaky_0.debug_fw(bn_0.debug_fw(conv_0.debug_fw(x))))));
-        x += leaky_3.debug_fw(bn_3.debug_fw(conv_3.debug_fw(leaky_2.debug_fw(bn_2.debug_fw(conv_2.debug_fw(x))))));
-        x = leaky_5.debug_fw(bn_5.debug_fw(conv_5.debug_fw(x)));
-        x += leaky_7.debug_fw(bn_7.debug_fw(conv_7.debug_fw(leaky_6.debug_fw(bn_6.debug_fw(conv_6.debug_fw(x))))));
-        x += leaky_10.debug_fw(bn_10.debug_fw(conv_10.debug_fw(leaky_9.debug_fw(bn_9.debug_fw(conv_9.debug_fw(x))))));
-        x = leaky_12.debug_fw(bn_12.debug_fw(conv_12.debug_fw(x)));
-        x += leaky_14.debug_fw(bn_14.debug_fw(conv_14.debug_fw(leaky_13.debug_fw(bn_13.debug_fw(conv_13.debug_fw(x))))));
-        x += leaky_17.debug_fw(bn_17.debug_fw(conv_17.debug_fw(leaky_16.debug_fw(bn_16.debug_fw(conv_16.debug_fw(x))))));
-        x += leaky_20.debug_fw(bn_20.debug_fw(conv_20.debug_fw(leaky_19.debug_fw(bn_19.debug_fw(conv_19.debug_fw(x))))));
-        x += leaky_23.debug_fw(bn_23.debug_fw(conv_23.debug_fw(leaky_22.debug_fw(bn_22.debug_fw(conv_22.debug_fw(x))))));
-        x += leaky_26.debug_fw(bn_26.debug_fw(conv_26.debug_fw(leaky_25.debug_fw(bn_25.debug_fw(conv_25.debug_fw(x))))));
-        x += leaky_29.debug_fw(bn_29.debug_fw(conv_29.debug_fw(leaky_28.debug_fw(bn_28.debug_fw(conv_28.debug_fw(x))))));
-        x += leaky_32.debug_fw(bn_32.debug_fw(conv_32.debug_fw(leaky_31.debug_fw(bn_31.debug_fw(conv_31.debug_fw(x))))));
-        x += leaky_35.debug_fw(bn_35.debug_fw(conv_35.debug_fw(leaky_34.debug_fw(bn_34.debug_fw(conv_34.debug_fw(x)))))); auto x1 = x;
+        x = leaky_1(bn_1(conv_1(leaky_0(bn_0(conv_0(x))))));
+        x += leaky_3(bn_3(conv_3(leaky_2(bn_2(conv_2(x))))));
+        x = leaky_5(bn_5(conv_5(x)));
+        x += leaky_7(bn_7(conv_7(leaky_6(bn_6(conv_6(x))))));
+        x += leaky_10(bn_10(conv_10(leaky_9(bn_9(conv_9(x))))));
+        x = leaky_12(bn_12(conv_12(x)));
+        x += leaky_14(bn_14(conv_14(leaky_13(bn_13(conv_13(x))))));
+        x += leaky_17(bn_17(conv_17(leaky_16(bn_16(conv_16(x))))));
+        x += leaky_20(bn_20(conv_20(leaky_19(bn_19(conv_19(x))))));
+        x += leaky_23(bn_23(conv_23(leaky_22(bn_22(conv_22(x))))));
+        x += leaky_26(bn_26(conv_26(leaky_25(bn_25(conv_25(x))))));
+        x += leaky_29(bn_29(conv_29(leaky_28(bn_28(conv_28(x))))));
+        x += leaky_32(bn_32(conv_32(leaky_31(bn_31(conv_31(x))))));
+        x += leaky_35(bn_35(conv_35(leaky_34(bn_34(conv_34(x)))))); auto x1 = x;
         x = leaky_37(bn_37(conv_37(x)));
         x += leaky_39(bn_39(conv_39(leaky_38(bn_38(conv_38(x))))));
         x += leaky_42(bn_42(conv_42(leaky_41(bn_41(conv_41(x))))));

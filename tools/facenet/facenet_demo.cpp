@@ -29,17 +29,27 @@ int main(int argc, char** argv) {
 
 
     
+hypertea::CPUTimer load_timer;
 
+load_timer.Start();
 
+#ifdef __ANDROID__
+    hypertea::facenet<DeviceTensor> face_net("/sdcard/hypertea_ws/facenet/pytorch_weight");
+#else
+    hypertea::facenet<DeviceTensor> face_net("/home/zrji/hypertea/examples/facenet/pytorch_weight");
+#endif
 
-    hypertea::facenet<DeviceTensor> face_net("/home/zrji/hypertea/tools/facenet/pytorch_weight");
+load_timer.Stop();
+
+std::cout << "LOAD Time difference = " << load_timer.MilliSeconds() << "ms" <<std::endl;
+
 
 
     Timer timer;
 
     timer.Start();
     
-    for (int i = 0; i < 100; ++i) {
+    for (int i = 0; i < 1; ++i) {
         face_net.inference(input_vector, output_vector);
     }
     

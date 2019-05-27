@@ -89,7 +89,6 @@ template void mean_var(
   float eps
 );
 
-
 template void mean_var(
   const TensorGPU<half>& x, 
   TensorGPU<half>& mean,
@@ -99,6 +98,14 @@ template void mean_var(
   float eps
 );
 
+template void mean_var(
+  const TensorGPU<int16>& x, 
+  TensorGPU<int16>& mean,
+  TensorGPU<int16>& var,
+  int channels,
+  int spatial_dim,
+  float eps
+);
 
 template<typename DeviceTensor>
 DeviceTensor BatchNormOp<DeviceTensor>::operator()(DeviceTensor input) {

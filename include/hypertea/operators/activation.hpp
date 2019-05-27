@@ -33,7 +33,7 @@ TensorGPU<Dtype> inplace_prelu(
   auto data = x.mutable_data();
   auto weight_ = weight.mutable_data();
 
-
+ 
   opencl_launch_wrapper(
     OpenCLHandler::Get().math_program,
     "prelu_kernel",

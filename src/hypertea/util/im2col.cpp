@@ -172,6 +172,12 @@ template void im2col(const TensorGPU<half>& data_im, const int channels,
     const int stride_w, const int dilation_h, const int dilation_w,
     TensorGPU<half>& data_col);
 
+template void im2col(const TensorGPU<int16>& data_im, const int channels,
+    const int height, const int width, const int kernel_h, const int kernel_w,
+    const int pad_h, const int pad_w, const int stride_h,
+    const int stride_w, const int dilation_h, const int dilation_w,
+    TensorGPU<int16>& data_col);
+
 
 template <typename Dtype>
 void col2im(const TensorGPU<Dtype>& data_col, const int channels,
@@ -236,6 +242,14 @@ template void col2im(const TensorGPU<half>& data_col, const int channels,
     const int stride_h, const int stride_w,
     const int dilation_h, const int dilation_w,
     TensorGPU<half>& data_im
+);
+
+template void col2im(const TensorGPU<int16>& data_col, const int channels,
+    const int height, const int width, const int kernel_h, const int kernel_w,
+    const int pad_h, const int pad_w,
+    const int stride_h, const int stride_w,
+    const int dilation_h, const int dilation_w,
+    TensorGPU<int16>& data_im
 );
 
 #endif //USE_OPENCL

@@ -36,6 +36,7 @@
 #define IN_PLACE true
 #define NOT_IN_PLACE false
 
+using int16 = short;
 
 #ifdef USE_OPENCL
 #define INSTANTIATE_CLASS_GPU(classname) \
@@ -53,7 +54,8 @@
 #define DEFINE_FORWARD_FUNC(classname) \
 template TensorCPU<float> classname<TensorCPU<float>>::operator()(TensorCPU<float> input); \
 template TensorGPU<float> classname<TensorGPU<float>>::operator()(TensorGPU<float> input); \
-template TensorGPU<half> classname<TensorGPU<half>>::operator()(TensorGPU<half> input)
+template TensorGPU<half> classname<TensorGPU<half>>::operator()(TensorGPU<half> input); \
+template TensorGPU<int16> classname<TensorGPU<int16>>::operator()(TensorGPU<int16> input)
 #else
 #define DEFINE_FORWARD_FUNC(classname) \
 template TensorCPU<float> classname<TensorCPU<float>>::operator()(TensorCPU<float> input);

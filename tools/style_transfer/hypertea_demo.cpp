@@ -10,7 +10,7 @@
 
 #ifdef USE_OPENCL
 using Timer = hypertea::GPUTimer;
-using DeviceTensor = hypertea::TensorGPU<float>;
+using DeviceTensor = hypertea::TensorGPU<int16>;
 #else
 using Timer = hypertea::CPUTimer;
 using DeviceTensor = hypertea::TensorCPU<float>;
@@ -22,8 +22,8 @@ int main(int argc, char** argv) {
     PPMImage *image;
     image = readPPM("./examples/style_transfer/HKU.ppm");
 
-    std::vector<float> converter(512*512*3, 0);
-    std::vector<float> converter1(512*512*3, 0);
+    std::vector<int16> converter(512*512*3, 0);
+    std::vector<int16> converter1(512*512*3, 0);
 
     for (int y = 0; y < 512; y++) {
       for (int x = 0; x < 512; x++) {

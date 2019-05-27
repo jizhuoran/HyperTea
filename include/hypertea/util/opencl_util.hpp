@@ -64,7 +64,7 @@ public:
   	std::string opencl_math_code(bool is_half);
 
 
-  	void build_opencl_math_code(bool is_half);
+  	void build_opencl_math_code(bool is_half, std::string save_to = " ");
 
 
 

@@ -46,6 +46,10 @@ template TensorGPU<half>& unary_math_gpu_inplace(
   TensorGPU<half> &x,
   const std::string& op_name
 );
+template TensorGPU<int16>& unary_math_gpu_inplace(
+  TensorGPU<int16> &x,
+  const std::string& op_name
+);
 
 
 
@@ -85,6 +89,12 @@ template TensorGPU<float>& binary_math_gpu_inplace(
 template TensorGPU<half>& binary_math_gpu_inplace(
   const TensorGPU<half> &x,
   TensorGPU<half> &y,
+  const std::string& op_name
+);
+
+template TensorGPU<int16>& binary_math_gpu_inplace(
+  const TensorGPU<int16> &x,
+  TensorGPU<int16> &y,
   const std::string& op_name
 );
 
@@ -134,6 +144,11 @@ template TensorGPU<half>& unary_scalar_math_gpu_inplace(
   const float scalar,
   const std::string& op_name
 );
+template TensorGPU<int16>& unary_scalar_math_gpu_inplace(
+  TensorGPU<int16> &x,
+  const float scalar,
+  const std::string& op_name
+);
 
 
 
@@ -177,6 +192,12 @@ template TensorGPU<float>& binary_scalar_math_gpu_inplace(
 template TensorGPU<half>& binary_scalar_math_gpu_inplace(
   const TensorGPU<half> &x,
   TensorGPU<half> &y,
+  const float scalar,
+  const std::string& op_name
+);
+template TensorGPU<int16>& binary_scalar_math_gpu_inplace(
+  const TensorGPU<int16> &x,
+  TensorGPU<int16> &y,
   const float scalar,
   const std::string& op_name
 );
@@ -233,6 +254,13 @@ template TensorGPU<half> inplace_channeled_scal(
   int inner_dim
 );
 
+template TensorGPU<int16> inplace_channeled_scal(
+  TensorGPU<int16> x, 
+  const TensorGPU<int16>& weight,
+  int channels,
+  int inner_dim
+);
+
 
 
 template <typename Dtype>
@@ -283,6 +311,13 @@ template TensorGPU<half> inplace_channeled_add(
   int inner_dim
 );
 
+template TensorGPU<int16> inplace_channeled_add(
+  TensorGPU<int16> x, 
+  const TensorGPU<int16>& bias,
+  int channels,
+  int inner_dim
+);
+
 
 template <typename Dtype>
 TensorGPU<Dtype> inplace_channeled_sub(
@@ -328,6 +363,13 @@ template TensorGPU<float> inplace_channeled_sub(
 template TensorGPU<half> inplace_channeled_sub(
   TensorGPU<half> x, 
   const TensorGPU<half>& bias,
+  int channels,
+  int inner_dim
+);
+
+template TensorGPU<int16> inplace_channeled_sub(
+  TensorGPU<int16> x, 
+  const TensorGPU<int16>& bias,
   int channels,
   int inner_dim
 );
@@ -384,6 +426,13 @@ template TensorGPU<half> inplace_channeled_scaladd(
   int channels,
   int inner_dim
 );
+template TensorGPU<int16> inplace_channeled_scaladd(
+  TensorGPU<int16> x, 
+  const TensorGPU<int16>& weight,
+  const TensorGPU<int16>& bias,
+  int channels,
+  int inner_dim
+);
 
 
 
@@ -423,6 +472,11 @@ template TensorGPU<float> channeled_sum(
 
 template TensorGPU<half> channeled_sum(
   TensorGPU<half> x, 
+  int spatial_dim
+);
+
+template TensorGPU<int16> channeled_sum(
+  TensorGPU<int16> x, 
   int spatial_dim
 );
 
@@ -479,6 +533,11 @@ template std::vector<int> batched_argmax(
 
 template std::vector<int> batched_argmax(
   TensorGPU<half> x, 
+  int spatial_dim
+);
+
+template std::vector<int> batched_argmax(
+  TensorGPU<int16> x, 
   int spatial_dim
 );
 

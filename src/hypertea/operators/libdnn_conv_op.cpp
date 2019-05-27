@@ -41,6 +41,7 @@ DeviceTensor LibDNNConvOp<DeviceTensor>::operator()(DeviceTensor input) {
 
 template TensorGPU<float> LibDNNConvOp<TensorGPU<float>>::operator()(TensorGPU<float> input);
 template TensorGPU<half> LibDNNConvOp<TensorGPU<half>>::operator()(TensorGPU<half> input);
+template TensorGPU<int16> LibDNNConvOp<TensorGPU<int16>>::operator()(TensorGPU<int16> input);
 
 
 template <typename DeviceTensor>
@@ -78,6 +79,7 @@ DeviceTensor LibDNNDeconvOp<DeviceTensor>::operator()(DeviceTensor input) {
 
 template TensorGPU<float> LibDNNDeconvOp<TensorGPU<float>>::operator()(TensorGPU<float> input);
 template TensorGPU<half> LibDNNDeconvOp<TensorGPU<half>>::operator()(TensorGPU<half> input);
+template TensorGPU<int16> LibDNNDeconvOp<TensorGPU<int16>>::operator()(TensorGPU<int16> input);
 
 
 

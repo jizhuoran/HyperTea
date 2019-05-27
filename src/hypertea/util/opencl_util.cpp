@@ -79,8 +79,12 @@ OpenCLHandler::OpenCLHandler() {
 
 }
 
-void OpenCLHandler::build_opencl_math_code(bool is_half) {
+void OpenCLHandler::build_opencl_math_code(bool is_half, std::string save_to) {
+  if (save_to.size() > 2) {
+    build_save_opencl_program(opencl_math_code(is_half), math_program, save_to + "prebuilt_math_program");
+  } else {
     build_opencl_program(opencl_math_code(is_half), math_program);
+  }
 }
 
 
@@ -94,7 +98,7 @@ void OpenCLHandler::load_opencl_program(std::string save_binary_file, cl_program
   size_t kernel_size = file.tellg();
   file.seekg(0, std::ios::beg);
 
-  LOG(INFO) << "The kernel we read is size of " << kernel_size << std::endl;
+  std::cout << "The kernel we read is size of " << kernel_size << std::endl;
 
   char* buffer = new char[kernel_size];
 
@@ -107,11 +111,8 @@ void OpenCLHandler::load_opencl_program(std::string save_binary_file, cl_program
   program = clCreateProgramWithBinary(context, 1, &deviceID,
                                         &kernel_size, (const unsigned char **)&buffer, NULL, &ret);
 
-
-  LOG(INFO) << "pass this line";
-
-
   OPENCL_CHECK(ret);
+
 
   ret = clBuildProgram(program, 1, &deviceID, NULL, NULL, NULL);
 
@@ -142,6 +143,7 @@ void OpenCLHandler::build_opencl_program(const std::string &kernel_code, cl_prog
 
 void OpenCLHandler::build_save_opencl_program(std::string kernel_code, cl_program &program, std::string save_binary_file) {
 
+  std::cout << "DEBUG: build_save_opencl_program " << save_binary_file << std::endl;
 
   build_opencl_program(kernel_code, program);
 
@@ -159,14 +161,22 @@ void OpenCLHandler::build_save_opencl_program(std::string kernel_code, cl_progra
 
   clGetProgramInfo(program, CL_PROGRAM_BINARIES, sizeof(unsigned char *), &binary, NULL);
 
-  LOG(INFO) << "The kernel we write is size of " << binary_kernel_size << std::endl;
+  std::cout << "The kernel we write is size of " << binary_kernel_size << std::endl;
 
 
   std::fstream file;
   file.open(save_binary_file, std::ios::out | std::ios::binary);
+  
+  std::cout << "DEBUG: Open it " << binary_kernel_size << std::endl;
+
+
   file.write((const char*)binary, binary_kernel_size); // ideally, you should memcpy it to a char buffer.
 
+  std::cout << "DEBUG: Write it " << binary_kernel_size << std::endl;
+
   file.close();
+
+  std::cout << "DEBUG: Close it " << binary_kernel_size << std::endl;
 
   delete [] binary;
 
@@ -515,35 +525,48 @@ std::string reduce_opencl_math_kernel(
 std::string OpenCLHandler::opencl_math_code(bool is_half) {
 	
 
+  std::string int16_header = R"(
+    
+    #define Dtype short
+    #define Dtype2 short2
+    #define Dtype4 short4
+    #define Dtype8 short8
 
-	std::string opencl_kernel_header = is_half?
+    #undef FLT_MIN
+    #define FLT_MIN (-32767 - 1)
 
-	R"(
-		
-		#pragma OPENCL EXTENSION cl_khr_fp16 : enable
+    #undef FLT_MAX
+    #define FLT_MAX 32767
+    
+  )";
 
-		#define Dtype half
-		#define Dtype2 half2
-		#define Dtype4 half4
-		#define Dtype8 half8
+  std::string half_header = R"(
 
-		#undef FLT_MIN
-		#define FLT_MIN 0x1.0p-14h
+    #pragma OPENCL EXTENSION cl_khr_fp16 : enable
+
+    #define Dtype half
+    #define Dtype2 half2
+    #define Dtype4 half4
+    #define Dtype8 half8
+
+    #undef FLT_MIN
+    #define FLT_MIN 0x1.0p-14h
 
     #undef FLT_MAX
     #define FLT_MAX 0x1.ffcp15h
-		
-	)"
-	:
-	R"(
+    
+  )";
 
-		#define Dtype float
-		#define Dtype2 float2
-		#define Dtype4 float4
+  std::string float_header = R"(
 
-	)";
+    #define Dtype float
+    #define Dtype2 float2
+    #define Dtype4 float4
 
-  
+  )";
+
+	std::string opencl_kernel_header = is_half? int16_header : float_header;
+
 
 	std::string opencl_kernel_code =
 
@@ -576,7 +599,7 @@ std::string OpenCLHandler::opencl_math_code(bool is_half) {
    + channel_opencl_math_kernel("channel_sub", "y[index] = x[index] - weight[scale_index];", false)
    + channel_opencl_math_kernel("channel_scal", "y[index] = x[index] * weight[scale_index];", false)
    + channel_opencl_math_kernel("channel_scaladd", "y[index] = x[index] * weight[scale_index] + bias[scale_index];", true)
-   + channel_opencl_math_kernel("prelu", "y[index] = x[index] > 0? x[index] : x[index] * weight[scale_index];", true)
+   + channel_opencl_math_kernel("prelu", "y[index] = x[index] > 0? x[index] : x[index] * weight[scale_index];", false)
 
    + reduce_opencl_math_kernel("sum", "value += lcl_mem[lcl_offset + i];", "red_value += in[batch_index * spatial_dim + k];")
 

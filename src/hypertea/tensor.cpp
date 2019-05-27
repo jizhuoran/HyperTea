@@ -152,6 +152,7 @@ TensorGPU<Dtype>::TensorGPU(int count, Dtype value) {
 }
 template TensorGPU<float>::TensorGPU(int count, float value);
 template TensorGPU<half>::TensorGPU(int count, half value);
+template TensorGPU<int16>::TensorGPU(int count, short value);
 
 
 
@@ -167,6 +168,7 @@ TensorGPU<Dtype>::TensorGPU(cl_mem data_ptr, int count, bool shared) {
 }
 template TensorGPU<float>::TensorGPU(cl_mem data_ptr, int count, bool shared);
 template TensorGPU<half>::TensorGPU(cl_mem data_ptr, int count, bool shared);
+template TensorGPU<int16>::TensorGPU(cl_mem data_ptr, int count, bool shared);
 
 
 
@@ -187,6 +189,7 @@ TensorGPU<Dtype>::TensorGPU(std::vector<Dtype> data) {
 }
 template TensorGPU<float>::TensorGPU(std::vector<float> data);
 template TensorGPU<half>::TensorGPU(std::vector<half> data);
+template TensorGPU<int16>::TensorGPU(std::vector<int16> data);
 
 
 template <typename Dtype>
@@ -201,6 +204,7 @@ TensorGPU<Dtype>& TensorGPU<Dtype>::copy_data(const TensorGPU & other) {
 }
 template TensorGPU<float>& TensorGPU<float>::copy_data(const TensorGPU<float> & other);
 template TensorGPU<half>& TensorGPU<half>::copy_data(const TensorGPU<half> & other);
+template TensorGPU<int16>& TensorGPU<int16>::copy_data(const TensorGPU<int16> & other);
 
 
 template <typename Dtype>
@@ -211,6 +215,7 @@ TensorGPU<Dtype> TensorGPU<Dtype>::duplicate() const {
 }
 template TensorGPU<float> TensorGPU<float>::duplicate() const;
 template TensorGPU<half> TensorGPU<half>::duplicate() const;
+template TensorGPU<int16> TensorGPU<int16>::duplicate() const;
 
 
 
@@ -227,6 +232,7 @@ TensorGPU<Dtype> TensorGPU<Dtype>::sub_view(unsigned int offset, unsigned int si
 }
 template TensorGPU<float> TensorGPU<float>::sub_view(unsigned int offset, unsigned int size, cl_mem_flags flags);
 template TensorGPU<half> TensorGPU<half>::sub_view(unsigned int offset, unsigned int size, cl_mem_flags flags);
+template TensorGPU<int16> TensorGPU<int16>::sub_view(unsigned int offset, unsigned int size, cl_mem_flags flags);
 
 
 
@@ -261,6 +267,7 @@ std::vector<TensorGPU<Dtype> > TensorGPU<Dtype>::chunked_tensors(int chunck_num,
 
 template std::vector<TensorGPU<float> > TensorGPU<float>::chunked_tensors(int chunck_num, cl_mem_flags flags);
 template std::vector<TensorGPU<half> > TensorGPU<half>::chunked_tensors(int chunck_num, cl_mem_flags flags);
+template std::vector<TensorGPU<int16> > TensorGPU<int16>::chunked_tensors(int chunck_num, cl_mem_flags flags);
 
 
 
@@ -299,6 +306,7 @@ TensorGPU<Dtype> TensorGPU<Dtype>::transpose_hw(int old_last_dim, int new_last_d
 
 template TensorGPU<float> TensorGPU<float>::transpose_hw(int old_last_dim, int new_last_dim);
 template TensorGPU<half> TensorGPU<half>::transpose_hw(int old_last_dim, int new_last_dim);
+template TensorGPU<int16> TensorGPU<int16>::transpose_hw(int old_last_dim, int new_last_dim);
 
 
 
@@ -311,6 +319,7 @@ std::shared_ptr<Dtype> TensorGPU<Dtype>::debug_gtest_cpu_data() const {
 
 template std::shared_ptr<float> TensorGPU<float>::debug_gtest_cpu_data() const;
 template std::shared_ptr<half> TensorGPU<half>::debug_gtest_cpu_data() const;
+template std::shared_ptr<int16> TensorGPU<int16>::debug_gtest_cpu_data() const;
 
 #endif //USE_OPENCL
 

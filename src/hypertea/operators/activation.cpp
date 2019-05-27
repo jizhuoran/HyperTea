@@ -6,7 +6,15 @@ namespace hypertea {
 
 template<typename DeviceTensor>
 DeviceTensor PReLUOp<DeviceTensor>::operator()(DeviceTensor input) {
+
+    std::cout << "DEBUG: PReLUOp 0" <<std::endl;
+
+
 	DeviceTensor output = inplace_? input : input.duplicate();
+
+    std::cout << "DEBUG: PReLUOp 1" <<std::endl;
+
+
 	inplace_prelu(output, *weight_, channels_, inner_dim_);
 	return output;
 }

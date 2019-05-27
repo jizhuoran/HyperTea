@@ -53,7 +53,8 @@
   do { \
     cl_int error = condition; \
     if(error != CL_SUCCESS) { \
-      std::cout << "This is a error for OpenCL " << error; \
+      LOG(ERROR) << "This is a error for OpenCL " << error << std::endl; \
+      std::cout << "This is a error for OpenCL " << error << std::endl; \
       exit(1); \
     } \
   } while (0)

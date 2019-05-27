@@ -10,7 +10,7 @@ public:
 
     new_net(const std::string &param_file) { 
 
-        compile_opencl_kernels(conv_opencl_funcs, " ");
+        compile_opencl_kernels(conv_opencl_funcs, " ", true);
         
         load_weight_to_tensor(param_file, param);
 
@@ -18,7 +18,7 @@ public:
 
     
     
-    void inference( std::vector<float> &data_from_user, std::vector<float> &data_to_user) {
+    void inference( std::vector<int16> &data_from_user, std::vector<int16> &data_to_user) {
         
         auto data = DeviceTensor(data_from_user);
 

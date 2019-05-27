@@ -6,6 +6,8 @@
 #include <clblast.h>
 #include <cblas.h>
 
+using int16 = short;
+
 namespace hypertea {
 
 template<typename Dtype> class Tensor;
@@ -18,6 +20,7 @@ template<typename Dtype> class TensorGPU;
 template<typename T> T to_dtype(const float x);
 template<> inline float to_dtype<float>(const float x) {return x;}
 template<> inline half to_dtype<half> (const float x) {return float2half_impl(x);}
+template<> inline int16 to_dtype<int16> (const float x) {return static_cast<int16>(x);}
 
 
 template <typename Dtype>
@@ -60,17 +63,17 @@ TensorGPU<Dtype> inplace_gemm(
   	auto blastTransB =
       (TransB == CblasNoTrans) ? clblast::Transpose::kNo : clblast::Transpose::kYes;
 
-	CLBLAST_CPP_CHECK(clblast::Gemm<Dtype>(
-    clblast::Layout::kRowMajor,
-    blastTransA, blastTransB,
-    M, N, K,
-    alpha_,
-    (cl_mem) A_data, 0, lda,
-    (cl_mem) B_data, 0, ldb,
-    beta_,
-    (cl_mem) C_data, 0, ldc,
-    &OpenCLHandler::Get().commandQueue, NULL)
-  );
+	// CLBLAST_CPP_CHECK(clblast::Gemm<Dtype>(
+	//     clblast::Layout::kRowMajor,
+	//     blastTransA, blastTransB,
+	//     M, N, K,
+	//     alpha_,
+	//     (cl_mem) A_data, 0, lda,
+	//     (cl_mem) B_data, 0, ldb,
+	//     beta_,
+	//     (cl_mem) C_data, 0, ldc,
+	//     &OpenCLHandler::Get().commandQueue, NULL)
+ //  );
 
 	return C;
 }
@@ -98,17 +101,17 @@ TensorGPU<Dtype> inplace_gemv(
 	auto blastTransA =
 	(TransA != CblasNoTrans) ? clblast::Transpose::kNo : clblast::Transpose::kYes;
 
-	CLBLAST_CPP_CHECK(clblast::Gemv<Dtype>(
-		clblast::Layout::kColMajor,
-		blastTransA, 
-		N, M,
-		alpha_,
-		A_data, 0, N,
-		x_data, 0, 1,
-		beta_,
-		y_data, 0, 1,
-		&OpenCLHandler::Get().commandQueue, NULL)
-	);
+	// CLBLAST_CPP_CHECK(clblast::Gemv<Dtype>(
+	// 	clblast::Layout::kColMajor,
+	// 	blastTransA, 
+	// 	N, M,
+	// 	alpha_,
+	// 	A_data, 0, N,
+	// 	x_data, 0, 1,
+	// 	beta_,
+	// 	y_data, 0, 1,
+	// 	&OpenCLHandler::Get().commandQueue, NULL)
+	// );
 
 	return y;
 }
