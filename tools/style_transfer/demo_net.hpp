@@ -12,8 +12,65 @@ public:
 
         compile_opencl_kernels(conv_opencl_funcs, " ", true);
         
-        load_weight_to_tensor(param_file, param);
+        // load_weight_to_tensor(param_file, param);
 
+        auto all_weights = load_weights<float>(param_file, 1821315);
+
+        conv1_bias.copy_from_ptr(all_weights + 0);
+        conv1_weight.copy_from_ptr(all_weights + 32);
+        bn1_weight.copy_from_ptr(all_weights + 7808);
+        bn1_bias.copy_from_ptr(all_weights + 7840);
+        conv2_bias.copy_from_ptr(all_weights + 7872);
+        conv2_weight.copy_from_ptr(all_weights + 7936);
+        bn2_weight.copy_from_ptr(all_weights + 40704);
+        bn2_bias.copy_from_ptr(all_weights + 40768);
+        conv3_bias.copy_from_ptr(all_weights + 40832);
+        conv3_weight.copy_from_ptr(all_weights + 40960);
+        bn3_weight.copy_from_ptr(all_weights + 172032);
+        bn3_bias.copy_from_ptr(all_weights + 172160);
+        res1_conv1_weight.copy_from_ptr(all_weights + 172288);
+        res1_bn1_weight.copy_from_ptr(all_weights + 319744);
+        res1_bn1_bias.copy_from_ptr(all_weights + 319872);
+        res1_conv2_weight.copy_from_ptr(all_weights + 320000);
+        res1_bn2_weight.copy_from_ptr(all_weights + 467456);
+        res1_bn2_bias.copy_from_ptr(all_weights + 467584);
+        res2_conv1_weight.copy_from_ptr(all_weights + 467712);
+        res2_bn1_weight.copy_from_ptr(all_weights + 615168);
+        res2_bn1_bias.copy_from_ptr(all_weights + 615296);
+        res2_conv2_weight.copy_from_ptr(all_weights + 615424);
+        res2_bn2_weight.copy_from_ptr(all_weights + 762880);
+        res2_bn2_bias.copy_from_ptr(all_weights + 763008);
+        res3_conv1_weight.copy_from_ptr(all_weights + 763136);
+        res3_bn1_weight.copy_from_ptr(all_weights + 910592);
+        res3_bn1_bias.copy_from_ptr(all_weights + 910720);
+        res3_conv2_weight.copy_from_ptr(all_weights + 910848);
+        res3_bn2_weight.copy_from_ptr(all_weights + 1058304);
+        res3_bn2_bias.copy_from_ptr(all_weights + 1058432);
+        res4_conv1_weight.copy_from_ptr(all_weights + 1058560);
+        res4_bn1_weight.copy_from_ptr(all_weights + 1206016);
+        res4_bn1_bias.copy_from_ptr(all_weights + 1206144);
+        res4_conv2_weight.copy_from_ptr(all_weights + 1206272);
+        res4_bn2_weight.copy_from_ptr(all_weights + 1353728);
+        res4_bn2_bias.copy_from_ptr(all_weights + 1353856);
+        res5_conv1_weight.copy_from_ptr(all_weights + 1353984);
+        res5_bn1_weight.copy_from_ptr(all_weights + 1501440);
+        res5_bn1_bias.copy_from_ptr(all_weights + 1501568);
+        res5_conv2_weight.copy_from_ptr(all_weights + 1501696);
+        res5_bn2_weight.copy_from_ptr(all_weights + 1649152);
+        res5_bn2_bias.copy_from_ptr(all_weights + 1649280);
+        deconv1_bias.copy_from_ptr(all_weights + 1649408);
+        deconv1_weight.copy_from_ptr(all_weights + 1649472);
+        de_bn1_weight.copy_from_ptr(all_weights + 1780544);
+        de_bn1_bias.copy_from_ptr(all_weights + 1780608);
+        deconv2_bias.copy_from_ptr(all_weights + 1780672);
+        deconv2_weight.copy_from_ptr(all_weights + 1780704);
+        de_bn2_weight.copy_from_ptr(all_weights + 1813472);
+        de_bn2_bias.copy_from_ptr(all_weights + 1813504);
+        deconv3_bias.copy_from_ptr(all_weights + 1813536);
+        deconv3_weight.copy_from_ptr(all_weights + 1813539);
+    
+        free(all_weights);
+    
     }
 
     
@@ -47,60 +104,64 @@ public:
 
 private:
     
-    DeviceTensor param = DeviceTensor(1821315);
 
-     DeviceTensor conv1_bias = param.sub_view(0, 32);
-     DeviceTensor conv1_weight = param.sub_view(32, 7776);
-     DeviceTensor bn1_weight = param.sub_view(7808, 32);
-     DeviceTensor bn1_bias = param.sub_view(7840, 32);
-     DeviceTensor conv2_bias = param.sub_view(7872, 64);
-     DeviceTensor conv2_weight = param.sub_view(7936, 32768);
-     DeviceTensor bn2_weight = param.sub_view(40704, 64);
-     DeviceTensor bn2_bias = param.sub_view(40768, 64);
-     DeviceTensor conv3_bias = param.sub_view(40832, 128);
-     DeviceTensor conv3_weight = param.sub_view(40960, 131072);
-     DeviceTensor bn3_weight = param.sub_view(172032, 128);
-     DeviceTensor bn3_bias = param.sub_view(172160, 128);
-     DeviceTensor res1_conv1_weight = param.sub_view(172288, 147456);
-     DeviceTensor res1_bn1_weight = param.sub_view(319744, 128);
-     DeviceTensor res1_bn1_bias = param.sub_view(319872, 128);
-     DeviceTensor res1_conv2_weight = param.sub_view(320000, 147456);
-     DeviceTensor res1_bn2_weight = param.sub_view(467456, 128);
-     DeviceTensor res1_bn2_bias = param.sub_view(467584, 128);
-     DeviceTensor res2_conv1_weight = param.sub_view(467712, 147456);
-     DeviceTensor res2_bn1_weight = param.sub_view(615168, 128);
-     DeviceTensor res2_bn1_bias = param.sub_view(615296, 128);
-     DeviceTensor res2_conv2_weight = param.sub_view(615424, 147456);
-     DeviceTensor res2_bn2_weight = param.sub_view(762880, 128);
-     DeviceTensor res2_bn2_bias = param.sub_view(763008, 128);
-     DeviceTensor res3_conv1_weight = param.sub_view(763136, 147456);
-     DeviceTensor res3_bn1_weight = param.sub_view(910592, 128);
-     DeviceTensor res3_bn1_bias = param.sub_view(910720, 128);
-     DeviceTensor res3_conv2_weight = param.sub_view(910848, 147456);
-     DeviceTensor res3_bn2_weight = param.sub_view(1058304, 128);
-     DeviceTensor res3_bn2_bias = param.sub_view(1058432, 128);
-     DeviceTensor res4_conv1_weight = param.sub_view(1058560, 147456);
-     DeviceTensor res4_bn1_weight = param.sub_view(1206016, 128);
-     DeviceTensor res4_bn1_bias = param.sub_view(1206144, 128);
-     DeviceTensor res4_conv2_weight = param.sub_view(1206272, 147456);
-     DeviceTensor res4_bn2_weight = param.sub_view(1353728, 128);
-     DeviceTensor res4_bn2_bias = param.sub_view(1353856, 128);
-     DeviceTensor res5_conv1_weight = param.sub_view(1353984, 147456);
-     DeviceTensor res5_bn1_weight = param.sub_view(1501440, 128);
-     DeviceTensor res5_bn1_bias = param.sub_view(1501568, 128);
-     DeviceTensor res5_conv2_weight = param.sub_view(1501696, 147456);
-     DeviceTensor res5_bn2_weight = param.sub_view(1649152, 128);
-     DeviceTensor res5_bn2_bias = param.sub_view(1649280, 128);
-     DeviceTensor deconv1_bias = param.sub_view(1649408, 64);
-     DeviceTensor deconv1_weight = param.sub_view(1649472, 131072);
-     DeviceTensor de_bn1_weight = param.sub_view(1780544, 64);
-     DeviceTensor de_bn1_bias = param.sub_view(1780608, 64);
-     DeviceTensor deconv2_bias = param.sub_view(1780672, 32);
-     DeviceTensor deconv2_weight = param.sub_view(1780704, 32768);
-     DeviceTensor de_bn2_weight = param.sub_view(1813472, 32);
-     DeviceTensor de_bn2_bias = param.sub_view(1813504, 32);
-     DeviceTensor deconv3_bias = param.sub_view(1813536, 3);
-     DeviceTensor deconv3_weight = param.sub_view(1813539, 7776);
+
+    
+
+    DeviceTensor conv1_bias = DeviceTensor(32);
+    DeviceTensor conv1_weight = DeviceTensor(7776);
+    DeviceTensor bn1_weight = DeviceTensor(32);
+    DeviceTensor bn1_bias = DeviceTensor(32);
+    DeviceTensor conv2_bias = DeviceTensor(64);
+    DeviceTensor conv2_weight = DeviceTensor(32768);
+    DeviceTensor bn2_weight = DeviceTensor(64);
+    DeviceTensor bn2_bias = DeviceTensor(64);
+    DeviceTensor conv3_bias = DeviceTensor(128);
+    DeviceTensor conv3_weight = DeviceTensor(131072);
+    DeviceTensor bn3_weight = DeviceTensor(128);
+    DeviceTensor bn3_bias = DeviceTensor(128);
+    DeviceTensor res1_conv1_weight = DeviceTensor(147456);
+    DeviceTensor res1_bn1_weight = DeviceTensor(128);
+    DeviceTensor res1_bn1_bias = DeviceTensor(128);
+    DeviceTensor res1_conv2_weight = DeviceTensor(147456);
+    DeviceTensor res1_bn2_weight = DeviceTensor(128);
+    DeviceTensor res1_bn2_bias = DeviceTensor(128);
+    DeviceTensor res2_conv1_weight = DeviceTensor(147456);
+    DeviceTensor res2_bn1_weight = DeviceTensor(128);
+    DeviceTensor res2_bn1_bias = DeviceTensor(128);
+    DeviceTensor res2_conv2_weight = DeviceTensor(147456);
+    DeviceTensor res2_bn2_weight = DeviceTensor(128);
+    DeviceTensor res2_bn2_bias = DeviceTensor(128);
+    DeviceTensor res3_conv1_weight = DeviceTensor(147456);
+    DeviceTensor res3_bn1_weight = DeviceTensor(128);
+    DeviceTensor res3_bn1_bias = DeviceTensor(128);
+    DeviceTensor res3_conv2_weight = DeviceTensor(147456);
+    DeviceTensor res3_bn2_weight = DeviceTensor(128);
+    DeviceTensor res3_bn2_bias = DeviceTensor(128);
+    DeviceTensor res4_conv1_weight = DeviceTensor(147456);
+    DeviceTensor res4_bn1_weight = DeviceTensor(128);
+    DeviceTensor res4_bn1_bias = DeviceTensor(128);
+    DeviceTensor res4_conv2_weight = DeviceTensor(147456);
+    DeviceTensor res4_bn2_weight = DeviceTensor(128);
+    DeviceTensor res4_bn2_bias = DeviceTensor(128);
+    DeviceTensor res5_conv1_weight = DeviceTensor(147456);
+    DeviceTensor res5_bn1_weight = DeviceTensor(128);
+    DeviceTensor res5_bn1_bias = DeviceTensor(128);
+    DeviceTensor res5_conv2_weight = DeviceTensor(147456);
+    DeviceTensor res5_bn2_weight = DeviceTensor(128);
+    DeviceTensor res5_bn2_bias = DeviceTensor(128);
+    DeviceTensor deconv1_bias = DeviceTensor(64);
+    DeviceTensor deconv1_weight = DeviceTensor(131072);
+    DeviceTensor de_bn1_weight = DeviceTensor(64);
+    DeviceTensor de_bn1_bias = DeviceTensor(64);
+    DeviceTensor deconv2_bias = DeviceTensor(32);
+    DeviceTensor deconv2_weight = DeviceTensor(32768);
+    DeviceTensor de_bn2_weight = DeviceTensor(32);
+    DeviceTensor de_bn2_bias = DeviceTensor(32);
+    DeviceTensor deconv3_bias = DeviceTensor(3);
+    DeviceTensor deconv3_weight = DeviceTensor(7776);
+
+
     LibDNNConvOp<DeviceTensor> conv1 = LibDNNConvOp<DeviceTensor> ("conv1_forward", 8388608, &conv1_weight, &conv1_bias, std::vector<size_t> {16,4,1}, std::vector<size_t> {32768,8,1});
     ELUOp<DeviceTensor> elu1 = ELUOp<DeviceTensor> ( 1, NOT_IN_PLACE );
     BatchNormOp<DeviceTensor> bn1 = BatchNormOp<DeviceTensor> (32, 262144, 1e-05, nullptr, nullptr, &bn1_weight, &bn1_bias);
